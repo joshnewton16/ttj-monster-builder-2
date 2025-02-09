@@ -6,32 +6,24 @@ export function BasicInfo({ monster, setMonster, onCRChange }) {
   const [baseArmorType, setBaseArmorType] = useState('Natural Armor');
   const [diceNotation, setDiceNotation] = useState('');
 
-  function calculateProficiencyBonus(cr) {
-    return Math.floor((cr - 1) / 4) + 2;
-  }
-
-  // Function to calculate average from dice notation (e.g., "2d6+3")
   function calculateAverageHP(notation) {
     if (!notation) return 0;
     
     const match = notation.match(/(\d+)d(\d+)(?:\s*\+\s*(\d+))?/);
     if (!match) return 0;
     
-    const [_, numDice, diceSize, bonus] = match;
+    const [, numDice, diceSize, bonus] = match;  // removed unused underscore
     const average = (parseInt(numDice) * (parseInt(diceSize) + 1) / 2) + (parseInt(bonus) || 0);
     return Math.floor(average);
   }
 
-  // Function to calculate CR based on AC and HP
   function calculateCR(ac, hp) {
-    // This is a simplified version - you might want to make this more sophisticated
     if (ac && hp) {
       if (ac <= 13 && hp <= 50) return 1;
       if (ac <= 14 && hp <= 100) return 2;
       if (ac <= 15 && hp <= 150) return 3;
       if (ac <= 16 && hp <= 200) return 4;
       if (ac <= 17 && hp <= 250) return 5;
-      // Add more ranges as needed
     }
     return null;
   }
@@ -40,17 +32,19 @@ export function BasicInfo({ monster, setMonster, onCRChange }) {
   useEffect(() => {
     const baseAC = SRD_ARMOR.find(a => a.name === baseArmorType)?.ac || 10;
     const totalAC = baseAC + customAC;
-    setMonster(prev => ({ ...prev, ac: totalAC }));
-  }, [baseArmorType, customAC]);
+    const armorClassText = baseArmorType + '(' + totalAC + ')';
+    setMonster(prev => ({ ...prev, ac: totalAC, acText: armorClassText }));
+  }, [baseArmorType, customAC, setMonster]);
 
   // Update movement speed when size changes
   useEffect(() => {
     const baseSpeed = SIZE_MOVEMENT[monster.size] || 30;
+    const currentSpeedType = monster.speed?.type || 'Walk';
     setMonster(prev => ({ 
       ...prev, 
-      speed: { type: monster.speed?.type || 'Walk', value: baseSpeed }
+      speed: { type: currentSpeedType, value: baseSpeed }
     }));
-  }, [monster.size]);
+  }, [monster.size, monster.speed?.type, setMonster]);
 
   // Update CR when AC and HP change
   useEffect(() => {
@@ -58,28 +52,30 @@ export function BasicInfo({ monster, setMonster, onCRChange }) {
     if (calculatedCR) {
       onCRChange(calculatedCR);
     }
-  }, [monster.ac, monster.hp]);
+  }, [monster.ac, monster.hp, onCRChange]);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-8">
       <h2 className="text-xl font-bold">Basic Information</h2>
-      <div className="space-y-4">
-        <label className="block">
-          Name:
-          <input
-            type="text"
-            className="w-full p-2 border rounded"
-            value={monster.name}
-            onChange={e => setMonster(prev => ({ ...prev, name: e.target.value }))}
-          />
-        </label>
+      <div className="space-y-8">
+        <div className="space-y-6">
+          <label className="block">
+            Name:
+            <input
+              type="text"
+              className="w-full p-2 border rounded mt-2"
+              value={monster.name}
+              onChange={e => setMonster(prev => ({ ...prev, name: e.target.value }))}
+            />
+          </label>
+        </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div>
+        <div className="grid grid-cols-2 gap-8">
+          <div className="space-y-6">
             <label className="block">
               Base Armor:
               <select
-                className="w-full p-2 border rounded"
+                className="w-full p-2 border rounded mt-2"
                 value={baseArmorType}
                 onChange={e => setBaseArmorType(e.target.value)}
               >
@@ -91,27 +87,27 @@ export function BasicInfo({ monster, setMonster, onCRChange }) {
               </select>
             </label>
             
-            <label className="block mt-2">
+            <label className="block">
               Additional AC:
               <input
                 type="number"
-                className="w-full p-2 border rounded"
+                className="w-full p-2 border rounded mt-2"
                 value={customAC}
                 onChange={e => setCustomAC(parseInt(e.target.value) || 0)}
               />
             </label>
             
-            <div className="mt-2">
+            <div>
               Total AC: {monster.ac}
             </div>
           </div>
 
-          <div>
+          <div className="space-y-6">
             <label className="block">
               Hit Points:
               <input
                 type="text"
-                className="w-full p-2 border rounded"
+                className="w-full p-2 border rounded mt-2"
                 placeholder="e.g., 4d8+12"
                 value={diceNotation}
                 onChange={e => {
@@ -121,17 +117,17 @@ export function BasicInfo({ monster, setMonster, onCRChange }) {
                 }}
               />
             </label>
-            <div className="mt-2">
+            <div>
               Average HP: {monster.hp}
             </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-8">
           <label className="block">
             Size:
             <select
-              className="w-full p-2 border rounded"
+              className="w-full p-2 border rounded mt-2"
               value={monster.size}
               onChange={e => setMonster(prev => ({ ...prev, size: e.target.value }))}
             >
@@ -144,7 +140,7 @@ export function BasicInfo({ monster, setMonster, onCRChange }) {
           <label className="block">
             Movement Type:
             <select
-              className="w-full p-2 border rounded"
+              className="w-full p-2 border rounded mt-2"
               value={monster.speed?.type}
               onChange={e => setMonster(prev => ({
                 ...prev,
@@ -158,7 +154,7 @@ export function BasicInfo({ monster, setMonster, onCRChange }) {
           </label>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-8">
           <div>
             CR: {monster.cr}
           </div>

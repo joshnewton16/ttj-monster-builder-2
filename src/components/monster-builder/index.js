@@ -52,29 +52,29 @@ function MonsterBuilder() {
   const PreviewPanel = () => {
     const getActionString = (action) => {
       if (!action) return null;
+      const strMod = calculateModifier(monster.attributes.str);
+      const dexMod = calculateModifier(monster.attributes.dex);
+      const mod = action.useDex ? dexMod : (action.useStr ? strMod : 0);
+      const modString = mod >= 0 ? `+${mod}` : mod;
       
-      // For Bonus Actions and Reactions, just return the description
-      if (action.type === 'Bonus Action' || action.type === 'Reaction') {
-        return action.description;
-      }
-      
-      // For regular actions with damage
-      if (action.damage) {
-        const strMod = calculateModifier(monster.attributes.str);
-        const dexMod = calculateModifier(monster.attributes.dex);
-        const mod = action.useDex ? dexMod : (action.useStr ? strMod : 0);
-        const modString = mod >= 0 ? `+${mod}` : mod;
-        const [dice, ...damageType] = action.damage.split(' ');
-        return `${action.type}: ${dice}${modString} ${damageType.join(' ')}`;
-      }
-      
-      // For actions without damage
-      return action.type || '';
+      // Split the damage string into dice and damage type
+      const [dice, ...damageType] = action.damage.split(' ');
+      return `${action.type}: ${dice}${modString} ${damageType.join(' ')}`;
     };
 
     return (
       <div className="preview-panel">
         <h2>Monster Features</h2>
+        {/* Basic Info Section */}
+        <div className="preview-section">
+          <h3>Basic Info</h3>
+          <div>Name: {monster.name}</div>
+          <div>CR: {monster.cr}</div>
+          <div>Proficiency Bonus: {monster.proficiencyBonus}</div>
+          <div>AC: {monster.acText}</div>
+          <div>HP: {monster.hp}</div>
+          <div>Movement: {monster.speed.type}: {monster.speed.value}</div>
+        </div>
         
         {/* Abilities Section */}
         <div className="preview-section">
@@ -138,11 +138,11 @@ function MonsterBuilder() {
 
     // Only show the preview panel in steps 4 and 5
     return (
-      <div className={step >= 4 ? 'actions-features-container' : ''}>
-        <div className={step >= 4 ? 'selection-panel' : ''}>
+      <div className={step >= 2 ? 'actions-features-container' : ''}>
+        <div className={step >= 2 ? 'selection-panel' : ''}>
           {stepContent()}
         </div>
-        {step >= 4 && <PreviewPanel />}
+        {step >= 2 && <PreviewPanel />}
       </div>
     );
   }
