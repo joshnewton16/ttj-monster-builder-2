@@ -81,3 +81,27 @@ export const FEATURE_POINT_OPTIONS = [
   // Then alphabetically by name
   return a.name.localeCompare(b.name);
 });
+
+export const SRD_ARMOR = [
+  { name: 'Natural Armor', ac: 10 },
+  { name: 'Leather', ac: 11 },
+  { name: 'Studded Leather', ac: 12 },
+  { name: 'Hide', ac: 12 },
+  { name: 'Chain Shirt', ac: 13 },
+  { name: 'Scale Mail', ac: 14 },
+  { name: 'Breastplate', ac: 14 },
+  { name: 'Half Plate', ac: 15 },
+  { name: 'Ring Mail', ac: 14 },
+  { name: 'Chain Mail', ac: 16 },
+  { name: 'Splint', ac: 17 },
+  { name: 'Plate', ac: 18 }
+].sort((a, b) => a.name.localeCompare(b.name));
+
+export const MOVEMENT_TYPES = ['Walk', 'Fly', 'Swim', 'Burrow', 'Climb'];
+
+export const SIZE_MOVEMENT = {
+  Small: 20,
+  Medium: 30,
+  Large: 40,
+  Huge: 50
+};
