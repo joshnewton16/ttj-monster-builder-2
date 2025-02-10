@@ -7,9 +7,23 @@ import { FeaturePoints } from './components/FeaturePoints';
 
 const initialMonsterState = {
   name: '',
-  cr: 1,
+  cr: 0,
+  baseArmorType: 'Natural Armor',
+  customAC: 0,
+  ac: 10,
+  acText: '',
+  diceNotation: '',
+  hp: 0,
+  hpFormula: '',
   proficiencyBonus: 2,
   size: 'Medium',
+  speed: [
+          { type: 'Walk', value: 0 },
+          { type: 'Fly', value: 0 },
+          { type: 'Swim', value: 0 },
+          { type: 'Climb', value: 0 },
+          { type: 'Burrow', value: 0 }
+        ],
   attributes: {
     str: 8, dex: 8, con: 8, int: 8, wis: 8, cha: 8
   },
@@ -73,7 +87,18 @@ function MonsterBuilder() {
           <div>Proficiency Bonus: {monster.proficiencyBonus}</div>
           <div>AC: {monster.acText}</div>
           <div>HP: {monster.hp}</div>
-          <div>Movement: {monster.speed.type}: {monster.speed.value}</div>
+          <div>
+            Movement: {Array.isArray(monster.speed) ? 
+              monster.speed
+                .filter(speed => speed.value > 0)
+                .map((speed, index, array) => (
+                  <span key={speed.type}>
+                    {speed.type} ({speed.value} ft.){index < array.length - 1 ? ', ' : ''}
+                  </span>
+                ))
+              : 'None'
+            }
+          </div>
         </div>
         
         {/* Abilities Section */}
