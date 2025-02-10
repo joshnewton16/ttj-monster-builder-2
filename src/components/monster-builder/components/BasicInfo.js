@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { SIZES, SRD_ARMOR } from '../constants/srd-data';
+import React, { useEffect, useRef } from 'react';
+import { SIZES, SRD_ARMOR, SIZE_MOVEMENT } from '../constants/srd-data';
 
 const SPEED_TYPES = ['Walk', 'Fly', 'Swim', 'Climb', 'Burrow'];
 
@@ -28,13 +28,45 @@ export function BasicInfo({ monster, setMonster, onCRChange }) {
 
   // Initialize speed array if needed
   useEffect(() => {
-    if (!Array.isArray(monster.speed)) {
-      setMonster(prev => ({
-        ...prev,
-        speed: SPEED_TYPES.map(type => ({ type, value: 0 }))
-      }));
+    const initializeSpeeds = () => {
+      // Check both the current and previous state to ensure we're not re-initializing
+      setMonster(prev => {
+        if (prev.speed === undefined || prev.speed === null) {
+          return {
+            ...prev,
+            speed: SPEED_TYPES.map(type => ({ type, value: 0 }))
+          };
+        }
+        return prev; // Return unchanged state if speed is already initialized
+      });
+    };
+  
+    initializeSpeeds();
+  }, [setMonster]); // Only depend on setMonster
+
+  const previousSize = useRef(monster.size);
+
+  useEffect(() => {
+    // Only update if size has actually changed
+    if (previousSize.current !== monster.size) {
+      if (Array.isArray(monster.speed) && monster.size) {
+        const sizeSpeed = SIZE_MOVEMENT[monster.size] || 30;
+        const hasActiveSpeed = monster.speed.some(s => s.value > 0);
+        
+        if (hasActiveSpeed) {
+          setMonster(prev => ({
+            ...prev,
+            speed: prev.speed.map(s => ({
+              ...s,
+              value: s.value > 0 ? sizeSpeed : 0
+            }))
+          }));
+        }
+      }
+      // Update the ref
+      previousSize.current = monster.size;
     }
-  }, [monster.speed, setMonster]);
+  }, [monster.size, monster.speed, setMonster]);
 
   // Update AC when armor or custom bonus changes
   useEffect(() => {
@@ -46,27 +78,11 @@ export function BasicInfo({ monster, setMonster, onCRChange }) {
 
   // Update CR when AC and HP change
   useEffect(() => {
-    const calculatedCR = calculateCR(monster.ac, monster.hp);
-    if (calculatedCR) {
-      onCRChange(calculatedCR);
+    const newCR = calculateCR(monster.ac, monster.hp);
+    if (newCR !== monster.cr) {  // Only update if CR actually changed
+      onCRChange(newCR);
     }
-  }, [monster.ac, monster.hp, onCRChange]);
-
-/*   const handleSpeedChange = (speedType, newValue) => {
-    if (newValue === 30) {
-      const hasOther30 = monster.speed.some(s => s.type !== speedType && s.value === 30);
-      if (hasOther30) {
-        // Don't allow the change if another speed is already 30
-        return;
-      }
-    }
-    setMonster(prev => ({
-      ...prev,
-      speed: prev.speed.map(s => 
-        s.type === speedType ? { ...s, value: newValue } : s
-      )
-    }));
-  }; */
+  }, [monster.ac, monster.hp, monster.cr, onCRChange]);
 
   return (
     <div className="space-y-8">
@@ -129,25 +145,23 @@ export function BasicInfo({ monster, setMonster, onCRChange }) {
               value={monster.diceNotation || ''}
               onChange={e => {
                 const newNotation = e.target.value;
+                let newHP;
+
                 // Check if input is just a number
                 if (/^\d+$/.test(newNotation)) {
-                  const hp = parseInt(newNotation);
-                  setMonster(prev => ({ 
-                    ...prev, 
-                    diceNotation: newNotation,
-                    hp: hp, 
-                    hpFormula: newNotation 
-                  }));
+                  newHP = parseInt(newNotation);
                 } else {
-                  // Handle dice notation as before
-                  const avgHP = calculateAverageHP(newNotation);
-                  setMonster(prev => ({ 
-                    ...prev, 
-                    diceNotation: newNotation,
-                    hp: avgHP, 
-                    hpFormula: newNotation 
-                  }));
+                  // Handle dice notation
+                  newHP = calculateAverageHP(newNotation);
                 }
+
+                // Single state update with all related HP fields
+                setMonster(prev => ({ 
+                  ...prev, 
+                  diceNotation: newNotation,
+                  hp: newHP,
+                  hpFormula: newNotation 
+                }));
               }}
             />
           </label>
@@ -180,9 +194,9 @@ export function BasicInfo({ monster, setMonster, onCRChange }) {
         </div>
         <div className="space-y-4">
           <h3 className="font-semibold">Movement Speeds</h3>
-          <p className="text-sm text-gray-600">Set one speed type to 30 ft.</p>
           {SPEED_TYPES.map(speedType => {
             const currentValue = monster.speed?.find(s => s.type === speedType)?.value || 0;
+            const sizeSpeed = SIZE_MOVEMENT[monster.size] || 30; // default to 30 if size not found
             
             return (
               <div key={speedType} className="flex items-center gap-2">
@@ -191,7 +205,7 @@ export function BasicInfo({ monster, setMonster, onCRChange }) {
                 <button
                   type="button"
                   className={`px-3 py-1 rounded ${
-                    currentValue === 30 
+                    currentValue === sizeSpeed
                       ? 'bg-blue-500 text-white' 
                       : 'bg-gray-200 hover:bg-gray-300'
                   }`}
@@ -200,12 +214,12 @@ export function BasicInfo({ monster, setMonster, onCRChange }) {
                       ...prev,
                       speed: prev.speed.map(s => ({
                         ...s,
-                        value: s.type === speedType ? 30 : s.value === 30 ? 0 : s.value
+                        value: s.type === speedType ? sizeSpeed : s.value === sizeSpeed ? 0 : s.value
                       }))
                     }));
                   }}
                 >
-                  Set to 30
+                  Set to {sizeSpeed}
                 </button>
               </div>
             );

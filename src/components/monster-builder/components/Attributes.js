@@ -16,7 +16,7 @@ export function Attributes({ monster, setMonster, availablePoints, setAvailableP
   }
 
   return (
-    <div>
+    <div className="space-y-6">
       <h2>Attributes</h2>
       <div>Available Points: {availablePoints}</div>
       <div className="attributes-grid">
@@ -35,6 +35,37 @@ export function Attributes({ monster, setMonster, availablePoints, setAvailableP
             />
           </div>
         ))}
+      </div>
+
+      {/* Added Saving Throws Section */}
+      <div className="proficiencies-section">
+        <h3 className="section-header">
+          Saving Throws (Max: {Math.floor(monster.proficiencyBonus / 2)})
+        </h3>
+        <div className="proficiencies-grid">
+          {Object.keys(monster.attributes).map(save => (
+            <div key={save} className="proficiency-item">
+              <input
+                type="checkbox"
+                checked={monster.savingThrows.includes(save)}
+                onChange={e => {
+                  if (e.target.checked && monster.savingThrows.length < Math.floor(monster.proficiencyBonus / 2)) {
+                    setMonster(prev => ({
+                      ...prev,
+                      savingThrows: [...prev.savingThrows, save]
+                    }));
+                  } else if (!e.target.checked) {
+                    setMonster(prev => ({
+                      ...prev,
+                      savingThrows: prev.savingThrows.filter(s => s !== save)
+                    }));
+                  }
+                }}
+              />
+              <label>{save.toUpperCase()}</label>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

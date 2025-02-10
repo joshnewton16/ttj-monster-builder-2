@@ -100,6 +100,26 @@ function MonsterBuilder() {
             }
           </div>
         </div>
+
+        {/* Attributes Section */}
+        <div className="preview-section">
+          <h3 className="font-bold border-b border-gray-300 mb-2">Attributes</h3>
+          <div className="space-y-1">
+            {Object.entries(monster.attributes).map(([attr, value]) => {
+              const modifier = calculateModifier(value);
+              const modifierText = modifier >= 0 ? `+${modifier}` : modifier;
+              const isProficientSave = monster.savingThrows.includes(attr);
+              const saveModifier = isProficientSave ? modifier + monster.proficiencyBonus : modifier;
+              const saveModifierText = saveModifier >= 0 ? `+${saveModifier}` : saveModifier;
+
+              return (
+                <div key={attr}>
+                  {attr.toUpperCase()}: {value} ({modifierText}) Save: {saveModifierText}
+                </div>
+              );
+            })}
+          </div>
+        </div>
         
         {/* Abilities Section */}
         <div className="preview-section">
