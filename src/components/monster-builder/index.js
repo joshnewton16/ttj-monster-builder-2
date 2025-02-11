@@ -66,14 +66,23 @@ function MonsterBuilder() {
   const PreviewPanel = () => {
     const getActionString = (action) => {
       if (!action) return null;
+      
+      // If there's no damage property, just return the description
+      if (!action.damage) return action.description;
+    
       const strMod = calculateModifier(monster.attributes.str);
       const dexMod = calculateModifier(monster.attributes.dex);
       const mod = action.useDex ? dexMod : (action.useStr ? strMod : 0);
       const modString = mod >= 0 ? `+${mod}` : mod;
       
-      // Split the damage string into dice and damage type
-      const [dice, ...damageType] = action.damage.split(' ');
-      return `${action.type}: ${dice}${modString} ${damageType.join(' ')}`;
+      try {
+        // Split the damage string into dice and damage type
+        const [dice, ...damageType] = action.damage.split(' ');
+        return `${action.type}: ${dice}${modString} ${damageType.join(' ')}`;
+      } catch (error) {
+        // If anything goes wrong parsing the damage, fall back to the description
+        return action.description;
+      }
     };
 
     return (
