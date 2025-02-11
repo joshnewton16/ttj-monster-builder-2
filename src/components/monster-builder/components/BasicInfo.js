@@ -85,27 +85,26 @@ export function BasicInfo({ monster, setMonster, onCRChange }) {
   }, [monster.ac, monster.hp, monster.cr, onCRChange]);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-4">
       <h2 className="text-xl font-bold">Basic Information</h2>
-      <div className="space-y-8">
-        <div className="space-y-6">
+        <div className="space-y-2">
           <label className="block">
             Name:
             <input
               type="text"
-              className="w-full p-2 border rounded mt-2"
+              className="w-full p-1 border rounded mt-1"
               value={monster.name || ''}
               onChange={e => setMonster(prev => ({ ...prev, name: e.target.value }))}
             />
           </label>
         </div>
 
-        <div className="grid grid-cols-2 gap-8">
-          <div className="space-y-6">
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
             <label className="block">
               Base Armor:
               <select
-                className="w-full p-2 border rounded mt-2"
+                className="w-full p-1 border rounded mt-1"
                 value={monster.baseArmorType || 'Natural Armor'}
                 onChange={e => setMonster(prev => ({ ...prev, baseArmorType: e.target.value }))}
               >
@@ -121,7 +120,7 @@ export function BasicInfo({ monster, setMonster, onCRChange }) {
               Additional AC:
               <input
                 type="number"
-                className="w-full p-2 border rounded mt-2"
+                className="w-full p-1 border rounded mt-1"
                 value={monster.customAC || 0}
                 onChange={e => setMonster(prev => ({ 
                   ...prev, 
@@ -130,17 +129,15 @@ export function BasicInfo({ monster, setMonster, onCRChange }) {
               />
             </label>
             
-            <div>
-              Total AC: {monster.ac}
-            </div>
+
           </div>
 
-          <div className="space-y-6">
+          <div className="space-y-2">
           <label className="block">
             Hit Points:
             <input
               type="text"
-              className="w-full p-2 border rounded mt-2"
+              className="w-full p-1 border rounded mt-1"
               placeholder="e.g., 4d8+12 or 45"
               value={monster.diceNotation || ''}
               onChange={e => {
@@ -165,17 +162,20 @@ export function BasicInfo({ monster, setMonster, onCRChange }) {
               }}
             />
           </label>
-            <div>
-              Average HP: {monster.hp}
-            </div>
+          <div>
+            Average HP: {monster.hp}
+          </div>
+          <div>
+            Total AC: {monster.ac}
+          </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-8">
-          <label className="block">
+        <div className="grid grid-cols-2">
+          <label className="block m-0">
             Size:
             <select
-              className="w-full p-2 border rounded mt-2"
+              className="w-full p-1 border rounded mt-1"
               value={monster.size || ''}
               onChange={e => setMonster(prev => ({ ...prev, size: e.target.value }))}
             >
@@ -185,14 +185,12 @@ export function BasicInfo({ monster, setMonster, onCRChange }) {
             </select>
           </label>
         </div>
-        <div className="grid grid-cols-2 gap-8">
-        <div className="grid grid-cols-2 gap-8">
+        <div className="grid grid-cols-2 gap-4">
           <div>
             CR: {monster.cr}
           </div>
         </div>
-        </div>
-        <div className="space-y-4">
+        <div className="space-y-2">
           <h3 className="font-semibold">Movement Speeds</h3>
           {SPEED_TYPES.map(speedType => {
             const currentValue = monster.speed?.find(s => s.type === speedType)?.value || 0;
@@ -225,7 +223,6 @@ export function BasicInfo({ monster, setMonster, onCRChange }) {
             );
           })}
         </div>
-      </div>
     </div>
   );
 }

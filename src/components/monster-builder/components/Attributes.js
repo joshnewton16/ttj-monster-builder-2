@@ -17,7 +17,7 @@ export function Attributes({ monster, setMonster, availablePoints, setAvailableP
 
   return (
     <div className="space-y-6">
-      <h2>Attributes</h2>
+      <h2 className="text-xl font-bold">Attributes</h2>
       <div>Available Points: {availablePoints}</div>
       <div className="attributes-grid">
         {Object.entries(monster.attributes).map(([attr, value]) => (

@@ -1,11 +1,17 @@
 import React, { useState } from 'react';
 import { SRD_ACTIONS, SRD_FEATURES } from '../constants/srd-data';
+import { Check } from 'lucide-react';
 
 export function ActionsFeatures({ monster, setMonster }) {
   const [actionTitle, setActionTitle] = useState('');
   const [actionDescription, setActionDescription] = useState('');
   const [featureTitle, setFeatureTitle] = useState('');
   const [featureDescription, setFeatureDescription] = useState('');
+
+  // Check if first action/feature exists
+  const hasFirstAction = monster.features.some(f => f.category === 'Actions' && f.isFirst);
+  const hasFirstFeature = monster.features.some(f => f.category === 'Abilities' && f.isFirst);
+
   function calculateFeaturePoints(cr, proficiencyBonus) {
     return (cr || 0) + (proficiencyBonus || 0);
   }
@@ -15,7 +21,6 @@ export function ActionsFeatures({ monster, setMonster }) {
     if (selectedAction) {
       setActionTitle(selectedAction.name);
       
-      // Format description with damage and modifier placeholder
       if (selectedAction.damage && (selectedAction.useStr || selectedAction.useDex)) {
         try {
           const [dice, ...damageType] = selectedAction.damage.split(' ');
@@ -43,19 +48,22 @@ export function ActionsFeatures({ monster, setMonster }) {
   const handleAddAction = () => {
     if (!actionTitle || !actionDescription) return;
     
-    // Find the original SRD action
     const srdAction = SRD_ACTIONS.find(a => a.name === actionTitle);
     
+    const newAction = {
+      name: actionTitle,
+      category: 'Actions',
+      type: srdAction?.type || 'Custom',
+      damage: srdAction?.damage || '',
+      useStr: srdAction?.useStr || false,
+      useDex: srdAction?.useDex || false,
+      description: actionDescription,
+      isFirst: !hasFirstAction // Set isFirst true if this is the first one
+    };
+
     setMonster(prev => ({
       ...prev,
-      baseAction: {
-        name: actionTitle,
-        // Don't set description since it will be generated in the preview
-        type: srdAction?.type || 'Custom',
-        damage: srdAction?.damage || '',
-        useStr: srdAction?.useStr || false,
-        useDex: srdAction?.useDex || false
-      }
+      features: [...prev.features, newAction]
     }));
   
     setActionTitle('');
@@ -65,12 +73,16 @@ export function ActionsFeatures({ monster, setMonster }) {
   const handleAddFeature = () => {
     if (!featureTitle || !featureDescription) return;
     
+    const newFeature = {
+      name: featureTitle,
+      category: 'Abilities',
+      description: featureDescription,
+      isFirst: !hasFirstFeature // Set isFirst true if this is the first one
+    };
+
     setMonster(prev => ({
       ...prev,
-      baseFeature: {
-        name: featureTitle,
-        description: featureDescription
-      }
+      features: [...prev.features, newFeature]
     }));
 
     setFeatureTitle('');
@@ -78,17 +90,18 @@ export function ActionsFeatures({ monster, setMonster }) {
   };
 
   return (
-    
-    <div className="space-y-8">
+    <div className="space-y-1">
       <h2 className="text-xl font-bold">Actions and Features</h2>
-      <div className="bg-gray-100 p-4 rounded">
+      <div className="bg-gray-100 p-1 rounded">
         <h3 className="font-semibold mb-2">Available Choices:</h3>
         <div className="grid grid-cols-3 gap-4">
-          <div>
+          <div className="flex items-center">
             <span className="font-medium">Actions:</span> 1
+            {hasFirstAction && <Check size={16} className="ml-1 text-green-500" />}
           </div>
-          <div>
+          <div className="flex items-center">
             <span className="font-medium">Features:</span> 1
+            {hasFirstFeature && <Check size={16} className="ml-1 text-green-500" />}
           </div>
           <div>
             <span className="font-medium">Feature Points:</span>{' '}
@@ -96,8 +109,9 @@ export function ActionsFeatures({ monster, setMonster }) {
           </div>
         </div>
       </div>
+
       {/* Actions Section */}
-      <div className="space-y-4">
+      <div className="space-y-2">
         <h3 className="font-semibold">Action</h3>
         <select 
           className="w-full p-2 border rounded"
@@ -124,7 +138,7 @@ export function ActionsFeatures({ monster, setMonster }) {
           value={actionDescription}
           onChange={(e) => setActionDescription(e.target.value)}
           placeholder="Action Description"
-          className="w-full p-2 border rounded h-32"
+          className="w-full p-2 border rounded h-16"
         />
 
         <button 
@@ -137,7 +151,7 @@ export function ActionsFeatures({ monster, setMonster }) {
       </div>
 
       {/* Features Section */}
-      <div className="space-y-4">
+      <div className="space-y-2">
         <h3 className="font-semibold">Feature</h3>
         <select 
           className="w-full p-2 border rounded"
@@ -164,7 +178,7 @@ export function ActionsFeatures({ monster, setMonster }) {
           value={featureDescription}
           onChange={(e) => setFeatureDescription(e.target.value)}
           placeholder="Feature Description"
-          className="w-full p-2 border rounded h-32"
+          className="w-full p-2 border rounded h-16"
         />
 
         <button 

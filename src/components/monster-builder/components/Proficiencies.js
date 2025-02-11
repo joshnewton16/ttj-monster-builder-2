@@ -5,10 +5,10 @@ import { SRD_LANGUAGES, SRD_SKILLS } from '../constants/srd-data';
 export function Proficiencies({ monster, setMonster }) {
   return (
     <div className="proficiencies-container">
-      <h2>Proficiencies & Languages</h2>
+      <h2 className="text-xl font-bold">Proficiencies & Languages</h2>
 
       <div className="proficiencies-section">
-        <h3 className="section-header">
+        <h3 className="font-semibold">
           Skills (Max: {monster.proficiencyBonus})
         </h3>
         <div className="proficiencies-grid">
@@ -38,7 +38,7 @@ export function Proficiencies({ monster, setMonster }) {
       </div>
 
       <div className="proficiencies-section">
-        <h3 className="section-header">Languages</h3>
+        <h3 className="font-semibold">Languages</h3>
         <div className="proficiencies-grid">
           {SRD_LANGUAGES.map(language => (
             <div key={language} className="proficiency-item">

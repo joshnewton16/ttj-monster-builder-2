@@ -4,6 +4,7 @@ import { Attributes } from './components/Attributes';
 import { Proficiencies } from './components/Proficiencies';
 import { ActionsFeatures } from './components/ActionsFeatures';
 import { FeaturePoints } from './components/FeaturePoints';
+import PreviewPanel from './components/PreviewPanel';
 
 const initialMonsterState = {
   name: '',
@@ -30,10 +31,7 @@ const initialMonsterState = {
   savingThrows: [],
   skills: [],
   languages: [],
-  baseAction: null,
-  baseFeature: null,
-  additionalActions: [],
-  additionalFeatures: []
+  features: []
 };
 
 function MonsterBuilder() {
@@ -61,109 +59,6 @@ function MonsterBuilder() {
     }));
     setAvailablePoints(attrPoints);
   }
-
-  // Preview Panel Component
-  const PreviewPanel = () => {
-    const getActionString = (action) => {
-      if (!action) return null;
-      
-      // If there's no damage property, just return the description
-      if (!action.damage) return action.description;
-    
-      const strMod = calculateModifier(monster.attributes.str);
-      const dexMod = calculateModifier(monster.attributes.dex);
-      const mod = action.useDex ? dexMod : (action.useStr ? strMod : 0);
-      const modString = mod >= 0 ? `+${mod}` : mod;
-      
-      try {
-        // Split the damage string into dice and damage type
-        const [dice, ...damageType] = action.damage.split(' ');
-        return `${action.type}: ${dice}${modString} ${damageType.join(' ')}`;
-      } catch (error) {
-        // If anything goes wrong parsing the damage, fall back to the description
-        return action.description;
-      }
-    };
-
-    return (
-      <div className="preview-panel">
-        <h2>Monster Features</h2>
-        {/* Basic Info Section */}
-        <div className="preview-section">
-          <h3>Basic Info</h3>
-          <div>Name: {monster.name}</div>
-          <div>CR: {monster.cr}</div>
-          <div>Proficiency Bonus: {monster.proficiencyBonus}</div>
-          <div>AC: {monster.acText}</div>
-          <div>HP: {monster.hp}</div>
-          <div>
-            Movement: {Array.isArray(monster.speed) ? 
-              monster.speed
-                .filter(speed => speed.value > 0)
-                .map((speed, index, array) => (
-                  <span key={speed.type}>
-                    {speed.type} ({speed.value} ft.){index < array.length - 1 ? ', ' : ''}
-                  </span>
-                ))
-              : 'None'
-            }
-          </div>
-        </div>
-
-        {/* Attributes Section */}
-        <div className="preview-section">
-          <h3 className="font-bold border-b border-gray-300 mb-2">Attributes</h3>
-          <div className="space-y-1">
-            {Object.entries(monster.attributes).map(([attr, value]) => {
-              const modifier = calculateModifier(value);
-              const modifierText = modifier >= 0 ? `+${modifier}` : modifier;
-              const isProficientSave = monster.savingThrows.includes(attr);
-              const saveModifier = isProficientSave ? modifier + monster.proficiencyBonus : modifier;
-              const saveModifierText = saveModifier >= 0 ? `+${saveModifier}` : saveModifier;
-
-              return (
-                <div key={attr}>
-                  {attr.toUpperCase()}: {value} ({modifierText}) Save: {saveModifierText}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-        
-        {/* Abilities Section */}
-        <div className="preview-section">
-          <h3>Abilities</h3>
-          {monster.baseFeature && (
-            <div className="preview-item">
-              <strong>{monster.baseFeature.name}.</strong> {monster.baseFeature.description}
-            </div>
-          )}
-          {monster.additionalFeatures?.map((feature, index) => (
-            <div key={index} className="preview-item">
-              <strong>{feature.name}.</strong> {feature.description}
-            </div>
-          ))}
-        </div>
-
-        {/* Actions Section */}
-        <div className="preview-section">
-          <h3>Actions</h3>
-          {monster.baseAction && (
-            <div className="preview-item">
-              <strong>{monster.baseAction.name}.</strong> {getActionString(monster.baseAction)}
-              {monster.baseAction.description && <div>{monster.baseAction.description}</div>}
-            </div>
-          )}
-          {monster.additionalActions?.map((action, index) => (
-            <div key={index} className="preview-item">
-              <strong>{action.name}.</strong> {getActionString(action)}
-              {action.description && <div>{action.description}</div>}
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  };
 
   function renderStep() {
     const stepContent = () => {
@@ -196,7 +91,7 @@ function MonsterBuilder() {
         <div className={step >= 2 ? 'selection-panel' : ''}>
           {stepContent()}
         </div>
-        {step >= 2 && <PreviewPanel />}
+        {step >= 2 && <PreviewPanel monster={monster} setMonster={setMonster} setStep={setStep}/>}
       </div>
     );
   }
