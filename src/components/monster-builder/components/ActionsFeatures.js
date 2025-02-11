@@ -7,14 +7,30 @@ export function ActionsFeatures({ monster, setMonster }) {
   const [actionDescription, setActionDescription] = useState('');
   const [featureTitle, setFeatureTitle] = useState('');
   const [featureDescription, setFeatureDescription] = useState('');
+  const [selectedFeatureAction, setSelectedFeatureAction] = useState('');
+  const [selectedAttackToModify, setSelectedAttackToModify] = useState('');
+  const [secondaryDamageType, setSecondaryDamageType] = useState('');
+
+  // Calculate total and available feature points
+  function calculateFeaturePoints(cr, proficiencyBonus) {
+    return (cr || 0) + (proficiencyBonus || 0);
+  }
+
+  const totalFeaturePoints = calculateFeaturePoints(monster.cr, monster.proficiencyBonus);
+  const usedFeaturePoints = monster.features.reduce((total, feature) => {
+    // Only count feature points for non-primary features
+    if (feature.costFeaturePoint && !feature.isFirst) total += 1;
+    return total;
+  }, 0);
+  const availableFeaturePoints = totalFeaturePoints - usedFeaturePoints;
 
   // Check if first action/feature exists
   const hasFirstAction = monster.features.some(f => f.category === 'Actions' && f.isFirst);
   const hasFirstFeature = monster.features.some(f => f.category === 'Abilities' && f.isFirst);
 
-  function calculateFeaturePoints(cr, proficiencyBonus) {
-    return (cr || 0) + (proficiencyBonus || 0);
-  }
+  // Check for existing multiattack and get its count
+  const existingMultiattack = monster.features.find(f => f.isMultiattack);
+  const multiattackCount = existingMultiattack ? existingMultiattack.attackCount - 1 : 0;
 
   const handleActionSelect = (e) => {
     const selectedAction = SRD_ACTIONS[e.target.value];
@@ -45,6 +61,13 @@ export function ActionsFeatures({ monster, setMonster }) {
     }
   };
 
+  const handleFeatureActionSelect = (e) => {
+    setSelectedFeatureAction(e.target.value);
+    // Reset other selections when changing action type
+    setSelectedAttackToModify('');
+    setSecondaryDamageType('');
+  };
+
   const handleAddAction = () => {
     if (!actionTitle || !actionDescription) return;
     
@@ -58,7 +81,8 @@ export function ActionsFeatures({ monster, setMonster }) {
       useStr: srdAction?.useStr || false,
       useDex: srdAction?.useDex || false,
       description: actionDescription,
-      isFirst: !hasFirstAction // Set isFirst true if this is the first one
+      isFirst: !hasFirstAction,
+      costFeaturePoint: hasFirstAction // Only cost a point if not the first action
     };
 
     setMonster(prev => ({
@@ -77,7 +101,8 @@ export function ActionsFeatures({ monster, setMonster }) {
       name: featureTitle,
       category: 'Abilities',
       description: featureDescription,
-      isFirst: !hasFirstFeature // Set isFirst true if this is the first one
+      isFirst: !hasFirstFeature,
+      costFeaturePoint: hasFirstFeature // Only cost a point if not the first feature
     };
 
     setMonster(prev => ({
@@ -88,6 +113,97 @@ export function ActionsFeatures({ monster, setMonster }) {
     setFeatureTitle('');
     setFeatureDescription('');
   };
+
+  const handleFeatureActionSubmit = () => {
+    if (!selectedFeatureAction || availableFeaturePoints <= 0) return;
+
+    switch (selectedFeatureAction) {
+      case 'multiattack':
+        if (multiattackCount >= 2) return; // Max 2 additional attacks
+        
+        if (existingMultiattack) {
+          // Update existing multiattack
+          setMonster(prev => ({
+            ...prev,
+            features: prev.features.map(feature => {
+              if (feature.isMultiattack) {
+                return {
+                  ...feature,
+                  attackCount: feature.attackCount + 1,
+                  description: `${monster.name} attacks ${feature.attackCount + 1} times per round.`,
+                  costFeaturePoint: true
+                };
+              }
+              return feature;
+            })
+          }));
+        } else {
+          // Create new multiattack
+          const newMultiattack = {
+            name: 'Multiattack',
+            category: 'Actions',
+            description: `${monster.name} attacks twice per round.`,
+            isMultiattack: true,
+            attackCount: 2,
+            costFeaturePoint: true
+          };
+          
+          setMonster(prev => ({
+            ...prev,
+            features: [...prev.features, newMultiattack]
+          }));
+        }
+        break;
+
+      case 'modifyDamage':
+        if (!selectedAttackToModify || !secondaryDamageType) return;
+        
+        setMonster(prev => ({
+          ...prev,
+          features: prev.features.map(feature => {
+            if (feature.name === selectedAttackToModify) {
+              return {
+                ...feature,
+                secondaryDamage: {
+                  type: secondaryDamageType,
+                  costFeaturePoint: true
+                }
+              };
+            }
+            return feature;
+          })
+        }));
+        break;
+
+      case 'doubleDamage':
+        if (!selectedAttackToModify) return;
+        
+        setMonster(prev => ({
+          ...prev,
+          features: prev.features.map(feature => {
+            if (feature.name === selectedAttackToModify) {
+              return {
+                ...feature,
+                doubleDamage: true,
+                costFeaturePoint: true
+              };
+            }
+            return feature;
+          })
+        }));
+        break;
+    }
+
+    // Reset selections after submission
+    setSelectedFeatureAction('');
+    setSelectedAttackToModify('');
+    setSecondaryDamageType('');
+  };
+
+  // Get all existing attacks that can be modified
+  const existingAttacks = monster.features.filter(f => 
+    f.category === 'Actions' && f.damage && !f.isMultiattack
+  );
 
   return (
     <div className="space-y-1">
@@ -105,12 +221,79 @@ export function ActionsFeatures({ monster, setMonster }) {
           </div>
           <div>
             <span className="font-medium">Feature Points:</span>{' '}
-            {calculateFeaturePoints(monster.cr, monster.proficiencyBonus)}
+            {availableFeaturePoints} / {totalFeaturePoints}
           </div>
         </div>
       </div>
 
-      {/* Actions Section */}
+      {/* Feature Point Actions */}
+      <div className="space-y-2">
+        <h3 className="font-semibold">Feature Point Actions</h3>
+        <select 
+          className="w-full p-2 border rounded"
+          value={selectedFeatureAction}
+          onChange={handleFeatureActionSelect}
+        >
+          <option value="">Select Feature Point Action...</option>
+          <option value="multiattack" disabled={multiattackCount >= 2}>
+            Add Multiattack ({2 - multiattackCount} remaining)
+          </option>
+          <option value="modifyDamage">Add Secondary Damage Type</option>
+          <option value="doubleDamage">Double Attack Damage</option>
+        </select>
+
+        {(selectedFeatureAction === 'modifyDamage' || selectedFeatureAction === 'doubleDamage') && (
+          <select
+            className="w-full p-2 border rounded"
+            value={selectedAttackToModify}
+            onChange={(e) => setSelectedAttackToModify(e.target.value)}
+          >
+            <option value="">Select Attack to Modify...</option>
+            {existingAttacks.map((attack, index) => (
+              <option key={index} value={attack.name}>
+                {attack.name}
+              </option>
+            ))}
+          </select>
+        )}
+
+        {selectedFeatureAction === 'modifyDamage' && selectedAttackToModify && (
+          <select
+            className="w-full p-2 border rounded"
+            value={secondaryDamageType}
+            onChange={(e) => setSecondaryDamageType(e.target.value)}
+          >
+            <option value="">Select Secondary Damage Type...</option>
+            <option value="acid">Acid</option>
+            <option value="cold">Cold</option>
+            <option value="fire">Fire</option>
+            <option value="force">Force</option>
+            <option value="lightning">Lightning</option>
+            <option value="necrotic">Necrotic</option>
+            <option value="poison">Poison</option>
+            <option value="psychic">Psychic</option>
+            <option value="radiant">Radiant</option>
+            <option value="thunder">Thunder</option>
+          </select>
+        )}
+
+        {selectedFeatureAction && (
+          <button 
+            onClick={handleFeatureActionSubmit}
+            disabled={
+              availableFeaturePoints <= 0 ||
+              (selectedFeatureAction === 'modifyDamage' && (!selectedAttackToModify || !secondaryDamageType)) ||
+              (selectedFeatureAction === 'doubleDamage' && !selectedAttackToModify) ||
+              (selectedFeatureAction === 'multiattack' && multiattackCount >= 2)
+            }
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-400"
+          >
+            Apply Feature Point Action
+          </button>
+        )}
+      </div>
+
+      {/* Regular Actions Section */}
       <div className="space-y-2">
         <h3 className="font-semibold">Action</h3>
         <select 
@@ -143,14 +326,14 @@ export function ActionsFeatures({ monster, setMonster }) {
 
         <button 
           onClick={handleAddAction}
-          disabled={!actionTitle || !actionDescription}
+          disabled={!actionTitle || !actionDescription || availableFeaturePoints <= 0}
           className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-400"
         >
           Add Action
         </button>
       </div>
 
-      {/* Features Section */}
+      {/* Regular Features Section */}
       <div className="space-y-2">
         <h3 className="font-semibold">Feature</h3>
         <select 
@@ -183,7 +366,7 @@ export function ActionsFeatures({ monster, setMonster }) {
 
         <button 
           onClick={handleAddFeature}
-          disabled={!featureTitle || !featureDescription}
+          disabled={!featureTitle || !featureDescription || availableFeaturePoints <= 0}
           className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-400"
         >
           Add Feature

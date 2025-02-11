@@ -100,7 +100,7 @@ function MonsterBuilder() {
     <div className="monster-builder">
       <div className="space-y-6">
         {renderStep()}
-        <div className="flex justify-between mt-4">
+        <div className="flex justify-start gap-32 mt-1">
           <button
             className="nav-button prev-button"
             onClick={() => setStep(prev => Math.max(1, prev - 1))}

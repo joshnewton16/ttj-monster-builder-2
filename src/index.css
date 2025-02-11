@@ -59,11 +59,12 @@ code {
 
 .attribute-label {
   width: 50px;  /* Fixed width for all labels */
-  text-align: right;
+  padding: 4px;
+  text-align: left;
 }
 
 .attribute-input {
-  width: 40px;
+  width: 60px;
   padding: 4px;
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -81,7 +82,7 @@ code {
   display: grid;
   grid-template-columns: 1fr 1fr;  /* Creates two equal columns */
   column-gap: 20px;
-  row-gap: 8px;
+  /*row-gap: 8px; */
 }
 
 .section-header {
