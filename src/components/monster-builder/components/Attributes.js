@@ -2,10 +2,13 @@
 import React from 'react';
 
 export function Attributes({ monster, setMonster, availablePoints, setAvailablePoints }) {
+  // Calculate total available points including feature points
+  const totalAvailablePoints = availablePoints + (monster.attributePointsFromFeatures || 0);
+
   function handleAttributeChange(attr, value) {
     if (value >= 4 && value <= 20) {
       const diff = value - monster.attributes[attr];
-      if (availablePoints - diff >= 0 || diff < 0) {
+      if (totalAvailablePoints - diff >= 0 || diff < 0) {
         setMonster(prev => ({
           ...prev,
           attributes: { ...prev.attributes, [attr]: value }
@@ -18,7 +21,17 @@ export function Attributes({ monster, setMonster, availablePoints, setAvailableP
   return (
     <div className="space-y-6">
       <h2 className="text-xl font-bold">Attributes</h2>
-      <div>Available Points: {availablePoints}</div>
+      <div>
+        Base Points: {availablePoints}
+        {monster.attributePointsFromFeatures && (
+          <span className="ml-2 text-green-600">
+            (+{monster.attributePointsFromFeatures} from Feature Points)
+          </span>
+        )}
+        <div className="text-lg font-semibold">
+          Total Available: {totalAvailablePoints}
+        </div>
+      </div>
       <div className="attributes-grid">
         {Object.entries(monster.attributes).map(([attr, value]) => (
           <div key={attr} className="attribute-input-group">
