@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { SIZES, SRD_ARMOR, SIZE_MOVEMENT } from '../constants/srd-data';
+import { SIZES, CR_TABLE, SRD_ARMOR, SIZE_MOVEMENT } from '../constants/srd-data';
 
 const SPEED_TYPES = ['Walk', 'Fly', 'Swim', 'Climb', 'Burrow'];
 
@@ -16,14 +16,26 @@ export function BasicInfo({ monster, setMonster, onCRChange }) {
   }
 
   function calculateCR(ac, hp) {
-    if (ac && hp) {
-      if (ac <= 13 && hp <= 50) return 1;
-      if (ac <= 14 && hp <= 100) return 2;
-      if (ac <= 15 && hp <= 150) return 3;
-      if (ac <= 16 && hp <= 200) return 4;
-      if (ac <= 17 && hp <= 250) return 5;
+    // Find all possible CRs based on AC
+    const acMatches = CR_TABLE.filter(entry => ac >= entry.minAC);
+    
+    // Find all possible CRs based on HP
+    const hpMatches = CR_TABLE.filter(entry => 
+      hp >= entry.minHP && hp <= entry.maxHP
+    );
+    
+    if (!acMatches.length || !hpMatches.length) {
+      return null;
     }
-    return null;
+    
+    // Get the highest CR from AC matches
+    const acCR = Math.max(...acMatches.map(entry => entry.cr));
+    
+    // Get the CR from HP range
+    const hpCR = hpMatches[0].cr;
+    
+    // Return the higher of the two CRs
+    return Math.max(acCR, hpCR);
   }
 
   // Initialize speed array if needed

@@ -105,3 +105,36 @@ export const SIZE_MOVEMENT = {
   Large: 40,
   Huge: 50
 };
+
+export const CR_TABLE = [
+  { minAC: 13, minHP: 71, maxHP: 85, cr: 1 },
+  { minAC: 13, minHP: 86, maxHP: 100, cr: 2 },
+  { minAC: 13, minHP: 101, maxHP: 115, cr: 3 },
+  { minAC: 14, minHP: 116, maxHP: 130, cr: 4 },
+  { minAC: 15, minHP: 131, maxHP: 145, cr: 5 },
+  { minAC: 15, minHP: 146, maxHP: 160, cr: 6 },
+  { minAC: 15, minHP: 161, maxHP: 175, cr: 7 },
+  { minAC: 16, minHP: 176, maxHP: 190, cr: 8 },
+  { minAC: 16, minHP: 191, maxHP: 205, cr: 9 },
+  { minAC: 17, minHP: 206, maxHP: 220, cr: 10 },
+  { minAC: 17, minHP: 221, maxHP: 235, cr: 11 },
+  { minAC: 17, minHP: 236, maxHP: 250, cr: 12 },
+  { minAC: 18, minHP: 251, maxHP: 265, cr: 13 },
+  { minAC: 18, minHP: 266, maxHP: 280, cr: 14 },
+  { minAC: 18, minHP: 281, maxHP: 295, cr: 15 },
+  { minAC: 18, minHP: 296, maxHP: 310, cr: 16 },
+  { minAC: 19, minHP: 311, maxHP: 325, cr: 17 },
+  { minAC: 19, minHP: 326, maxHP: 340, cr: 18 },
+  { minAC: 19, minHP: 341, maxHP: 355, cr: 19 },
+  { minAC: 19, minHP: 356, maxHP: 400, cr: 20 },
+  { minAC: 19, minHP: 401, maxHP: 445, cr: 21 },
+  { minAC: 19, minHP: 446, maxHP: 490, cr: 22 },
+  { minAC: 19, minHP: 491, maxHP: 535, cr: 23 },
+  { minAC: 19, minHP: 536, maxHP: 580, cr: 24 },
+  { minAC: 19, minHP: 581, maxHP: 625, cr: 25 },
+  { minAC: 19, minHP: 626, maxHP: 670, cr: 26 },
+  { minAC: 19, minHP: 671, maxHP: 715, cr: 27 },
+  { minAC: 19, minHP: 716, maxHP: 760, cr: 28 },
+  { minAC: 19, minHP: 760, maxHP: 805, cr: 29 },
+  { minAC: 19, minHP: 805, maxHP: 850, cr: 30 }
+];
