@@ -49,29 +49,49 @@ export function ActionsFeatures({ monster, setMonster }) {
     setMonster(prev => {
       const newSpeed = [...prev.speed];
       const speedIndex = newSpeed.findIndex(s => s.type === speedType);
+
+      if (speedIndex === -1) {
+        console.error('Speed type not found:', speedType);
+        return prev;
+      }
+
+      // Get the original base speed from SIZE_MOVEMENT
+      const baseSpeed = SIZE_MOVEMENT[prev.size]?.Walk || 30;
       
+      // Set the new movement type to the original base speed
       if (modificationType === 'new') {
-        // Get the original base speed from SIZE_MOVEMENT
-        const baseSpeed = SIZE_MOVEMENT[prev.size]?.Walk || 30;
-        
-        // Set the new movement type to the original base speed
         newSpeed[speedIndex] = {
           ...newSpeed[speedIndex],
           value: baseSpeed
         };
       } else if (modificationType === 'increase') {
-        // Increase existing speed by 10
         newSpeed[speedIndex] = {
           ...newSpeed[speedIndex],
           value: newSpeed[speedIndex].value + 10
         };
       }
-  
+
+      const newFeature = {
+        name: `${speedType} Movement Modification`,
+        description: modificationType === 'new' 
+          ? `Added ${speedType} movement` 
+          : `Increased ${speedType} movement`,
+        modificationCost: true,
+        movementModification: {
+          type: modificationType,
+          speedType: speedType
+        },
+        isHidden: true  // Add this flag to indicate it shouldn't be displayed
+      };
+
+      console.log(monster);
       return {
         ...prev,
-        speed: newSpeed
+        speed: newSpeed,
+        features: [...prev.features, newFeature]
       };
     });
+    
   };
 
   const handleAttributePoints = () => {
@@ -83,18 +103,38 @@ export function ActionsFeatures({ monster, setMonster }) {
 
   const handleSkillModify = (type, skills) => {
     setMonster(prev => {
+
+      const newFeature = {
+        name: `${skills} Modification`,
+        description: type === 'expertise' 
+          ? `Added Expertise in ${skills}` 
+          : `Added ${skills}`,
+        modificationCost: true,
+        skillsModification: {
+          type: type,
+          skillType: skills
+        },
+        isHidden: true  // Add this flag to indicate it shouldn't be displayed
+      };
+
+      console.log(newFeature);
+      console.log('Before Add:',monster);
       if (type === 'expertise') {
         return {
           ...prev,
-          expertise: [...(prev.expertise || []), skills[0]]
+          expertise: [...(prev.expertise || []), skills[0]],
+          features: [...prev.features, newFeature]
         };
-      } else { // proficiency
+      } else {
+        console.log("enter else");
         return {
           ...prev,
-          skills: [...prev.skills, ...skills]
-        };
+          skills: [...prev.skills, ...skills],
+          features: [...prev.features, newFeature]
+        };      
       }
     });
+    console.log('After Add:', monster);
   };
 
   return (

@@ -136,6 +136,10 @@ const PreviewPanel = ({ monster, setMonster, setStep }) => {
         speed.type === movementType
           ? { ...speed, value: 0 }  // Reset the speed to 0 instead of removing it
           : speed
+      ),
+      features: prev.features.filter(feature => 
+        !(feature.movementModification && 
+          feature.movementModification.speedType === movementType)
       )
     }));
   };
@@ -177,14 +181,24 @@ const PreviewPanel = ({ monster, setMonster, setStep }) => {
   const handleDeleteExpertise = (skill) => {
     setMonster(prev => ({
       ...prev,
-      expertise: prev.expertise.filter(s => s !== skill)
+      expertise: prev.expertise.filter(s => s !== skill),
+      features: prev.features.filter(feature => 
+        !(feature.skillsModification && 
+          feature.skillsModification.skillType === skill &&
+          feature.skillsModification.type === 'expertise') 
+      )
     }));
   };
   
   const handleDeleteProficiency = (skill) => {
     setMonster(prev => ({
       ...prev,
-      skills: prev.skills.filter(s => s !== skill)
+      skills: prev.skills.filter(s => s !== skill),
+      features: prev.features.filter(feature => 
+        !(feature.skillsModification && 
+          feature.skillsModification.skillType === skill &&
+          feature.skillsModification.type === 'proficiency')
+      )
     }));
   };
 
