@@ -40,25 +40,16 @@ export function useFeaturePoints(monster) {
       points += feature.attackCount - 2;
     }
 
-      // Calculate movement modification points
-
+      // Add immunity/resistance point costs
+    if (feature.immunityModification?.costsTwoPoints) {
+      points += 2;  // Damage immunity costs 2 points
+    } else if (feature.immunityModification || feature.resistanceModification) {
+      points += 1;  // Condition immunity and resistance cost 1 point
+    }
 
     console.log(`Feature ${feature.name} using ${points} points (isFirst: ${feature.isFirst}, hasSecondary: ${!!feature.secondaryEffect}, modCost: ${!!feature.modificationCost})`);
     return total + points;
   }, 0);
-
-  const movementPoints = monster.speed.reduce((total, speed) => {
-    return total + (speed.pointCost || 0);
-  }, 0);
-
-  // Calculate attribute points cost
-  const attributePoints = monster.attributePointsFromFeatures ? 1 : 0;
-
-  // Calculate skill modification points
-  const skillPoints = (
-    ((monster.expertise?.length || 0) * 0.5) + // 0.5 points per expertise
-    ((monster.skills?.length || 0) * 0.5)      // 0.5 points per skill proficiency
-  );
 
   const hasFirstAction = monster.features.some(f => f.category === 'Actions' && f.isFirst);
   const hasFirstFeature = monster.features.some(f => f.category === 'Abilities' && f.isFirst);

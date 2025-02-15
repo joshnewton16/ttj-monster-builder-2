@@ -5,6 +5,7 @@ import { SecondaryEffects } from './SecondaryEffects';
 import { DoubleDamageAction } from './DoubleDamageAction';
 import { MovementAction } from './MovementAction';
 import { SkillAction } from './SkillAction';
+import { DefenseModifications } from './DefenseModifications';
 
 export function FeaturePointActions({
   existingAttacks,
@@ -15,6 +16,8 @@ export function FeaturePointActions({
   onDoubleDamage,
   onMovementModify,
   onSkillModify,
+  onImmunityModify,
+  onResistanceModify,
   availablePoints
 }) {
   const [selectedAction, setSelectedAction] = useState('');
@@ -42,6 +45,15 @@ export function FeaturePointActions({
 
   const handleSkillModify = (type, skills) => {
     onSkillModify(type, skills);
+    setSelectedAction('');
+  };
+
+  const handleDefenseModify = (modificationType, type) => {
+    if (modificationType === 'resistance') {
+      onResistanceModify(type);
+    } else {
+      onImmunityModify(modificationType === 'damageImmunity' ? 'damage' : 'condition', type);
+    }
     setSelectedAction('');
   };
 
@@ -98,6 +110,13 @@ export function FeaturePointActions({
             availablePoints={availablePoints}
           />
         );
+      case 'defense':
+        return (
+          <DefenseModifications
+            onSubmit={handleDefenseModify}
+            availablePoints={availablePoints}
+          />
+        );
       default:
         return null;
     }
@@ -120,6 +139,7 @@ export function FeaturePointActions({
         <option value="movement">Modify Movement Speed</option>
         <option value="expertise">Add Expertise in Skill</option>
         <option value="proficiency">Add Two Skill Proficiencies</option>
+        <option value="defense">Add Defense Modification</option>
       </select>
 
       {renderActionComponent()}

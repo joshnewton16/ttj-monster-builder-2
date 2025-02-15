@@ -138,3 +138,33 @@ export const CR_TABLE = [
   { minAC: 19, minHP: 760, maxHP: 805, cr: 29 },
   { minAC: 19, minHP: 805, maxHP: 850, cr: 30 }
 ];
+
+// constants/effect-types.js
+export const DAMAGE_TYPES = [
+  'acid',
+  'cold',
+  'fire',
+  'force',
+  'lightning',
+  'necrotic',
+  'poison',
+  'psychic',
+  'radiant',
+  'thunder'
+];
+
+export const CONDITIONS = [
+  'blinded',
+  'charmed',
+  'deafened',
+  'frightened',
+  'grappled',
+  'incapacitated',
+  'paralyzed',
+  'petrified',
+  'poisoned',
+  'prone',
+  'restrained',
+  'stunned',
+  'unconscious'
+];

@@ -179,28 +179,53 @@ const PreviewPanel = ({ monster, setMonster, setStep }) => {
   };
 
   const handleDeleteExpertise = (skill) => {
-    setMonster(prev => ({
-      ...prev,
-      expertise: prev.expertise.filter(s => s !== skill),
-      features: prev.features.filter(feature => 
-        !(feature.skillsModification && 
-          feature.skillsModification.skillType === skill &&
-          feature.skillsModification.type === 'expertise') 
-      )
-    }));
+    setMonster(prev => {
+      console.log('Removing expertise for skill:', skill);
+      console.log('Current features:', prev.features);
+      
+      return {
+        ...prev,
+        expertise: prev.expertise.filter(s => s !== skill),
+        features: prev.features.filter(feature => {
+          // Add debug logging
+          if (feature.skillsModification) {
+            console.log('Checking feature:', feature);
+            console.log('Skill types:', feature.skillsModification.skillType);
+          }
+          
+          return !(
+            feature.skillsModification && 
+            Array.isArray(feature.skillsModification.skillType) &&
+            feature.skillsModification.skillType.includes(skill) &&
+            feature.skillsModification.type === 'expertise'
+          );
+        })
+      };
+    });
   };
   
   const handleDeleteProficiency = (skill) => {
+    setMonster(prev => {
+      const newSkills = prev.skills.filter(s => s !== skill);
+      const shouldKeepFeaturePoint = newSkills.length > monster.proficiencyBonus;
+  
+      return {
+        ...prev,
+        skills: newSkills,
+        features: shouldKeepFeaturePoint 
+          ? prev.features 
+          : prev.features.filter(f => !f.skillModification)
+      };
+    });
+  };
+
+  const handleDeleteDefense = (feature, index) => {
     setMonster(prev => ({
       ...prev,
-      skills: prev.skills.filter(s => s !== skill),
-      features: prev.features.filter(feature => 
-        !(feature.skillsModification && 
-          feature.skillsModification.skillType === skill &&
-          feature.skillsModification.type === 'proficiency')
-      )
+      features: prev.features.filter((_, i) => i !== index)
     }));
-  };
+  };  
+
 
   return (
     <div className="preview-panel">

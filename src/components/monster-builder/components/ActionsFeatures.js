@@ -127,14 +127,72 @@ export function ActionsFeatures({ monster, setMonster }) {
         };
       } else {
         console.log("enter else");
+        const currentSkillCount = prev.skills.length;
+        const willNeedFeaturePoint = currentSkillCount >= monster.proficiencyBonus;
+
         return {
           ...prev,
           skills: [...prev.skills, ...skills],
-          features: [...prev.features, newFeature]
+          features: willNeedFeaturePoint ? [
+            ...prev.features,
+            {
+              name: 'Additional Skill Proficiencies',
+              modificationCost: true,
+              isHidden: true,
+              skillModification: {
+                type: 'proficiency',
+                baseCount: monster.proficiencyBonus
+              }
+            }
+          ] : prev.features
         };      
       }
     });
     console.log('After Add:', monster);
+  };
+
+  const handleImmunityModify = (type, immunityType) => {
+    setMonster(prev => {
+      const newFeature = {
+        name: `${type} Immunity`,
+        description: `Immune to ${immunityType}`,
+        category: 'Abilities',
+        modificationCost: true,
+        isImmunity: true,
+        immunityModification: {
+          type: type,
+          immunityType: immunityType,
+          costsTwoPoints: type === 'damage' // damage immunity costs 2 points
+        },
+        isHidden: true
+      };
+  
+      return {
+        ...prev,
+        features: [...prev.features, newFeature]
+      };
+    });
+  };
+  
+  const handleResistanceModify = (damageType) => {
+    setMonster(prev => {
+      const newFeature = {
+        name: `Damage Resistance`,
+        description: `Resistant to ${damageType} damage`,
+        category: 'Abilities',
+        modificationCost: true,
+        isResistance: true,
+        resistanceModification: {
+          damageType: damageType
+        },
+        isHidden: true
+      };
+  
+      return {
+        ...prev,
+        features: [...prev.features, newFeature]
+      };
+    });
   };
 
   return (
@@ -159,6 +217,8 @@ export function ActionsFeatures({ monster, setMonster }) {
         onMovementModify={handleMovementModify}
         onAttributePoints={handleAttributePoints}
         onSkillModify={handleSkillModify}  // Add this prop
+        onImmunityModify={handleImmunityModify}     // Add these handlers
+        onResistanceModify={handleResistanceModify}  // Add these handlers
       />
 
       <BaseActionForm

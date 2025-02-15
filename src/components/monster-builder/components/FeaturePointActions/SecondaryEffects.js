@@ -1,5 +1,6 @@
 // components/FeaturePointActions/SecondaryEffects.js
 import React, { useState } from 'react';
+import { DAMAGE_TYPES, CONDITIONS } from '../../constants/srd-data';
 
 export function SecondaryEffects({ 
   existingAttacks, 
@@ -52,16 +53,11 @@ export function SecondaryEffects({
           onChange={(e) => setEffect(e.target.value)}
         >
           <option value="">Select Secondary Damage Type...</option>
-          <option value="acid">Acid</option>
-          <option value="cold">Cold</option>
-          <option value="fire">Fire</option>
-          <option value="force">Force</option>
-          <option value="lightning">Lightning</option>
-          <option value="necrotic">Necrotic</option>
-          <option value="poison">Poison</option>
-          <option value="psychic">Psychic</option>
-          <option value="radiant">Radiant</option>
-          <option value="thunder">Thunder</option>
+          {DAMAGE_TYPES.map(type => (
+            <option key={type} value={type}>
+              {type.charAt(0).toUpperCase() + type.slice(1)}
+            </option>
+          ))}
         </select>
       )}
 
@@ -72,19 +68,11 @@ export function SecondaryEffects({
           onChange={(e) => setEffect(e.target.value)}
         >
           <option value="">Select Condition...</option>
-          <option value="blinded">Blinded</option>
-          <option value="charmed">Charmed</option>
-          <option value="deafened">Deafened</option>
-          <option value="frightened">Frightened</option>
-          <option value="grappled">Grappled</option>
-          <option value="incapacitated">Incapacitated</option>
-          <option value="paralyzed">Paralyzed</option>
-          <option value="petrified">Petrified</option>
-          <option value="poisoned">Poisoned</option>
-          <option value="prone">Prone</option>
-          <option value="restrained">Restrained</option>
-          <option value="stunned">Stunned</option>
-          <option value="unconscious">Unconscious</option>
+          {CONDITIONS.map(condition => (
+            <option key={condition} value={condition}>
+              {condition.charAt(0).toUpperCase() + condition.slice(1)}
+            </option>
+          ))}
         </select>
       )}
 
