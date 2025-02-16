@@ -6,6 +6,7 @@ import { DoubleDamageAction } from './DoubleDamageAction';
 import { MovementAction } from './MovementAction';
 import { SkillAction } from './SkillAction';
 import { DefenseModifications } from './DefenseModifications';
+import { SenseAction } from './SenseAction';  // Add this import
 
 export function FeaturePointActions({
   existingAttacks,
@@ -18,6 +19,7 @@ export function FeaturePointActions({
   onSkillModify,
   onImmunityModify,
   onResistanceModify,
+  onSenseModify,    // Add this prop
   availablePoints
 }) {
   const [selectedAction, setSelectedAction] = useState('');
@@ -54,6 +56,11 @@ export function FeaturePointActions({
     } else {
       onImmunityModify(modificationType === 'damageImmunity' ? 'damage' : 'condition', type);
     }
+    setSelectedAction('');
+  };
+
+  const handleSenseModify = (senseType, range) => {
+    onSenseModify(senseType, range);
     setSelectedAction('');
   };
 
@@ -117,6 +124,13 @@ export function FeaturePointActions({
             availablePoints={availablePoints}
           />
         );
+      case 'senses':
+        return (
+          <SenseAction
+            onSubmit={handleSenseModify}
+            availablePoints={availablePoints}
+          />
+        );
       default:
         return null;
     }
@@ -140,6 +154,7 @@ export function FeaturePointActions({
         <option value="expertise">Add Expertise in Skill</option>
         <option value="proficiency">Add Two Skill Proficiencies</option>
         <option value="defense">Add Defense Modification</option>
+        <option value="senses">Add Enhanced Senses</option>
       </select>
 
       {renderActionComponent()}

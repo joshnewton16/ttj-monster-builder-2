@@ -150,7 +150,8 @@ export const DAMAGE_TYPES = [
   'poison',
   'psychic',
   'radiant',
-  'thunder'
+  'thunder',
+  'nonmagical bludgeoing/slashing/piercing'
 ];
 
 export const CONDITIONS = [

@@ -86,6 +86,17 @@ const PreviewPanel = ({ monster, setMonster, setStep }) => {
     });
   };
 
+  const handleDeleteSense = (senseType) => {
+    setMonster(prev => ({
+      ...prev,
+      senses: prev.senses.filter(sense => sense.type !== senseType),
+      features: prev.features.filter(feature => 
+        !(feature.senseModification && 
+          feature.senseModification.type === senseType)
+      )
+    }));
+  };
+
   return (
     <div className="preview-panel">
       <h2>Monster Features</h2>

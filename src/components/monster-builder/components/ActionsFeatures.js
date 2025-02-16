@@ -154,15 +154,13 @@ export function ActionsFeatures({ monster, setMonster }) {
   const handleImmunityModify = (type, immunityType) => {
     setMonster(prev => {
       const newFeature = {
-        name: `${type} Immunity`,
+        name: `${type.charAt(0).toUpperCase() + type.slice(1)} Immunity`,
         description: `Immune to ${immunityType}`,
         category: 'Abilities',
-        modificationCost: true,
-        isImmunity: true,
+        // Remove modificationCost flag since we'll use immunityModification only
         immunityModification: {
           type: type,
-          immunityType: immunityType,
-          costsTwoPoints: type === 'damage' // damage immunity costs 2 points
+          immunityType: immunityType
         },
         isHidden: true
       };
@@ -180,9 +178,9 @@ export function ActionsFeatures({ monster, setMonster }) {
         name: `Damage Resistance`,
         description: `Resistant to ${damageType} damage`,
         category: 'Abilities',
-        modificationCost: true,
-        isResistance: true,
+        // Use resistanceModification instead of modificationCost
         resistanceModification: {
+          type: 'damage',
           damageType: damageType
         },
         isHidden: true
@@ -190,6 +188,28 @@ export function ActionsFeatures({ monster, setMonster }) {
   
       return {
         ...prev,
+        features: [...prev.features, newFeature]
+      };
+    });
+  };
+
+// In ActionsFeatures component
+  const handleSenseModify = (senseType, range) => {
+    setMonster(prev => {
+      const newFeature = {
+        name: `Enhanced Senses`,
+        description: `${senseType.charAt(0).toUpperCase() + senseType.slice(1)} ${range} ft.`,
+        category: 'Abilities',
+        senseModification: {
+          type: senseType,
+          range: range
+        },
+        isHidden: true
+      };
+
+      return {
+        ...prev,
+        senses: [...(prev.senses || []), { type: senseType, range: range }],
         features: [...prev.features, newFeature]
       };
     });
@@ -219,6 +239,7 @@ export function ActionsFeatures({ monster, setMonster }) {
         onSkillModify={handleSkillModify}  // Add this prop
         onImmunityModify={handleImmunityModify}     // Add these handlers
         onResistanceModify={handleResistanceModify}  // Add these handlers
+        onSenseModify={handleSenseModify}  // Add this prop
       />
 
       <BaseActionForm

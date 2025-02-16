@@ -40,11 +40,16 @@ export function useFeaturePoints(monster) {
       points += feature.attackCount - 2;
     }
 
-      // Add immunity/resistance point costs
-    if (feature.immunityModification?.costsTwoPoints) {
-      points += 2;  // Damage immunity costs 2 points
-    } else if (feature.immunityModification || feature.resistanceModification) {
-      points += 1;  // Condition immunity and resistance cost 1 point
+    if (feature.immunityModification) {
+      points += feature.immunityModification.type === 'damage' ? 2 : 1;
+    }
+    // Handle resistances
+    else if (feature.resistanceModification) {
+      points += 1;
+    }
+
+    else if (feature.senseModification) {
+      points += 1;
     }
 
     console.log(`Feature ${feature.name} using ${points} points (isFirst: ${feature.isFirst}, hasSecondary: ${!!feature.secondaryEffect}, modCost: ${!!feature.modificationCost})`);

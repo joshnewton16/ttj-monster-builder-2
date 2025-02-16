@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { DAMAGE_TYPES, CONDITIONS } from '../../constants/srd-data';
 
 export function DefenseModifications({ 
-  onSubmit,  // Single submit handler instead of separate handlers
+  onSubmit,  // This is being passed from FeaturePointActions
   availablePoints 
 }) {
   const [modificationType, setModificationType] = useState('');
@@ -16,7 +16,7 @@ export function DefenseModifications({
     if (modificationType === 'damageImmunity' && availablePoints < 2) return;
     if (['conditionImmunity', 'resistance'].includes(modificationType) && availablePoints < 1) return;
 
-    // Pass both the modification type and selected type to the single onSubmit handler
+    // Pass modification type and selected type to the parent's onSubmit handler
     onSubmit(modificationType, selectedType);
 
     // Reset form
