@@ -1,17 +1,25 @@
 // components/FeaturePointActions/index.js
 import React, { useState } from 'react';
+import { BaseActionForm } from './BaseActionForm';
+import { BaseFeatureForm } from './BaseFeatureForm';
 import { MultiattackAction } from './MultiattackAction';
 import { SecondaryEffects } from './SecondaryEffects';
 import { DoubleDamageAction } from './DoubleDamageAction';
 import { MovementAction } from './MovementAction';
 import { SkillAction } from './SkillAction';
 import { DefenseModifications } from './DefenseModifications';
+import { SpellcastingForm } from './SpellcastingForm';
 import { SenseAction } from './SenseAction';  // Add this import
+import { LEGENDARYACTIONS } from '../../constants/srd-data';
 
 export function FeaturePointActions({
   existingAttacks,
   multiattackCount,
   monster,
+  onBaseActionSubmit,
+  hasFirstAction,      // Add this prop
+  onFeatureSubmit,    // Add this
+  hasFirstFeature,    // Add this
   onMultiattack,
   onSecondaryEffect,
   onDoubleDamage,
@@ -25,8 +33,30 @@ export function FeaturePointActions({
   const [selectedAction, setSelectedAction] = useState('');
 
   // Wrap each handler to reset the selectedAction after completion
+  const handleBaseAction = (actionData) => {
+    onBaseActionSubmit(actionData);
+    setSelectedAction('');
+  };
+
+  const handleFeatureSubmit = (featureData) => {
+    onFeatureSubmit(featureData);
+    setSelectedAction('');
+  };
+
   const handleMultiattack = () => {
     onMultiattack();
+    setSelectedAction('');
+  };
+
+  const handleLegendaryAction = (actionData) => {
+    const legendaryAction = {
+      ...actionData,
+      category: 'Legendary',
+      costFeaturePoint: true,
+      featurePointCost: 2, // Costs 2 points
+      isFirst: false
+    };
+    onBaseActionSubmit(legendaryAction);
     setSelectedAction('');
   };
 
@@ -66,6 +96,22 @@ export function FeaturePointActions({
 
   const renderActionComponent = () => {
     switch (selectedAction) {
+      case 'baseAction':  // New case for BaseActionForm
+        return (
+          <BaseActionForm
+            onSubmit={handleBaseAction}
+            availablePoints={availablePoints}
+            hasFirstAction={hasFirstAction}
+          />
+        );
+      case 'baseFeature':
+        return (
+          <BaseFeatureForm
+            onSubmit={handleFeatureSubmit}
+            availablePoints={availablePoints}
+            hasFirstFeature={hasFirstFeature}
+          />
+        );
       case 'multiattack':
         return (
           <MultiattackAction
@@ -74,6 +120,27 @@ export function FeaturePointActions({
             availablePoints={availablePoints}
           />
         );
+        case 'spellcasting':
+          return (
+            <SpellcastingForm
+              onSubmit={(spellcastingData) => {
+                onFeatureSubmit(spellcastingData);
+                setSelectedAction('');
+              }}
+              availablePoints={availablePoints}
+              monster={monster}
+            />
+          );
+        case 'legendaryAction':
+          return (
+            <BaseActionForm
+              onSubmit={handleLegendaryAction}
+              availablePoints={availablePoints}
+              hasFirstAction={false}
+              isLegendary={true}
+              legendaryActions={LEGENDARYACTIONS} 
+            />
+          );
       case 'modifyDamage':
         return (
           <SecondaryEffects
@@ -144,7 +211,13 @@ export function FeaturePointActions({
         value={selectedAction}
         onChange={(e) => setSelectedAction(e.target.value)}
       >
-        <option value="">Select Feature Point Action...</option>
+        <option value="">Select Feature or Action</option>
+        <option value="baseAction">Add Actions, Bonus Actions, or Reactions</option>  {/* New option */}
+        <option value="baseFeature">Add Features or Abilities</option>
+        {monster.cr >= 5 && (
+          <option value="legendaryAction">Add Legendary Action or Reaction</option>
+        )}
+        <option value="spellcasting">Add Spellcasting</option>
         <option value="multiattack" disabled={multiattackCount >= 2}>
           Add Multiattack ({2 - multiattackCount} remaining)
         </option>

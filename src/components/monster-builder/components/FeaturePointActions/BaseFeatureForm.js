@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { SRD_FEATURES } from '../constants/srd-data';
+import { SRD_FEATURES } from '../../constants/srd-data';
 
 export function BaseFeatureForm({ onSubmit, availablePoints, hasFirstFeature }) {
   const [featureTitle, setFeatureTitle] = useState('');

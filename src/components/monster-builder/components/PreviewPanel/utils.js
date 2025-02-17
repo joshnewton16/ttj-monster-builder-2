@@ -3,7 +3,7 @@ export const calculateModifier = (attributeValue) => {
   return Math.floor((attributeValue - 10) / 2);
 };
 
-export const getActionString = (feature, monster, calculateModifier) => {
+export const getActionString = (feature, monster) => {
   if (!feature.damage) return feature.description;
 
   const strMod = calculateModifier(monster.attributes.str);

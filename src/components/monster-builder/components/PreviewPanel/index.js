@@ -5,7 +5,7 @@ import { AttributesSection } from './AttributesSection';
 import { SkillsSection } from './SkillsSection';
 import { AbilitiesSection } from './AbilitiesSection';
 import { ActionsSection } from './ActionsSection';
-import { calculateModifier, getActionString, getFeaturesByCategory } from './utils';
+import { calculateModifier, getFeaturesByCategory } from './utils';
 
 const PreviewPanel = ({ monster, setMonster, setStep }) => {
   const handleDeleteFeature = (feature, index) => {

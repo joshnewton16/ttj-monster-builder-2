@@ -22,7 +22,7 @@ export function useFeaturePoints(monster) {
     
     // Basic feature cost (if not first)
     if (feature.costFeaturePoint && !feature.isFirst) {
-      points += 1;
+      points += feature.featurePointCost || 1;
     }
 
     // Count modifications - secondary effects always cost a point

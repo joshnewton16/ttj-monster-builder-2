@@ -39,10 +39,6 @@ function MonsterBuilder() {
   const [availablePoints, setAvailablePoints] = useState(10);
   const [monster, setMonster] = useState(initialMonsterState);
 
-  function calculateModifier(attributeValue) {
-    return Math.floor((attributeValue - 10) / 2);
-  }
-
   function handleCRChange(newCR) {
     const profBonus = Math.floor((newCR - 1) / 4) + 2;
     let attrPoints = 10;

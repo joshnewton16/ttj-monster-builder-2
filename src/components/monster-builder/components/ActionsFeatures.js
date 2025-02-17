@@ -2,8 +2,6 @@
 import React from 'react';
 import { FeaturePointsSummary } from './FeaturePointSummary';
 import { FeaturePointActions } from './FeaturePointActions';
-import { BaseActionForm } from './BaseActionForm';
-import { BaseFeatureForm } from './BaseFeatureForm';
 import { useFeaturePoints } from '../hooks/useFeaturePoints';
 import { useFeatureModification } from '../hooks/useFeatureModification';
 import { SIZE_MOVEMENT } from '../constants/srd-data';
@@ -231,6 +229,10 @@ export function ActionsFeatures({ monster, setMonster }) {
         multiattackCount={multiattackCount}
         monster={monster}  // Make sure we're passing the monster prop
         availablePoints={availableFeaturePoints}
+        onBaseActionSubmit={handleAddAction}  // Add this line
+        hasFirstAction={hasFirstAction}       // Add this line
+        onFeatureSubmit={handleAddFeature}    // Add this
+        hasFirstFeature={hasFirstFeature}     // Add this
         onMultiattack={() => addMultiattack(existingMultiattack)}
         onSecondaryEffect={addSecondaryEffect}
         onDoubleDamage={doubleDamage}
@@ -242,17 +244,6 @@ export function ActionsFeatures({ monster, setMonster }) {
         onSenseModify={handleSenseModify}  // Add this prop
       />
 
-      <BaseActionForm
-        onSubmit={handleAddAction}
-        availablePoints={availableFeaturePoints}
-        hasFirstAction={hasFirstAction}
-      />
-
-      <BaseFeatureForm
-        onSubmit={handleAddFeature}
-        availablePoints={availableFeaturePoints}
-        hasFirstFeature={hasFirstFeature}
-      />
     </div>
   );
 }
