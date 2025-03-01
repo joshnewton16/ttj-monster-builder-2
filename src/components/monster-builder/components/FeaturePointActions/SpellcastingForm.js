@@ -1,6 +1,7 @@
 // components/FeaturePointActions/SpellcastingForm.js
 import React, { useState, useMemo } from 'react';
 import { FULL_SPELL_LIST } from '../../constants/spell-list';
+import { SPELLCASTERLEVELS } from '../../constants/srd-data';
 
 export function SpellcastingForm({ onSubmit, availablePoints, monster }) {
   const [spellcastingAbility, setSpellcastingAbility] = useState('');
@@ -8,14 +9,26 @@ export function SpellcastingForm({ onSubmit, availablePoints, monster }) {
   const [levelFilter, setLevelFilter] = useState('all');
   const [flagFilter, setFlagFilter] = useState('all');
 
+  function getLevelFromCR(challengeRating) {
+    // Convert the CR to string for consistent comparison
+    const crString = String(challengeRating);
+    
+    // Find the matching record in the table
+    const matchingRecord = SPELLCASTERLEVELS.find(record => String(record.cr) === crString);
+    
+    // Return the level if found, otherwise provide a fallback
+    return matchingRecord ? matchingRecord.level : 20;
+  }
+
   // Calculate spellcasting stats based on CR and proficiency
   const spellcastingStats = useMemo(() => {
-    const baseStat = (monster.cr + monster.proficiencyBonus) / 2;
+    const baseStat = getLevelFromCR(monster.cr);
+    console.log(baseStat);
     return {
       maxSpells: Math.floor(baseStat),
       casterLevel: Math.max(2, Math.floor(baseStat))
     };
-  }, [monster.cr, monster.proficiencyBonus]);
+  }, [monster.cr]);
 
   // Filter spells based on selected filters and caster level
   const filteredSpells = useMemo(() => {
