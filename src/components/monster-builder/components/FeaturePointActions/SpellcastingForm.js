@@ -1,6 +1,7 @@
 // components/FeaturePointActions/SpellcastingForm.js
 import React, { useState, useMemo } from 'react';
 import { FULL_SPELL_LIST } from '../../constants/spell-list';
+import { SPELLCASTERLEVELS } from '../../constants/srd-data';
 
 export function SpellcastingForm({ onSubmit, availablePoints, monster }) {
   const [spellcastingAbility, setSpellcastingAbility] = useState('');
@@ -8,18 +9,29 @@ export function SpellcastingForm({ onSubmit, availablePoints, monster }) {
   const [levelFilter, setLevelFilter] = useState('all');
   const [flagFilter, setFlagFilter] = useState('all');
 
+  function getLevelFromCR(challengeRating) {
+    // Convert the CR to string for consistent comparison
+    const crString = String(challengeRating);
+    
+    // Find the matching record in the table
+    const matchingRecord = SPELLCASTERLEVELS.find(record => String(record.cr) === crString);
+    
+    // Return the level if found, otherwise provide a fallback
+    return matchingRecord ? matchingRecord.level : 20;
+  }
+
   // Calculate spellcasting stats based on CR and proficiency
   const spellcastingStats = useMemo(() => {
-    const baseStat = (monster.cr + monster.proficiencyBonus) / 2;
+    const baseStat = getLevelFromCR(monster.cr);
+    console.log(baseStat);
     return {
       maxSpells: Math.floor(baseStat),
       casterLevel: Math.max(2, Math.floor(baseStat))
     };
-  }, [monster.cr, monster.proficiencyBonus]);
+  }, [monster.cr]);
 
-  // Filter spells based on selected filters
-// Filter spells based on selected filters and caster level
-const filteredSpells = useMemo(() => {
+  // Filter spells based on selected filters and caster level
+  const filteredSpells = useMemo(() => {
     const maxSpellLevel = Math.floor(spellcastingStats.casterLevel / 2);
     
     return FULL_SPELL_LIST.filter(spell => {
@@ -27,12 +39,12 @@ const filteredSpells = useMemo(() => {
       if (spell.level > maxSpellLevel) {
         return false;
       }
-  
+
       // Level filter
       if (levelFilter !== 'all' && spell.level !== parseInt(levelFilter)) {
         return false;
       }
-  
+
       // Flag filters
       switch (flagFilter) {
         case 'no_flags':
@@ -59,7 +71,6 @@ const filteredSpells = useMemo(() => {
 
   const handleSpellSelect = (e) => {
     const selectedSpellName = e.target.value;
-    // Find the spell by name instead of index
     const selectedSpell = FULL_SPELL_LIST.find(spell => spell.name === selectedSpellName);
     
     if (selectedSpell && selectedSpells.length < spellcastingStats.maxSpells) {
@@ -69,6 +80,39 @@ const filteredSpells = useMemo(() => {
 
   const removeSpell = (spellToRemove) => {
     setSelectedSpells(selectedSpells.filter(spell => spell !== spellToRemove));
+  };
+
+// In the handleSubmit function, modify the ability score access and description building
+  const handleSubmit = () => {
+    if (!spellcastingAbility || selectedSpells.length === 0) return;
+
+    // Filter for at-will spells
+    const atWillSpells = selectedSpells.filter(spell => 
+      !spell.causes_damage && 
+      !spell.prevents_damage && 
+      !spell.provides_healing && 
+      !spell.controls_creatures && 
+      !spell.movement_enhancement
+    );
+
+    const newFeature = {
+      name: 'Spellcasting',
+      category: 'Abilities',
+      // Don't include calculated values in the description
+      description: 'spellcasting',  // This will be a marker for the preview panel
+      costFeaturePoint: true,
+      featurePointCost: 2,
+      spellcasting: {
+        ability: spellcastingAbility,
+        level: spellcastingStats.casterLevel,
+        spells: selectedSpells,
+        atWillSpells: atWillSpells.map(spell => spell.name)  // Store just the names
+      }
+    };
+
+    onSubmit(newFeature);
+    setSpellcastingAbility('');
+    setSelectedSpells([]);
   };
 
   return (
@@ -95,22 +139,22 @@ const filteredSpells = useMemo(() => {
       {/* Filters */}
       <div className="grid grid-cols-2 gap-4">
         <div>
-            <label className="block text-sm font-medium mb-1">
-                Spell Level
-            </label>
-            <select
-                className="w-full p-2 border rounded"
-                value={levelFilter}
-                onChange={(e) => setLevelFilter(e.target.value)}
-            >
-                <option value="all">All Levels</option>
-                <option value="0">Cantrips (Level 0)</option>
-                {[...Array(Math.floor(spellcastingStats.casterLevel / 2))].map((_, i) => (
-                <option key={i + 1} value={i + 1}>
-                    Level {i + 1}
-                </option>
-                ))}
-            </select>
+          <label className="block text-sm font-medium mb-1">
+            Spell Level
+          </label>
+          <select
+            className="w-full p-2 border rounded"
+            value={levelFilter}
+            onChange={(e) => setLevelFilter(e.target.value)}
+          >
+            <option value="all">All Levels</option>
+            <option value="0">Cantrips (Level 0)</option>
+            {[...Array(Math.floor(spellcastingStats.casterLevel / 2))].map((_, i) => (
+              <option key={i + 1} value={i + 1}>
+                Level {i + 1}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div>
@@ -139,17 +183,17 @@ const filteredSpells = useMemo(() => {
           Select Spells ({selectedSpells.length}/{spellcastingStats.maxSpells})
         </label>
         <select
-            className="w-full p-2 border rounded"
-            onChange={handleSpellSelect}
-            value=""
-            disabled={selectedSpells.length >= spellcastingStats.maxSpells}
-            >
-            <option value="">Select a Spell...</option>
-            {filteredSpells.map((spell) => (
+          className="w-full p-2 border rounded"
+          onChange={handleSpellSelect}
+          value=""
+          disabled={selectedSpells.length >= spellcastingStats.maxSpells}
+        >
+          <option value="">Select a Spell...</option>
+          {filteredSpells.map((spell) => (
             <option key={spell.name} value={spell.name}>
-                {spell.name} (Level {spell.level})
+              {spell.name} (Level {spell.level})
             </option>
-            ))}
+          ))}
         </select>
       </div>
 
@@ -171,11 +215,11 @@ const filteredSpells = useMemo(() => {
         </div>
       )}
 
-        <div className="text-sm text-gray-600">
-            This creature will be a {spellcastingStats.casterLevel}th-level spellcaster,
-            can know up to {spellcastingStats.maxSpells} spells, and can learn spells of 
-            level {Math.floor(spellcastingStats.casterLevel / 2)} or lower.
-        </div>
+      <div className="text-sm text-gray-600">
+        This creature will be a {spellcastingStats.casterLevel}th-level spellcaster,
+        can know up to {spellcastingStats.maxSpells} spells, and can learn spells of 
+        level {Math.floor(spellcastingStats.casterLevel / 2)} or lower.
+      </div>
 
       <button 
         onClick={() => {

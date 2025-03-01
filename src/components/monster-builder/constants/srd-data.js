@@ -493,3 +493,32 @@ export const FULL_SPELL_LIST = [
   ]
 
   export const LEGENDARYACTIONS = []
+
+  export const SPELLCASTERLEVELS = [
+    {"cr": 1, "level": 3},
+    {"cr": 2, "level": 4},
+    {"cr": 3, "level": 5},
+    {"cr": 4, "level": 5},
+    {"cr": 5, "level": 6},
+    {"cr": 6, "level": 7},
+    {"cr": 7, "level": 7},
+    {"cr": 8, "level": 8},
+    {"cr": 9, "level": 9},
+    {"cr": 10, "level": 9},
+    {"cr": 11, "level": 10},
+    {"cr": 12, "level": 11},
+    {"cr": 13, "level": 11},
+    {"cr": 14, "level": 12},
+    {"cr": 15, "level": 13},
+    {"cr": 16, "level": 13},
+    {"cr": 17, "level": 14},
+    {"cr": 18, "level": 15},
+    {"cr": 19, "level": 15},
+    {"cr": 20, "level": 16},
+    {"cr": 21, "level": 17},
+    {"cr": 22, "level": 17},
+    {"cr": 23, "level": 18},
+    {"cr": 24, "level": 19},
+    {"cr": 25, "level": 19},
+    {"cr": 26, "level": 20}
+  ]

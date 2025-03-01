@@ -128,7 +128,7 @@ export function FeaturePointActions({
                 setSelectedAction('');
               }}
               availablePoints={availablePoints}
-              monster={monster}
+              monster={monster}  // Make sure this is being passed
             />
           );
         case 'legendaryAction':

@@ -107,6 +107,7 @@ const PreviewPanel = ({ monster, setMonster, setStep }) => {
             monster={monster} 
             setStep={setStep}
             onDeleteMovement={handleDeleteMovement}
+            onDeleteSense={handleDeleteSense}
           />
           
           <AttributesSection 
@@ -128,6 +129,7 @@ const PreviewPanel = ({ monster, setMonster, setStep }) => {
             features={getFeaturesByCategory(monster.features, 'Abilities')}
             setStep={setStep}
             onDeleteFeature={handleDeleteFeature}
+            monster={monster} 
           />
           
           <ActionsSection 
