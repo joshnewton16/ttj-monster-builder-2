@@ -9,7 +9,7 @@ import { MovementAction } from './MovementAction';
 import { SkillAction } from './SkillAction';
 import { DefenseModifications } from './DefenseModifications';
 import { SpellcastingForm } from './SpellcastingForm';
-import { ActionEconomySpellForm } from './ActionEconomySpellForm'; // Import the new component
+import { ActionEconomySpellForm } from './ActionEconomySpellForm'; // Adjusted import
 import { SenseAction } from './SenseAction';
 import { LEGENDARYACTIONS } from '../../constants/srd-data';
 
@@ -104,16 +104,14 @@ export function FeaturePointActions({
 
   // Handler for action economy spells
   const handleActionEconomySpell = (spellData) => {
-    // Update magic points
-    if (setMagicPoints && magicPoints) {
-      setMagicPoints({
-        ...magicPoints,
-        used: magicPoints.used + spellData.magicPointCost
-      });
-    }
+    // Log information for debugging
+    console.log('Adding spell with magic point cost:', spellData.magicPointCost);
+    console.log('Current magic points before adding:', magicPoints);
     
-    // Add the spell as a feature
+    // Submit the spell feature
     onFeatureSubmit(spellData);
+    
+    // Reset the selected action
     setSelectedAction('');
   };
 
@@ -162,6 +160,7 @@ export function FeaturePointActions({
             availablePoints={availablePoints}
             monster={monster}
             magicPoints={magicPoints}
+            setMagicPoints={setMagicPoints}
           />
         );
       case 'legendaryAction':
@@ -251,7 +250,7 @@ export function FeaturePointActions({
         {magicPoints && magicPoints.total > 0 && (
           <div>
             <span className="font-medium text-sm">Magic Points:</span> 
-            <span className="ml-1">{magicPoints.total - magicPoints.used}</span>
+            <span className="ml-1">{magicPoints.total - magicPoints.used}/{magicPoints.total}</span>
           </div>
         )}
       </div>

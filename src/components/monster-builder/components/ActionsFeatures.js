@@ -23,8 +23,21 @@ export function ActionsFeatures({ monster, setMonster }) {
     if (spellcastingFeature) {
       setMagicPoints({
         total: spellcastingFeature.magicPointsTotal,
-        used: spellcastingFeature.magicPointsUsed || 0
+        used: 0 // Reset to zero initially and then calculate used points
       });
+      
+      // Calculate used magic points from existing spells
+      const usedPoints = monster.features
+        .filter(f => f.costMagicPoint && f.magicPointCost)
+        .reduce((total, feature) => total + (feature.magicPointCost || 0), 0);
+      
+      // Update with used points
+      if (usedPoints > 0) {
+        setMagicPoints(prev => ({
+          ...prev,
+          used: usedPoints
+        }));
+      }
     }
   }, [monster.features]);
 
@@ -64,6 +77,14 @@ export function ActionsFeatures({ monster, setMonster }) {
         total: newFeature.magicPointsTotal,
         used: newFeature.magicPointsUsed || 0
       });
+    }
+    
+    // If this feature costs magic points, update our counter
+    if (newFeature.costMagicPoint && newFeature.magicPointCost > 0) {
+      setMagicPoints(prev => ({
+        ...prev,
+        used: prev.used + newFeature.magicPointCost
+      }));
     }
     
     setMonster(prev => ({
@@ -242,6 +263,16 @@ export function ActionsFeatures({ monster, setMonster }) {
     });
   };
 
+  // Debug the current magic points state
+  console.log('Current magic points:', magicPoints);
+  
+  // Calculate the actual used magic points from features (for debugging)
+  const actualUsedMagicPoints = monster.features
+    .filter(f => f.costMagicPoint && f.magicPointCost)
+    .reduce((total, feature) => total + (feature.magicPointCost || 0), 0);
+  
+  console.log('Actual used magic points from features:', actualUsedMagicPoints);
+
   return (
     <div className="space-y-1">
       <h2 className="text-xl font-bold">Actions and Features</h2>
@@ -251,7 +282,6 @@ export function ActionsFeatures({ monster, setMonster }) {
         availablePoints={availableFeaturePoints}
         hasFirstAction={hasFirstAction}
         hasFirstFeature={hasFirstFeature}
-        // Add magic points to summary if needed
         magicPoints={magicPoints.total > 0 ? magicPoints : null}
       />
 
@@ -273,7 +303,6 @@ export function ActionsFeatures({ monster, setMonster }) {
         onImmunityModify={handleImmunityModify}
         onResistanceModify={handleResistanceModify}
         onSenseModify={handleSenseModify}
-        // Pass magic points state
         magicPoints={magicPoints}
         setMagicPoints={setMagicPoints}
       />
