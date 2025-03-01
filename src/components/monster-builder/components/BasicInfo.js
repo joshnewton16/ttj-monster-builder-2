@@ -33,9 +33,15 @@ export function BasicInfo({ monster, setMonster, onCRChange }) {
     
     // Get the CR from HP range
     const hpCR = hpMatches[0].cr;
+    console.log(acCR, hpCR)
     
     // Return the higher of the two CRs
-    return Math.max(acCR, hpCR);
+    if (acCR !== hpCR) {
+      return Math.round((acCR + hpCR) / 2);
+    }
+    
+    // If results are the same, return either one
+    return acCR;
   }
 
   // Initialize speed array if needed

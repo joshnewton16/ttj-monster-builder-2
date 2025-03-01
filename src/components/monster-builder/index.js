@@ -58,8 +58,10 @@ function MonsterBuilder() {
 
   function renderStep() {
     const stepContent = () => {
+      
       switch (step) {
         case 1:
+          console.log(monster);
           return <BasicInfo monster={monster} setMonster={setMonster} onCRChange={handleCRChange} />;
         case 2:
           return (
@@ -71,10 +73,12 @@ function MonsterBuilder() {
             />
           );
         case 3:
+          console.log(monster);
           return <Proficiencies monster={monster} setMonster={setMonster} />;
         case 4:
           return <ActionsFeatures monster={monster} setMonster={setMonster} />;
         case 5:
+          console.log(monster);
           return <FeaturePoints monster={monster} setMonster={setMonster} />;
         default:
           return null;
