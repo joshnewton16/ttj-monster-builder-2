@@ -74,8 +74,6 @@ function MonsterBuilder() {
           return <Proficiencies monster={monster} setMonster={setMonster} />;
         case 4:
           return <ActionsFeatures monster={monster} setMonster={setMonster} />;
-        case 5:
-          return <FeaturePoints monster={monster} setMonster={setMonster} />;
         default:
           return null;
       }
