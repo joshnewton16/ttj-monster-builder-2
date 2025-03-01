@@ -9,7 +9,8 @@ import { MovementAction } from './MovementAction';
 import { SkillAction } from './SkillAction';
 import { DefenseModifications } from './DefenseModifications';
 import { SpellcastingForm } from './SpellcastingForm';
-import { SenseAction } from './SenseAction';  // Add this import
+import { ActionEconomySpellForm } from './ActionEconomySpellForm'; // Import the new component
+import { SenseAction } from './SenseAction';
 import { LEGENDARYACTIONS } from '../../constants/srd-data';
 
 export function FeaturePointActions({
@@ -17,9 +18,9 @@ export function FeaturePointActions({
   multiattackCount,
   monster,
   onBaseActionSubmit,
-  hasFirstAction,      // Add this prop
-  onFeatureSubmit,    // Add this
-  hasFirstFeature,    // Add this
+  hasFirstAction,
+  onFeatureSubmit,
+  hasFirstFeature,
   onMultiattack,
   onSecondaryEffect,
   onDoubleDamage,
@@ -27,10 +28,17 @@ export function FeaturePointActions({
   onSkillModify,
   onImmunityModify,
   onResistanceModify,
-  onSenseModify,    // Add this prop
-  availablePoints
+  onSenseModify,
+  availablePoints,
+  magicPoints,
+  setMagicPoints
 }) {
   const [selectedAction, setSelectedAction] = useState('');
+
+  // Check if the monster has spellcasting
+  const hasSpellcasting = monster.features.some(
+    feature => feature.name === 'Spellcasting'
+  );
 
   // Wrap each handler to reset the selectedAction after completion
   const handleBaseAction = (actionData) => {
@@ -53,7 +61,7 @@ export function FeaturePointActions({
       ...actionData,
       category: 'Legendary',
       costFeaturePoint: true,
-      featurePointCost: 2, // Costs 2 points
+      featurePointCost: 2,
       isFirst: false
     };
     onBaseActionSubmit(legendaryAction);
@@ -94,9 +102,24 @@ export function FeaturePointActions({
     setSelectedAction('');
   };
 
+  // Handler for action economy spells
+  const handleActionEconomySpell = (spellData) => {
+    // Update magic points
+    if (setMagicPoints && magicPoints) {
+      setMagicPoints({
+        ...magicPoints,
+        used: magicPoints.used + spellData.magicPointCost
+      });
+    }
+    
+    // Add the spell as a feature
+    onFeatureSubmit(spellData);
+    setSelectedAction('');
+  };
+
   const renderActionComponent = () => {
     switch (selectedAction) {
-      case 'baseAction':  // New case for BaseActionForm
+      case 'baseAction':
         return (
           <BaseActionForm
             onSubmit={handleBaseAction}
@@ -120,27 +143,37 @@ export function FeaturePointActions({
             availablePoints={availablePoints}
           />
         );
-        case 'spellcasting':
-          return (
-            <SpellcastingForm
-              onSubmit={(spellcastingData) => {
-                onFeatureSubmit(spellcastingData);
-                setSelectedAction('');
-              }}
-              availablePoints={availablePoints}
-              monster={monster}  // Make sure this is being passed
-            />
-          );
-        case 'legendaryAction':
-          return (
-            <BaseActionForm
-              onSubmit={handleLegendaryAction}
-              availablePoints={availablePoints}
-              hasFirstAction={false}
-              isLegendary={true}
-              legendaryActions={LEGENDARYACTIONS} 
-            />
-          );
+      case 'spellcasting':
+        return (
+          <SpellcastingForm
+            onSubmit={(spellcastingData) => {
+              onFeatureSubmit(spellcastingData);
+              setSelectedAction('');
+            }}
+            availablePoints={availablePoints}
+            monster={monster}
+            currentMagicPoints={magicPoints}
+          />
+        );
+      case 'actionEconomySpell':
+        return (
+          <ActionEconomySpellForm
+            onSubmit={handleActionEconomySpell}
+            availablePoints={availablePoints}
+            monster={monster}
+            magicPoints={magicPoints}
+          />
+        );
+      case 'legendaryAction':
+        return (
+          <BaseActionForm
+            onSubmit={handleLegendaryAction}
+            availablePoints={availablePoints}
+            hasFirstAction={false}
+            isLegendary={true}
+            legendaryActions={LEGENDARYACTIONS} 
+          />
+        );
       case 'modifyDamage':
         return (
           <SecondaryEffects
@@ -206,18 +239,39 @@ export function FeaturePointActions({
   return (
     <div className="space-y-2">
       <h3 className="font-semibold">Feature Point Actions</h3>
+      
+      {/* Points Display */}
+      <div className="flex gap-4 bg-gray-50 p-2 rounded mb-2">
+        <div>
+          <span className="font-medium text-sm">Feature Points:</span> 
+          <span className="ml-1">{availablePoints}</span>
+        </div>
+        
+        {/* Only show Magic Points if they exist */}
+        {magicPoints && magicPoints.total > 0 && (
+          <div>
+            <span className="font-medium text-sm">Magic Points:</span> 
+            <span className="ml-1">{magicPoints.total - magicPoints.used}</span>
+          </div>
+        )}
+      </div>
+      
       <select 
         className="w-full p-2 border rounded"
         value={selectedAction}
         onChange={(e) => setSelectedAction(e.target.value)}
       >
         <option value="">Select Feature or Action</option>
-        <option value="baseAction">Add Actions, Bonus Actions, or Reactions</option>  {/* New option */}
+        <option value="baseAction">Add Actions, Bonus Actions, or Reactions</option>
         <option value="baseFeature">Add Features or Abilities</option>
         {monster.cr >= 5 && (
           <option value="legendaryAction">Add Legendary Action or Reaction</option>
         )}
         <option value="spellcasting">Add Spellcasting</option>
+        {/* Add Action Economy Spell option only if spellcasting exists */}
+        {hasSpellcasting && magicPoints && magicPoints.total > 0 && (
+          <option value="actionEconomySpell">Add Action Economy Spell</option>
+        )}
         <option value="multiattack" disabled={multiattackCount >= 2}>
           Add Multiattack ({2 - multiattackCount} remaining)
         </option>

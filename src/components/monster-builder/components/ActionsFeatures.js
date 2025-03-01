@@ -1,5 +1,5 @@
 // ActionsFeatures/index.js
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { FeaturePointsSummary } from './FeaturePointSummary';
 import { FeaturePointActions } from './FeaturePointActions';
 import { useFeaturePoints } from '../hooks/useFeaturePoints';
@@ -7,6 +7,27 @@ import { useFeatureModification } from '../hooks/useFeatureModification';
 import { SIZE_MOVEMENT } from '../constants/srd-data';
 
 export function ActionsFeatures({ monster, setMonster }) {
+  // Add magic points state
+  const [magicPoints, setMagicPoints] = useState({
+    total: 0,
+    used: 0
+  });
+
+  // Load any existing magic points from monster when component mounts
+  useEffect(() => {
+    // Check if monster already has spellcasting with magic points
+    const spellcastingFeature = monster.features.find(
+      feature => feature.name === 'Spellcasting' && feature.magicPointsTotal !== undefined
+    );
+    
+    if (spellcastingFeature) {
+      setMagicPoints({
+        total: spellcastingFeature.magicPointsTotal,
+        used: spellcastingFeature.magicPointsUsed || 0
+      });
+    }
+  }, [monster.features]);
+
   const {
     totalFeaturePoints,
     availableFeaturePoints,
@@ -37,6 +58,14 @@ export function ActionsFeatures({ monster, setMonster }) {
   };
 
   const handleAddFeature = (newFeature) => {
+    // If this is spellcasting with magic points, update our state
+    if (newFeature.name === 'Spellcasting' && newFeature.magicPointsTotal !== undefined) {
+      setMagicPoints({
+        total: newFeature.magicPointsTotal,
+        used: newFeature.magicPointsUsed || 0
+      });
+    }
+    
     setMonster(prev => ({
       ...prev,
       features: [...prev.features, newFeature]
@@ -191,7 +220,7 @@ export function ActionsFeatures({ monster, setMonster }) {
     });
   };
 
-// In ActionsFeatures component
+  // In ActionsFeatures component
   const handleSenseModify = (senseType, range) => {
     setMonster(prev => {
       const newFeature = {
@@ -222,28 +251,32 @@ export function ActionsFeatures({ monster, setMonster }) {
         availablePoints={availableFeaturePoints}
         hasFirstAction={hasFirstAction}
         hasFirstFeature={hasFirstFeature}
+        // Add magic points to summary if needed
+        magicPoints={magicPoints.total > 0 ? magicPoints : null}
       />
 
       <FeaturePointActions
         existingAttacks={existingAttacks}
         multiattackCount={multiattackCount}
-        monster={monster}  // Make sure we're passing the monster prop
+        monster={monster}
         availablePoints={availableFeaturePoints}
-        onBaseActionSubmit={handleAddAction}  // Add this line
-        hasFirstAction={hasFirstAction}       // Add this line
-        onFeatureSubmit={handleAddFeature}    // Add this
-        hasFirstFeature={hasFirstFeature}     // Add this
+        onBaseActionSubmit={handleAddAction}
+        hasFirstAction={hasFirstAction}
+        onFeatureSubmit={handleAddFeature}
+        hasFirstFeature={hasFirstFeature}
         onMultiattack={() => addMultiattack(existingMultiattack)}
         onSecondaryEffect={addSecondaryEffect}
         onDoubleDamage={doubleDamage}
         onMovementModify={handleMovementModify}
         onAttributePoints={handleAttributePoints}
-        onSkillModify={handleSkillModify}  // Add this prop
-        onImmunityModify={handleImmunityModify}     // Add these handlers
-        onResistanceModify={handleResistanceModify}  // Add these handlers
-        onSenseModify={handleSenseModify}  // Add this prop
+        onSkillModify={handleSkillModify}
+        onImmunityModify={handleImmunityModify}
+        onResistanceModify={handleResistanceModify}
+        onSenseModify={handleSenseModify}
+        // Pass magic points state
+        magicPoints={magicPoints}
+        setMagicPoints={setMagicPoints}
       />
-
     </div>
   );
 }

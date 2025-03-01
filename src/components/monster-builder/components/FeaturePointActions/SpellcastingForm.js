@@ -3,11 +3,10 @@ import React, { useState, useMemo } from 'react';
 import { FULL_SPELL_LIST } from '../../constants/spell-list';
 import { SPELLCASTERLEVELS } from '../../constants/srd-data';
 
-export function SpellcastingForm({ onSubmit, availablePoints, monster }) {
+export function SpellcastingForm({ onSubmit, availablePoints, monster, currentMagicPoints }) {
   const [spellcastingAbility, setSpellcastingAbility] = useState('');
-  const [selectedSpells, setSelectedSpells] = useState([]);
+  const [selectedBasicSpells, setSelectedBasicSpells] = useState([]);
   const [levelFilter, setLevelFilter] = useState('all');
-  const [flagFilter, setFlagFilter] = useState('all');
 
   function getLevelFromCR(challengeRating) {
     // Convert the CR to string for consistent comparison
@@ -23,15 +22,24 @@ export function SpellcastingForm({ onSubmit, availablePoints, monster }) {
   // Calculate spellcasting stats based on CR and proficiency
   const spellcastingStats = useMemo(() => {
     const baseStat = getLevelFromCR(monster.cr);
-    console.log(baseStat);
     return {
-      maxSpells: Math.floor(baseStat),
+      magicPoints: Math.floor(baseStat) * 2, // Magic points based on caster level
       casterLevel: Math.max(2, Math.floor(baseStat))
     };
   }, [monster.cr]);
 
-  // Filter spells based on selected filters and caster level
-  const filteredSpells = useMemo(() => {
+  // Get current available magic points
+  const availableMagicPoints = useMemo(() => {
+    // If we already have magic points, use those values
+    if (currentMagicPoints && currentMagicPoints.total > 0) {
+      return currentMagicPoints.total - currentMagicPoints.used;
+    }
+    // Otherwise, calculate from scratch based on selectedBasicSpells
+    return spellcastingStats.magicPoints - selectedBasicSpells.length;
+  }, [currentMagicPoints, spellcastingStats.magicPoints, selectedBasicSpells.length]);
+
+  // Filter only for basic spells (no flags)
+  const basicSpells = useMemo(() => {
     const maxSpellLevel = Math.floor(spellcastingStats.casterLevel / 2);
     
     return FULL_SPELL_LIST.filter(spell => {
@@ -45,78 +53,58 @@ export function SpellcastingForm({ onSubmit, availablePoints, monster }) {
         return false;
       }
 
-      // Flag filters
-      switch (flagFilter) {
-        case 'no_flags':
-          return !spell.causes_damage && 
-                 !spell.prevents_damage && 
-                 !spell.provides_healing && 
-                 !spell.controls_creatures && 
-                 !spell.movement_enhancement;
-        case 'damage':
-          return spell.causes_damage;
-        case 'prevention':
-          return spell.prevents_damage;
-        case 'healing':
-          return spell.provides_healing;
-        case 'control':
-          return spell.controls_creatures;
-        case 'movement':
-          return spell.movement_enhancement;
-        default:
-          return true;
-      }
+      // Only basic spells - those without flags
+      return !spell.causes_damage && 
+             !spell.prevents_damage && 
+             !spell.provides_healing && 
+             !spell.controls_creatures && 
+             !spell.movement_enhancement;
     });
-  }, [levelFilter, flagFilter, spellcastingStats.casterLevel]);
+  }, [levelFilter, spellcastingStats.casterLevel]);
 
-  const handleSpellSelect = (e) => {
+  const handleBasicSpellSelect = (e) => {
     const selectedSpellName = e.target.value;
+    if (!selectedSpellName) return;
+    
     const selectedSpell = FULL_SPELL_LIST.find(spell => spell.name === selectedSpellName);
     
-    if (selectedSpell && selectedSpells.length < spellcastingStats.maxSpells) {
-      setSelectedSpells([...selectedSpells, selectedSpell]);
+    if (selectedSpell && !selectedBasicSpells.some(s => s.name === selectedSpell.name) && availableMagicPoints > 0) {
+      setSelectedBasicSpells([...selectedBasicSpells, selectedSpell]);
     }
   };
 
-  const removeSpell = (spellToRemove) => {
-    setSelectedSpells(selectedSpells.filter(spell => spell !== spellToRemove));
+  const removeBasicSpell = (spellToRemove) => {
+    setSelectedBasicSpells(selectedBasicSpells.filter(spell => spell !== spellToRemove));
   };
 
-// In the handleSubmit function, modify the ability score access and description building
   const handleSubmit = () => {
-    if (!spellcastingAbility || selectedSpells.length === 0) return;
+    if (!spellcastingAbility) return;
 
-    // Filter for at-will spells
-    const atWillSpells = selectedSpells.filter(spell => 
-      !spell.causes_damage && 
-      !spell.prevents_damage && 
-      !spell.provides_healing && 
-      !spell.controls_creatures && 
-      !spell.movement_enhancement
-    );
-
+    // Format the at-will spells list for display
+    const atWillSpellNames = selectedBasicSpells.map(spell => spell.name);
+    
     const newFeature = {
       name: 'Spellcasting',
       category: 'Abilities',
-      // Don't include calculated values in the description
-      description: 'spellcasting',  // This will be a marker for the preview panel
+      description: `The creature is a ${spellcastingStats.casterLevel}th-level spellcaster. Its spellcasting ability is ${spellcastingAbility}. ${
+        atWillSpellNames.length > 0 ? `At will: ${atWillSpellNames.join(', ')}` : ''
+      }`,
       costFeaturePoint: true,
       featurePointCost: 2,
+      magicPointsTotal: spellcastingStats.magicPoints,
+      magicPointsUsed: selectedBasicSpells.length, // Each basic spell costs 1 magic point
       spellcasting: {
         ability: spellcastingAbility,
         level: spellcastingStats.casterLevel,
-        spells: selectedSpells,
-        atWillSpells: atWillSpells.map(spell => spell.name)  // Store just the names
+        atWillSpells: atWillSpellNames
       }
     };
 
     onSubmit(newFeature);
-    setSpellcastingAbility('');
-    setSelectedSpells([]);
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 mt-4">
       <h3 className="font-semibold">Spellcasting</h3>
       
       {/* Ability Selection */}
@@ -136,76 +124,80 @@ export function SpellcastingForm({ onSubmit, availablePoints, monster }) {
         </select>
       </div>
 
-      {/* Filters */}
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium mb-1">
-            Spell Level
-          </label>
-          <select
-            className="w-full p-2 border rounded"
-            value={levelFilter}
-            onChange={(e) => setLevelFilter(e.target.value)}
-          >
-            <option value="all">All Levels</option>
-            <option value="0">Cantrips (Level 0)</option>
-            {[...Array(Math.floor(spellcastingStats.casterLevel / 2))].map((_, i) => (
-              <option key={i + 1} value={i + 1}>
-                Level {i + 1}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium mb-1">
-            Spell Type
-          </label>
-          <select
-            className="w-full p-2 border rounded"
-            value={flagFilter}
-            onChange={(e) => setFlagFilter(e.target.value)}
-          >
-            <option value="all">All Types</option>
-            <option value="no_flags">Basic Spells</option>
-            <option value="damage">Damage Dealing</option>
-            <option value="prevention">Damage Prevention</option>
-            <option value="healing">Healing</option>
-            <option value="control">Creature Control</option>
-            <option value="movement">Movement Enhancement</option>
-          </select>
-        </div>
+      {/* Magic Points Info */}
+      <div className="bg-blue-50 p-3 rounded border border-blue-200">
+        <h4 className="font-medium text-blue-800">Magic Points</h4>
+        <p className="text-sm text-blue-600">
+          {currentMagicPoints && currentMagicPoints.total > 0 ? (
+            <>
+              Available: {currentMagicPoints.total - currentMagicPoints.used} / {currentMagicPoints.total}
+              <span className="text-gray-500 ml-2">({selectedBasicSpells.length} will be used)</span>
+            </>
+          ) : (
+            <>
+              Total: {spellcastingStats.magicPoints} | 
+              Used: {selectedBasicSpells.length} | 
+              Available: {spellcastingStats.magicPoints - selectedBasicSpells.length}
+            </>
+          )}
+        </p>
+        <p className="text-xs text-gray-600 mt-1">
+          Based on caster level {spellcastingStats.casterLevel}. Each basic spell costs 1 magic point.
+        </p>
       </div>
 
-      {/* Spell Selection */}
+      {/* Filters for Basic Spells */}
       <div>
         <label className="block text-sm font-medium mb-1">
-          Select Spells ({selectedSpells.length}/{spellcastingStats.maxSpells})
+          Spell Level Filter
         </label>
         <select
           className="w-full p-2 border rounded"
-          onChange={handleSpellSelect}
-          value=""
-          disabled={selectedSpells.length >= spellcastingStats.maxSpells}
+          value={levelFilter}
+          onChange={(e) => setLevelFilter(e.target.value)}
         >
-          <option value="">Select a Spell...</option>
-          {filteredSpells.map((spell) => (
-            <option key={spell.name} value={spell.name}>
-              {spell.name} (Level {spell.level})
+          <option value="all">All Levels</option>
+          <option value="0">Cantrips (Level 0)</option>
+          {[...Array(Math.floor(spellcastingStats.casterLevel / 2))].map((_, i) => (
+            <option key={i + 1} value={i + 1}>
+              Level {i + 1}
             </option>
           ))}
         </select>
       </div>
 
-      {/* Selected Spells List */}
-      {selectedSpells.length > 0 && (
+      {/* Basic Spell Selection */}
+      <div>
+        <label className="block text-sm font-medium mb-1">
+          Select Basic Spells (At Will)
+        </label>
+        <select
+          className="w-full p-2 border rounded"
+          onChange={handleBasicSpellSelect}
+          value=""
+          disabled={availableMagicPoints <= 0}
+        >
+          <option value="">Select a Basic Spell...</option>
+          {basicSpells.map((spell) => (
+            <option key={spell.name} value={spell.name}>
+              {spell.name} (Level {spell.level})
+            </option>
+          ))}
+        </select>
+        <p className="text-xs text-gray-500 mt-1">
+          Basic spells are utility spells with no combat effects. Each costs 1 magic point.
+        </p>
+      </div>
+
+      {/* Selected Basic Spells List */}
+      {selectedBasicSpells.length > 0 && (
         <div className="space-y-2">
-          <label className="block text-sm font-medium">Selected Spells:</label>
-          {selectedSpells.map((spell, index) => (
+          <label className="block text-sm font-medium">Selected Basic Spells (At Will):</label>
+          {selectedBasicSpells.map((spell, index) => (
             <div key={index} className="flex justify-between items-center bg-gray-50 p-2 rounded">
               <span>{spell.name} (Level {spell.level})</span>
               <button
-                onClick={() => removeSpell(spell)}
+                onClick={() => removeBasicSpell(spell)}
                 className="text-red-500 hover:text-red-700"
               >
                 Remove
@@ -216,31 +208,16 @@ export function SpellcastingForm({ onSubmit, availablePoints, monster }) {
       )}
 
       <div className="text-sm text-gray-600">
-        This creature will be a {spellcastingStats.casterLevel}th-level spellcaster,
-        can know up to {spellcastingStats.maxSpells} spells, and can learn spells of 
-        level {Math.floor(spellcastingStats.casterLevel / 2)} or lower.
+        This creature will be a {spellcastingStats.casterLevel}th-level spellcaster
+        with {spellcastingStats.magicPoints} magic points.
       </div>
 
       <button 
-        onClick={() => {
-          const newFeature = {
-            name: 'Spellcasting',
-            category: 'Abilities',
-            description: `The creature is a ${spellcastingStats.casterLevel}th-level spellcaster. Its spellcasting ability is ${spellcastingAbility}.`,
-            costFeaturePoint: true,
-            featurePointCost: 2,
-            spellcasting: {
-              ability: spellcastingAbility,
-              level: spellcastingStats.casterLevel,
-              spells: selectedSpells
-            }
-          };
-          onSubmit(newFeature);
-        }}
-        disabled={!spellcastingAbility || selectedSpells.length === 0 || availablePoints < 2}
+        onClick={handleSubmit}
+        disabled={!spellcastingAbility || availablePoints < 2}
         className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-400"
       >
-        Add Spellcasting
+        Add Spellcasting ({availablePoints >= 2 ? '-2 Feature Points' : 'Not Enough Points'})
       </button>
     </div>
   );
