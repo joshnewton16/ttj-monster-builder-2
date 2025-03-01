@@ -48,6 +48,7 @@ export function SpellcastingForm({ onSubmit, availablePoints, monster, currentMa
         return false;
       }
 
+
       // Level filter
       if (levelFilter !== 'all' && spell.level !== parseInt(levelFilter)) {
         return false;
@@ -181,7 +182,9 @@ export function SpellcastingForm({ onSubmit, availablePoints, monster, currentMa
           {basicSpells.map((spell) => (
             <option key={spell.name} value={spell.name}>
               {spell.name} (Level {spell.level})
+              {spell.name} (Level {spell.level})
             </option>
+          ))}
           ))}
         </select>
         <p className="text-xs text-gray-500 mt-1">
