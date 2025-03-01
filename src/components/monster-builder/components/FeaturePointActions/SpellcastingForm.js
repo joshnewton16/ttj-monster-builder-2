@@ -185,7 +185,6 @@ export function SpellcastingForm({ onSubmit, availablePoints, monster, currentMa
               {spell.name} (Level {spell.level})
             </option>
           ))}
-          ))}
         </select>
         <p className="text-xs text-gray-500 mt-1">
           Basic spells are utility spells with no combat effects. Each costs 1 magic point.
