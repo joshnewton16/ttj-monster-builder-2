@@ -108,6 +108,7 @@ export const getSecondaryDamageForCR = (cr) => {
 };
 
 export const RANGE_MULTIPLIERS = [
+  { value: 0, label: 'Touch', mpCost: 0},
   { value: 1, label: 'Normal Range', mpCost: 0 },
   { value: 3, label: '3× Range', mpCost: 1 },
   { value: 5, label: '5× Range', mpCost: 2 },

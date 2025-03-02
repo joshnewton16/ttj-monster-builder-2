@@ -63,7 +63,11 @@ export const generateSpellDescription = ({
   switch (primaryEffectType) {
     case 'Spell Attack':
       if (actionType === 'spell attack') {
-        desc += `The creature makes a spell attack against a target within ${actualRange} feet. On a hit, `;
+        if (actualRange === 0) {
+          desc += `The creature makes a spell attack against a target it can reach. On a hit, `;
+        } else {
+          desc += `The creature makes a spell attack against a target within ${actualRange} feet. On a hit, `;
+        }
       } else {
         desc += `The target must make a ${savingThrow} saving throw. `;
         

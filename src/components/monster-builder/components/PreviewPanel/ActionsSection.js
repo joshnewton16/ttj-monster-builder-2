@@ -53,49 +53,43 @@ export const ActionsSection = ({
     );
   };
 
+  const multiattackFeature = monster.features.find(f => f.isMultiattack);
+
   return (
     <div className="preview-section">
       <h3 onClick={() => setStep(4)} className="cursor-pointer hover:text-blue-600">
         Actions
       </h3>
-      {monster.features.find(f => f.isMultiattack) && 
-        renderMultiattack(monster.features.find(f => f.isMultiattack))
-      }
+      {/* Only render Multiattack in the Actions section */}
+      {multiattackFeature && renderMultiattack(multiattackFeature)}
       {getFeaturesByCategory(monster.features, 'Actions')
         .filter(f => !f.isMultiattack)
         .map((feature, index) => renderFeature(feature, index)
       )}
+      
       <h3 onClick={() => setStep(4)} className="cursor-pointer hover:text-blue-600">
         Bonus Actions
       </h3>
-      {monster.features.find(f => f.isMultiattack) && 
-        renderMultiattack(monster.features.find(f => f.isMultiattack))
-      }
       {getFeaturesByCategory(monster.features, 'Bonus Actions')
         .filter(f => !f.isMultiattack)
         .map((feature, index) => renderFeature(feature, index)
       )}
+      
       <h3 onClick={() => setStep(4)} className="cursor-pointer hover:text-blue-600">
         Reactions
       </h3>
-      {monster.features.find(f => f.isMultiattack) && 
-        renderMultiattack(monster.features.find(f => f.isMultiattack))
-      }
       {getFeaturesByCategory(monster.features, 'Reactions')
         .filter(f => !f.isMultiattack)
         .map((feature, index) => renderFeature(feature, index)
       )}
+      
       <h3 onClick={() => setStep(4)} className="cursor-pointer hover:text-blue-600">
         Legendary Actions and Reactions
       </h3>
-      {monster.features.find(f => f.isMultiattack) && 
-        renderMultiattack(monster.features.find(f => f.isMultiattack))
-      }
       {getFeaturesByCategory(monster.features, 'Legendary')
         .filter(f => !f.isMultiattack)
         .map((feature, index) => renderFeature(feature, index)
       )}        
-
     </div>
   );
 };

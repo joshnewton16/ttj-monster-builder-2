@@ -167,9 +167,6 @@ export function BasicInfo({ monster, setMonster, onCRChange }) {
                   />
                 </div>
               </label>
-              <div className="text-sm mt-1">
-                Total AC: {monster.ac}
-              </div>
             </div>
 
             {/* Hit Points */}

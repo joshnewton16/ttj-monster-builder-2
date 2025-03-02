@@ -9,11 +9,23 @@ import { calculateModifier, getFeaturesByCategory } from './utils';
 
 const PreviewPanel = ({ monster, setMonster, setStep }) => {
   const handleDeleteFeature = (feature, index) => {
-    const category = feature.category;
-    const wasFirst = feature.isFirst;
+    // Get the actual feature from the monster features array using the index
+    const featureToDelete = monster.features[index];
+    const category = featureToDelete.category;
+    const wasFirst = featureToDelete.isFirst;
 
     setMonster(prev => {
       const newFeatures = prev.features.filter((_, i) => i !== index);
+
+      // If this was a Spellcasting feature with basic spells, also remove all related spell features
+      if (featureToDelete.name === 'Spellcasting' && featureToDelete.spellcasting?.atWillSpells?.length > 0) {
+        // Filter out all the individual basic spell features
+        const spellNames = featureToDelete.spellcasting.atWillSpells;
+        return {
+          ...prev,
+          features: newFeatures.filter(f => !(f.name.startsWith('Spell:') && spellNames.some(spell => f.name.includes(spell))))
+        };
+      }
 
       if (wasFirst) {
         const nextFeatureIndex = newFeatures.findIndex(f => f.category === category);
@@ -97,6 +109,42 @@ const PreviewPanel = ({ monster, setMonster, setStep }) => {
     }));
   };
 
+  // Filter out basic spell features and ensure multiattack only appears in Actions section
+  const getFilteredFeaturesByCategory = (features, category) => {
+    return features.filter(feature => {
+      // Basic filtering condition
+      const isHidden = feature.isHidden;
+      const isBasicSpell = feature.name.startsWith('Spell:') && feature.costMagicPoint;
+      const hasMultiattack = feature.isMultiattack; // Check if feature has isMultiattack property
+      
+      // For "Actions" category, include only actions and multiattack features
+      if (category === 'Actions') {
+        return feature.category === 'Actions' && !isHidden && !isBasicSpell;
+      }
+      
+      // For "Abilities" category, exclude any multiattack features
+      if (category === 'Abilities') {
+        return feature.category === 'Abilities' && !hasMultiattack && !isHidden && !isBasicSpell;
+      }
+      
+      // Default case for any other categories
+      return feature.category === category && !isHidden && !isBasicSpell;
+    });
+  };
+
+  const actionFeatures = monster.features.filter(feature => 
+    feature.category === 'Actions' && !feature.isHidden
+  );
+  
+  const abilityFeatures = monster.features.filter(feature => 
+    feature.category === 'Abilities' && !feature.isHidden && 
+    // Explicitly exclude multiattack features from abilities
+    !feature.isMultiattack && 
+    // Exclude basic spell features
+    !(feature.name.startsWith('Spell:') && feature.costMagicPoint)
+  );
+  
+
   return (
     <div className="preview-panel">
       <h2>Monster Features</h2>
@@ -125,18 +173,19 @@ const PreviewPanel = ({ monster, setMonster, setStep }) => {
         </div>
 
         <div className="preview-column">
-          <AbilitiesSection 
-            features={getFeaturesByCategory(monster.features, 'Abilities')}
-            setStep={setStep}
-            onDeleteFeature={handleDeleteFeature}
-            monster={monster} 
-          />
-          
-          <ActionsSection 
-            monster={monster}
-            setStep={setStep}
-            onDeleteFeature={handleDeleteFeature}
-          />
+        <AbilitiesSection 
+          features={abilityFeatures}
+          setStep={setStep}
+          onDeleteFeature={handleDeleteFeature}
+          monster={monster} 
+        />
+
+        <ActionsSection 
+          monster={monster}
+          setStep={setStep}
+          onDeleteFeature={handleDeleteFeature}
+          features={actionFeatures}
+        />
         </div>
       </div>
     </div>

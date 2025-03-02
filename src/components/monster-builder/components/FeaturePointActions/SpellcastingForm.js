@@ -89,17 +89,7 @@ export function SpellcastingForm({ onSubmit, availablePoints, monster, currentMa
     // Format the at-will spells list for display
     const atWillSpellNames = selectedBasicSpells.map(spell => spell.name);
     
-    // For each basic spell, create a separate feature that costs magic points
-    const basicSpellFeatures = selectedBasicSpells.map(spell => ({
-      name: `Spell: ${spell.name}`,
-      description: `The creature can cast ${spell.name} at will.`,
-      category: 'Abilities',
-      costMagicPoint: true, // This flag is used in ActionsFeatures to identify magic point features
-      magicPointCost: 1, // Each basic spell costs 1 magic point
-      isHidden: true // Don't show this as a separate feature in the UI
-    }));
-    
-    // Create the main spellcasting feature
+    // Create the main spellcasting feature that includes all basic spells directly
     const mainFeature = {
       name: 'Spellcasting',
       category: 'Abilities',
@@ -117,13 +107,22 @@ export function SpellcastingForm({ onSubmit, availablePoints, monster, currentMa
       }
     };
     
-    // Submit spellcasting feature first
+    // Submit main spellcasting feature first
     onSubmit(mainFeature);
     
-    // Then submit each individual spell feature to track magic point usage
-    basicSpellFeatures.forEach(feature => {
-      onSubmit(feature);
-    });
+    // Then submit one consolidated feature for all basic spells to track magic point usage
+    if (selectedBasicSpells.length > 0) {
+      const basicSpellsFeature = {
+        name: 'Basic Spells',
+        description: `The creature can cast these basic spells at will: ${atWillSpellNames.join(', ')}.`,
+        category: 'Abilities',
+        costMagicPoint: true, // This flag is used in ActionsFeatures to identify magic point features
+        magicPointCost: selectedBasicSpells.length, // Total cost for all basic spells
+        isHidden: true // Don't show this as a separate feature in the UI
+      };
+      
+      onSubmit(basicSpellsFeature);
+    }
   };
 
   return (
