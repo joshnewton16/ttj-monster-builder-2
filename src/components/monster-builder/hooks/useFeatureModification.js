@@ -40,7 +40,6 @@ export function useFeatureModification(monster, setMonster) {
         features: [...prev.features, newMultiattack]
       }));
     }
-    console.log('State after add:', monster);
   };
 
   const addSecondaryEffect = (attackName, effectType, effect) => {

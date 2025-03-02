@@ -5,6 +5,8 @@ import { Proficiencies } from './components/Proficiencies';
 import { ActionsFeatures } from './components/ActionsFeatures';
 import { FeaturePoints } from './components/FeaturePoints';
 import PreviewPanel from './components/PreviewPanel';
+import MarkdownExporter from './components/MarkdownExporter'; // Import markdown exporter
+import StatBlockImageExporter from './components/StatBlockImageExporter'; // Import image exporter
 
 const initialMonsterState = {
   name: '',
@@ -105,7 +107,7 @@ function MonsterBuilder() {
           maxWidth: '65%'
         }}>
           {stepContent()}
-          <div className="flex justify-start gap-32 mt-6 mb-4">
+          <div className="flex justify-start gap-4 mt-6 mb-4">
             <button
               className="nav-button prev-button"
               onClick={() => setStep(prev => Math.max(1, prev - 1))}
@@ -119,6 +121,9 @@ function MonsterBuilder() {
             >
               Next
             </button>
+            {/* Add Export buttons */}
+            <MarkdownExporter monster={monster} />
+            <StatBlockImageExporter monster={monster} />
           </div>
         </div>
         {step >= 2 && (

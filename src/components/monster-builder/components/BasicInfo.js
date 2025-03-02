@@ -33,7 +33,6 @@ export function BasicInfo({ monster, setMonster, onCRChange }) {
     
     // Get the CR from HP range
     const hpCR = hpMatches[0].cr;
-    console.log(acCR, hpCR)
     
     // Return the higher of the two CRs
     if (acCR !== hpCR) {

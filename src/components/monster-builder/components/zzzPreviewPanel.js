@@ -180,19 +180,10 @@ const PreviewPanel = ({ monster, setMonster, setStep }) => {
 
   const handleDeleteExpertise = (skill) => {
     setMonster(prev => {
-      console.log('Removing expertise for skill:', skill);
-      console.log('Current features:', prev.features);
-      
       return {
         ...prev,
         expertise: prev.expertise.filter(s => s !== skill),
         features: prev.features.filter(feature => {
-          // Add debug logging
-          if (feature.skillsModification) {
-            console.log('Checking feature:', feature);
-            console.log('Skill types:', feature.skillsModification.skillType);
-          }
-          
           return !(
             feature.skillsModification && 
             Array.isArray(feature.skillsModification.skillType) &&

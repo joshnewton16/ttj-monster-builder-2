@@ -1,6 +1,6 @@
 // Proficiencies.js
 import React from 'react';
-import { SRD_LANGUAGES, SRD_SKILLS } from '../constants/srd-data';
+import { SRD_LANGUAGES, SRD_SKILL_NAMES } from '../constants/srd-data';
 
 export function Proficiencies({ monster, setMonster }) {
   return (
@@ -12,7 +12,7 @@ export function Proficiencies({ monster, setMonster }) {
           Skills (Max: {monster.proficiencyBonus})
         </h3>
         <div className="proficiencies-grid">
-          {SRD_SKILLS.map(skill => (
+          {SRD_SKILL_NAMES.map(skill => (
             <div key={skill} className="proficiency-item">
               <input
                 type="checkbox"

@@ -104,10 +104,7 @@ export function FeaturePointActions({
 
   // Handler for action economy spells
   const handleActionEconomySpell = (spellData) => {
-    // Log information for debugging
-    console.log('Adding spell with magic point cost:', spellData.magicPointCost);
-    console.log('Current magic points before adding:', magicPoints);
-    
+   
     // Submit the spell feature
     onFeatureSubmit(spellData);
     

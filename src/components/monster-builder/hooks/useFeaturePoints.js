@@ -52,15 +52,12 @@ export function useFeaturePoints(monster) {
       points += 1;
     }
 
-    console.log(`Feature ${feature.name} using ${points} points (isFirst: ${feature.isFirst}, hasSecondary: ${!!feature.secondaryEffect}, modCost: ${!!feature.modificationCost})`);
     return total + points;
   }, 0);
 
   const hasFirstAction = monster.features.some(f => f.category === 'Actions' && f.isFirst);
   const hasFirstFeature = monster.features.some(f => f.category === 'Abilities' && f.isFirst);
   const availableFeaturePoints = totalFeaturePoints - usedFeaturePoints;
-
-  console.log(`Total Points: ${totalFeaturePoints}, Used Points: ${usedFeaturePoints}`);
 
   return {
     totalFeaturePoints,

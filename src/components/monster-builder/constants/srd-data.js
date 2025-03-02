@@ -8,10 +8,24 @@ export const SRD_LANGUAGES = [
 ];
 
 export const SRD_SKILLS = [
-  'Acrobatics', 'Animal Handling', 'Arcana', 'Athletics', 'Deception', 
-  'History', 'Insight', 'Intimidation', 'Investigation', 'Medicine', 
-  'Nature', 'Perception', 'Performance', 'Persuasion', 'Religion', 
-  'Sleight of Hand', 'Stealth', 'Survival'
+  { name: 'Acrobatics', ability: 'dex' },
+  { name: 'Animal Handling', ability: 'wis' },
+  { name: 'Arcana', ability: 'int' },
+  { name: 'Athletics', ability: 'str' },
+  { name: 'Deception', ability: 'cha' },
+  { name: 'History', ability: 'int' },
+  { name: 'Insight', ability: 'wis' },
+  { name: 'Intimidation', ability: 'cha' },
+  { name: 'Investigation', ability: 'int' },
+  { name: 'Medicine', ability: 'wis' },
+  { name: 'Nature', ability: 'int' },
+  { name: 'Perception', ability: 'wis' },
+  { name: 'Performance', ability: 'cha' },
+  { name: 'Persuasion', ability: 'cha' },
+  { name: 'Religion', ability: 'int' },
+  { name: 'Sleight of Hand', ability: 'dex' },
+  { name: 'Stealth', ability: 'dex' },
+  { name: 'Survival', ability: 'wis' }
 ];
 
 export const SRD_ACTIONS = [
@@ -200,3 +214,19 @@ export const CONDITIONS = [
     {"cr": 25, "level": 19},
     {"cr": 26, "level": 20}
   ]
+
+  // Helper function to find ability score for a skill
+export const getSkillAbility = (skillName) => {
+  if (!skillName) return 'wis'; // Default to wisdom if no skill name provided
+  
+  const normalized = skillName.toLowerCase().trim();
+  const skill = SRD_SKILLS.find(s => 
+    s.name.toLowerCase() === normalized || 
+    s.name.toLowerCase().replace(/\s+/g, '') === normalized.replace(/\s+/g, '')
+  );
+  
+  return skill ? skill.ability : 'wis'; // Default to wisdom if skill not found
+};
+
+// Get array of just skill names (for backward compatibility)
+export const SRD_SKILL_NAMES = SRD_SKILLS.map(skill => skill.name);

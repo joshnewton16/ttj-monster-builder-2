@@ -1,17 +1,17 @@
 // components/FeaturePointActions/SkillAction.js
 import React, { useState } from 'react';
-import { SRD_SKILLS } from '../../constants/srd-data'
+import { SRD_SKILL_NAMES } from '../../constants/srd-data'
 
 export function SkillAction({ monster, onSubmit, type }) {
   const [selectedSkills, setSelectedSkills] = useState([]);
 
   // For expertise, only show skills the monster is proficient in
   const availableSkills = type === 'expertise' 
-    ? SRD_SKILLS.filter(skill => 
+    ? SRD_SKILL_NAMES.filter(skill => 
         monster.skills.includes(skill) && 
         !monster.expertise?.includes(skill)
       )
-    : SRD_SKILLS.filter(skill => 
+    : SRD_SKILL_NAMES.filter(skill => 
         !monster.skills.includes(skill)
       );
 

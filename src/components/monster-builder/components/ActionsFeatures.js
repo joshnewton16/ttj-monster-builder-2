@@ -132,7 +132,6 @@ export function ActionsFeatures({ monster, setMonster }) {
         isHidden: true  // Add this flag to indicate it shouldn't be displayed
       };
 
-      console.log(monster);
       return {
         ...prev,
         speed: newSpeed,
@@ -165,8 +164,6 @@ export function ActionsFeatures({ monster, setMonster }) {
         isHidden: true  // Add this flag to indicate it shouldn't be displayed
       };
 
-      console.log(newFeature);
-      console.log('Before Add:',monster);
       if (type === 'expertise') {
         return {
           ...prev,
@@ -174,7 +171,6 @@ export function ActionsFeatures({ monster, setMonster }) {
           features: [...prev.features, newFeature]
         };
       } else {
-        console.log("enter else");
         const currentSkillCount = prev.skills.length;
         const willNeedFeaturePoint = currentSkillCount >= monster.proficiencyBonus;
 
@@ -196,7 +192,6 @@ export function ActionsFeatures({ monster, setMonster }) {
         };      
       }
     });
-    console.log('After Add:', monster);
   };
 
   const handleImmunityModify = (type, immunityType) => {
@@ -262,16 +257,11 @@ export function ActionsFeatures({ monster, setMonster }) {
       };
     });
   };
-
-  // Debug the current magic points state
-  console.log('Current magic points:', magicPoints);
   
   // Calculate the actual used magic points from features (for debugging)
   const actualUsedMagicPoints = monster.features
     .filter(f => f.costMagicPoint && f.magicPointCost)
     .reduce((total, feature) => total + (feature.magicPointCost || 0), 0);
-  
-  console.log('Actual used magic points from features:', actualUsedMagicPoints);
 
   return (
     <div className="space-y-1">
