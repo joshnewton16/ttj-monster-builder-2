@@ -26,31 +26,36 @@ export function DefenseModifications({
 
   return (
     <div className="space-y-2">
-      <select
-        className="w-full p-2 border rounded"
-        value={modificationType}
-        onChange={(e) => setModificationType(e.target.value)}
-      >
-        <option value="">Select Modification Type...</option>
-        <option value="damageImmunity">Damage Immunity (2 points)</option>
-        <option value="conditionImmunity">Condition Immunity</option>
-        <option value="resistance">Damage Resistance</option>
-      </select>
-
-      {modificationType && (
+      <div>
         <select
-          className="w-full p-2 border rounded"
-          value={selectedType}
-          onChange={(e) => setSelectedType(e.target.value)}
+          className="w-1/2 p-2 border rounded"
+          value={modificationType}
+          onChange={(e) => setModificationType(e.target.value)}
         >
-          <option value="">Select Type...</option>
-          {(modificationType === 'conditionImmunity' ? CONDITIONS : DAMAGE_TYPES).map(type => (
-            <option key={type} value={type}>
-              {type.charAt(0).toUpperCase() + type.slice(1)}
-            </option>
-          ))}
+          <option value="">Select Modification Type...</option>
+          <option value="damageImmunity">Damage Immunity (2 points)</option>
+          <option value="conditionImmunity">Condition Immunity</option>
+          <option value="resistance">Damage Resistance</option>
         </select>
-      )}
+      </div>
+      <div style={{ display: 'inline-block', width: '100%', marginBottom: '10px' }}>
+        {modificationType && (
+          
+            <select
+              className="w-1/2 p-2 border rounded"
+              value={selectedType}
+              onChange={(e) => setSelectedType(e.target.value)}
+            >
+              <option value="">Select Type...</option>
+              {(modificationType === 'conditionImmunity' ? CONDITIONS : DAMAGE_TYPES).map(type => (
+                <option key={type} value={type}>
+                  {type.charAt(0).toUpperCase() + type.slice(1)}
+                </option>
+              ))}
+            </select>
+          
+        )}
+      </div>
 
       <button
         onClick={handleSubmit}

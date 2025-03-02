@@ -34,6 +34,13 @@ const initialMonsterState = {
   features: []
 };
 
+// CSS styles should be added to your application's CSS file
+// .monster-builder {
+//   max-width: 1400px; /* Increased from default */
+//   width: 95%;
+//   margin: 0 auto;
+// }
+
 function MonsterBuilder() {
   const [step, setStep] = useState(1);
   const [availablePoints, setAvailablePoints] = useState(10);
@@ -85,36 +92,58 @@ function MonsterBuilder() {
       }
     };
 
-    // Only show the preview panel in steps 4 and 5
+    // Only show the preview panel in steps 2 and higher
     return (
-      <div className={step >= 2 ? 'actions-features-container' : ''}>
-        <div className={step >= 2 ? 'selection-panel' : ''}>
+      <div className={step >= 2 ? 'actions-features-container' : ''} style={{ 
+          display: step >= 2 ? 'flex' : 'block',
+          width: '100%',
+          gap: '20px',
+          justifyContent: 'space-between'
+        }}>
+        <div className={step >= 2 ? 'selection-panel' : ''} style={{ 
+          flex: '1 1 65%', 
+          maxWidth: '65%'
+        }}>
           {stepContent()}
+          <div className="flex justify-start gap-32 mt-6 mb-4">
+            <button
+              className="nav-button prev-button"
+              onClick={() => setStep(prev => Math.max(1, prev - 1))}
+              disabled={step === 1}
+            >
+              Previous
+            </button>
+            <button
+              className="nav-button next-button"
+              onClick={() => setStep(prev => Math.min(5, prev + 1))}
+            >
+              Next
+            </button>
+          </div>
         </div>
-        {step >= 2 && <PreviewPanel monster={monster} setMonster={setMonster} setStep={setStep}/>}
+        {step >= 2 && (
+          <div className="preview-container" style={{ 
+            flex: '1 1 35%',
+            height: 'calc(100vh - 120px)', 
+            overflowY: 'auto',
+            position: 'sticky',
+            top: '20px',
+            borderLeft: '1px solid #e5e7eb',
+            paddingLeft: '20px',
+            marginBottom: '20px',
+            boxSizing: 'border-box'
+          }}>
+            <PreviewPanel monster={monster} setMonster={setMonster} setStep={setStep}/>
+          </div>
+        )}
       </div>
     );
   }
 
   return (
-    <div className="monster-builder">
-      <div className="space-y-6">
+    <div className="monster-builder" style={{ maxWidth: '1400px', width: '90%', margin: '0 auto' }}>
+      <div className="space-y-6" style={{ width: '100%' }}>
         {renderStep()}
-        <div className="flex justify-start gap-32 mt-1">
-          <button
-            className="nav-button prev-button"
-            onClick={() => setStep(prev => Math.max(1, prev - 1))}
-            disabled={step === 1}
-          >
-            Previous
-          </button>
-          <button
-            className="nav-button next-button"
-            onClick={() => setStep(prev => Math.min(5, prev + 1))}
-          >
-            Next
-          </button>
-        </div>
       </div>
     </div>
   );

@@ -34,49 +34,52 @@ export function MovementAction({ existingMovement, monster, onSubmit }) {
 
   return (
     <div className="space-y-2">
-      <select
-        className="w-full p-2 border rounded"
-        value={modificationType}
-        onChange={(e) => setModificationType(e.target.value)}
-      >
-        <option value="">Select Modification Type...</option>
-        <option value="new">Add New Movement Type</option>
-        <option value="increase">Increase Existing Speed</option>
-      </select>
-
-      {modificationType === 'new' && availableMovementTypes.length > 0 && (
+      <div>
         <select
-          className="w-full p-2 border rounded"
-          value={selectedSpeed}
-          onChange={(e) => setSelectedSpeed(e.target.value)}
+          className="w-1/2 p-2 border rounded"
+          value={modificationType}
+          onChange={(e) => setModificationType(e.target.value)}
         >
-          <option value="">Select Movement Type...</option>
-          {availableMovementTypes.map((type) => (
-            <option key={type} value={type}>
-              {type} (Will be set to {baseSpeed}ft)
-            </option>
-          ))}
+          <option value="">Select Modification Type...</option>
+          <option value="new">Add New Movement Type</option>
+          <option value="increase">Increase Existing Speed</option>
         </select>
-      )}
-
-      {modificationType === 'increase' && existingMovementTypes.length > 0 && (
-        <select
-          className="w-full p-2 border rounded"
-          value={selectedSpeed}
-          onChange={(e) => setSelectedSpeed(e.target.value)}
-        >
-          <option value="">Select Movement Type...</option>
-          {existingMovementTypes.map((type) => {
-            const currentSpeed = existingMovement.find(s => s.type === type).value;
-            return (
+      </div>
+      <div>
+        {modificationType === 'new' && availableMovementTypes.length > 0 && (
+          <select
+            className="w-1/2 p-2 border rounded"
+            value={selectedSpeed}
+            onChange={(e) => setSelectedSpeed(e.target.value)}
+          >
+            <option value="">Select Movement Type...</option>
+            {availableMovementTypes.map((type) => (
               <option key={type} value={type}>
-                {type} (Currently {currentSpeed}ft, will increase by 10ft)
+                {type} (Will be set to {baseSpeed}ft)
               </option>
-            );
-          })}
-        </select>
-      )}
-
+            ))}
+          </select>
+        )}
+      </div>
+      <div>       
+        {modificationType === 'increase' && existingMovementTypes.length > 0 && (
+          <select
+            className="w-1/2 p-2 border rounded"
+            value={selectedSpeed}
+            onChange={(e) => setSelectedSpeed(e.target.value)}
+          >
+            <option value="">Select Movement Type...</option>
+            {existingMovementTypes.map((type) => {
+              const currentSpeed = existingMovement.find(s => s.type === type).value;
+              return (
+                <option key={type} value={type}>
+                  {type} (Currently {currentSpeed}ft, will increase by 10ft)
+                </option>
+              );
+            })}
+          </select>
+        )}
+      </div> 
       <button
         onClick={handleSubmit}
         disabled={!modificationType || !selectedSpeed}

@@ -110,37 +110,39 @@ export function BaseActionForm({
           </button>
         </div>
       )}
-
-      <select 
-        className="w-full p-2 border rounded"
-        onChange={handleActionSelect}
-        value=""
-      >
-        <option value="">
-          {isLegendary ? 'Select a Legendary Action Template...' : 'Select an Action Template...'}
-        </option>
-        {(isLegendary ? legendaryActions : SRD_ACTIONS).map((action, index) => (
-          <option key={index} value={index}>
-            {action.name}
+      <div>
+        <select 
+          className="w-1/2 p-2 border rounded"
+          onChange={handleActionSelect}
+          value=""
+        >
+          <option value="">
+            {isLegendary ? 'Select a Legendary Action Template...' : 'Select an Action Template...'}
           </option>
-        ))}
-      </select>
-
-      <input
-        type="text"
-        value={actionTitle}
-        onChange={(e) => setActionTitle(e.target.value)}
-        placeholder={isLegendary ? "Legendary Action Title" : "Action Title"}
-        className="w-full p-2 border rounded"
-      />
-
-      <textarea
-        value={actionDescription}
-        onChange={(e) => setActionDescription(e.target.value)}
-        placeholder={isLegendary ? "Legendary Action Description" : "Action Description"}
-        className="w-full p-2 border rounded h-16"
-      />
-
+          {(isLegendary ? legendaryActions : SRD_ACTIONS).map((action, index) => (
+            <option key={index} value={index}>
+              {action.name}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div>
+        <input
+          type="text"
+          value={actionTitle}
+          onChange={(e) => setActionTitle(e.target.value)}
+          placeholder={isLegendary ? "Legendary Action Title" : "Action Title"}
+          className="w-1/2 p-2 border rounded"
+        />
+      </div>
+      <div>
+        <textarea
+          value={actionDescription}
+          onChange={(e) => setActionDescription(e.target.value)}
+          placeholder={isLegendary ? "Legendary Action Description" : "Action Description"}
+          className="w-1/2 p-2 border rounded h-16"
+        />
+      </div>
       <button 
         onClick={handleSubmit}
         disabled={!actionTitle || !actionDescription || availablePoints < (isLegendary ? 2 : 1)}

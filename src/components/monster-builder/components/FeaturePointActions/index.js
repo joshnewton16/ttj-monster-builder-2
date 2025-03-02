@@ -256,7 +256,7 @@ export function FeaturePointActions({
       </div>
       
       <select 
-        className="w-full p-2 border rounded"
+        className="w-1/2 p-2 border rounded"
         value={selectedAction}
         onChange={(e) => setSelectedAction(e.target.value)}
       >

@@ -48,7 +48,7 @@ code {
 
 .attributes-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(100px, 200px));
   gap: 4px;
 }
 
@@ -80,7 +80,7 @@ code {
 
 .proficiencies-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;  /* Creates two equal columns */
+  grid-template-columns: repeat(2, minmax(100px, 200px));
   column-gap: 20px;
   /*row-gap: 8px; */
 }
@@ -108,7 +108,6 @@ code {
 }
 
 .preview-panel {
-  width: 50%;
   border-left: 1px solid #ccc;
   padding-left: 20px;
 }

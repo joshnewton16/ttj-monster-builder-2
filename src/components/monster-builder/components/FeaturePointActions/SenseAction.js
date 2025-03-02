@@ -14,18 +14,19 @@ export function SenseAction({ onSubmit, availablePoints }) {
 
   return (
     <div className="space-y-2">
-      <select
-        className="w-full p-2 border rounded"
-        value={selectedSense}
-        onChange={(e) => setSelectedSense(e.target.value)}
-      >
-        <option value="">Select Sense Type...</option>
-        <option value="blindsight">Blindsight (20 ft.)</option>
-        <option value="darkvision">Darkvision (20 ft.)</option>
-        <option value="tremorsense">Tremorsense (20 ft.)</option>
-        <option value="truesight">Truesight (10 ft.)</option>
-      </select>
-
+      <div>
+        <select
+          className="w-1/2 p-2 border rounded"
+          value={selectedSense}
+          onChange={(e) => setSelectedSense(e.target.value)}
+        >
+          <option value="">Select Sense Type...</option>
+          <option value="blindsight">Blindsight (20 ft.)</option>
+          <option value="darkvision">Darkvision (20 ft.)</option>
+          <option value="tremorsense">Tremorsense (20 ft.)</option>
+          <option value="truesight">Truesight (10 ft.)</option>
+        </select>
+      </div>
       <button
         onClick={handleSubmit}
         disabled={!selectedSense || availablePoints < 1}

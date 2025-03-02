@@ -108,7 +108,7 @@ export function FeaturePoints({ monster, setMonster }) {
               <div className="form-section">
                 <h3>Select Action</h3>
                 <select
-                  className="w-full p-2 border rounded"
+                  className="w-1/2 p-2 border rounded"
                   value={selectedAction}
                   onChange={e => {
                     const actionName = e.target.value;

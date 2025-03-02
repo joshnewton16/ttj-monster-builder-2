@@ -134,16 +134,18 @@ export function SpellcastingForm({ onSubmit, availablePoints, monster, currentMa
         <label className="block text-sm font-medium mb-1">
           Spellcasting Ability
         </label>
-        <select
-          className="w-full p-2 border rounded"
-          value={spellcastingAbility}
-          onChange={(e) => setSpellcastingAbility(e.target.value)}
-        >
-          <option value="">Select Ability...</option>
-          <option value="Intelligence">Intelligence</option>
-          <option value="Wisdom">Wisdom</option>
-          <option value="Charisma">Charisma</option>
-        </select>
+        <div>
+          <select
+            className="w-1/2 p-2 border rounded"
+            value={spellcastingAbility}
+            onChange={(e) => setSpellcastingAbility(e.target.value)}
+          >
+            <option value="">Select Ability...</option>
+            <option value="Intelligence">Intelligence</option>
+            <option value="Wisdom">Wisdom</option>
+            <option value="Charisma">Charisma</option>
+          </select>
+        </div>
       </div>
 
       {/* Magic Points Info */}
@@ -175,19 +177,21 @@ export function SpellcastingForm({ onSubmit, availablePoints, monster, currentMa
         <label className="block text-sm font-medium mb-1">
           Spell Level Filter
         </label>
-        <select
-          className="w-full p-2 border rounded"
-          value={levelFilter}
-          onChange={(e) => setLevelFilter(e.target.value)}
-        >
-          <option value="all">All Levels</option>
-          <option value="0">Cantrips (Level 0)</option>
-          {[...Array(Math.floor(spellcastingStats.casterLevel / 2))].map((_, i) => (
-            <option key={i + 1} value={i + 1}>
-              Level {i + 1}
-            </option>
-          ))}
-        </select>
+        <div>
+          <select
+            className="w-1/2 p-2 border rounded"
+            value={levelFilter}
+            onChange={(e) => setLevelFilter(e.target.value)}
+          >
+            <option value="all">All Levels</option>
+            <option value="0">Cantrips (Level 0)</option>
+            {[...Array(Math.floor(spellcastingStats.casterLevel / 2))].map((_, i) => (
+              <option key={i + 1} value={i + 1}>
+                Level {i + 1}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {/* Basic Spell Selection */}
@@ -195,19 +199,21 @@ export function SpellcastingForm({ onSubmit, availablePoints, monster, currentMa
         <label className="block text-sm font-medium mb-1">
           Select Basic Spells (At Will)
         </label>
-        <select
-          className="w-full p-2 border rounded"
-          onChange={handleBasicSpellSelect}
-          value=""
-          disabled={availableMagicPoints <= 0}
-        >
-          <option value="">Select a Basic Spell...</option>
-          {availableBasicSpells.map((spell) => (
-            <option key={spell.name} value={spell.name}>
-              {spell.name} (Level {spell.level})
-            </option>
-          ))}
-        </select>
+        <div>
+          <select
+            className="w-1/2 p-2 border rounded"
+            onChange={handleBasicSpellSelect}
+            value=""
+            disabled={availableMagicPoints <= 0}
+          >
+            <option value="">Select a Basic Spell...</option>
+            {availableBasicSpells.map((spell) => (
+              <option key={spell.name} value={spell.name}>
+                {spell.name} (Level {spell.level})
+              </option>
+            ))}
+          </select>
+        </div>
         <p className="text-xs text-gray-500 mt-1">
           Basic spells are utility spells with no combat effects. Each costs 1 magic point.
         </p>

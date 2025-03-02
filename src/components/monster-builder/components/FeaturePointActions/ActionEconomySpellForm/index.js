@@ -376,22 +376,24 @@ export function ActionEconomySpellForm({ onSubmit, availablePoints, monster, mag
         <label className="block text-sm font-medium mb-1">
           Recharge Option
         </label>
-        <select
-          className="w-full p-2 border rounded"
-          value={rechargeOption}
-          onChange={(e) => setRechargeOption(e.target.value)}
-          disabled={atRechargeLimit || atActionEconomySpellLimit}
-        >
-          {RECHARGE_OPTIONS.map((option) => (
-            <option 
-              key={option.value} 
-              value={option.value}
-              disabled={option.value !== 'none' && atRechargeLimit}
-            >
-              {option.label} ({option.mpValue > 0 ? `-${option.mpValue} MP` : 'No discount'})
-            </option>
-          ))}
-        </select>
+        <div>
+          <select
+            className="w-1/2 p-2 border rounded"
+            value={rechargeOption}
+            onChange={(e) => setRechargeOption(e.target.value)}
+            disabled={atRechargeLimit || atActionEconomySpellLimit}
+          >
+            {RECHARGE_OPTIONS.map((option) => (
+              <option
+                key={option.value}
+                value={option.value}
+                disabled={option.value !== 'none' && atRechargeLimit}
+              >
+                {option.label} ({option.mpValue > 0 ? `-${option.mpValue} MP` : 'No discount'})
+              </option>
+            ))}
+          </select>
+        </div>
         {rechargeOption !== 'none' && (
           <p className="text-xs text-gray-500 mt-1">
             Reduces magic point cost by {selectedRecharge.mpValue} (minimum cost of 1 MP)
@@ -409,14 +411,16 @@ export function ActionEconomySpellForm({ onSubmit, availablePoints, monster, mag
         <label className="block text-sm font-medium mb-1">
           Additional Description (Optional)
         </label>
-        <textarea
-          className="w-full p-2 border rounded"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          rows="3"
-          placeholder="Add any additional spell effects or details"
-          disabled={atActionEconomySpellLimit}
-        />
+        <div>
+          <textarea
+            className="w-1/2 p-2 border rounded"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            rows="3"
+            placeholder="Add any additional spell effects or details"
+            disabled={atActionEconomySpellLimit}
+          />
+        </div>
       </div>
 
       {/* Spell Preview */}

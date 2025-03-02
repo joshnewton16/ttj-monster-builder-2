@@ -11,21 +11,22 @@ export function DoubleDamageAction({ existingAttacks, onSubmit }) {
 
   return (
     <div className="space-y-2">
-      <select
-        className="w-full p-2 border rounded"
-        value={selectedAttack}
-        onChange={(e) => setSelectedAttack(e.target.value)}
-      >
-        <option value="">Select Attack to Double Damage...</option>
-        {existingAttacks
-          .filter(attack => !attack.doubleDamage)
-          .map((attack, index) => (
-            <option key={index} value={attack.name}>
-              {attack.name}
-            </option>
-          ))}
-      </select>
-
+      <div>
+        <select
+          className="w-1/2 p-2 border rounded"
+          value={selectedAttack}
+          onChange={(e) => setSelectedAttack(e.target.value)}
+        >
+          <option value="">Select Attack to Double Damage...</option>
+          {existingAttacks
+            .filter(attack => !attack.doubleDamage)
+            .map((attack, index) => (
+              <option key={index} value={attack.name}>
+                {attack.name}
+              </option>
+            ))}
+        </select>
+      </div>
       <button
         onClick={handleSubmit}
         disabled={!selectedAttack}

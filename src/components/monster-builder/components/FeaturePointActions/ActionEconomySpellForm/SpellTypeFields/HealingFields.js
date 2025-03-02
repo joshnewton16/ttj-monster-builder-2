@@ -12,7 +12,7 @@ const HealingFields = ({
         Healing Amount
       </label>
       <select
-        className="w-full p-2 border rounded"
+        className="w-1/2 p-2 border rounded"
         value={healingDice}
         onChange={(e) => setHealingDice(parseInt(e.target.value))}
         disabled={disabled}

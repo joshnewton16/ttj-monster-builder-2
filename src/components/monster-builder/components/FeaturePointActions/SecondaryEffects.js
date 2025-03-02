@@ -23,59 +23,63 @@ export function SecondaryEffects({
 
   return (
     <div className="space-y-2">
-      <select
-        className="w-full p-2 border rounded"
-        value={effectType}
-        onChange={(e) => setEffectType(e.target.value)}
-      >
-        <option value="">Select Effect Type...</option>
-        <option value="damage">Secondary Damage</option>
-        <option value="condition">Add Condition</option>
-      </select>
-
-      <select
-        className="w-full p-2 border rounded"
-        value={selectedAttack}
-        onChange={(e) => setSelectedAttack(e.target.value)}
-      >
-        <option value="">Select Attack to Modify...</option>
-        {existingAttacks.map((attack, index) => (
-          <option key={index} value={attack.name}>
-            {attack.name}
-          </option>
-        ))}
-      </select>
-
-      {effectType === 'damage' && (
+      <div>
         <select
-          className="w-full p-2 border rounded"
-          value={effect}
-          onChange={(e) => setEffect(e.target.value)}
+          className="w-1/2 p-2 border rounded"
+          value={effectType}
+          onChange={(e) => setEffectType(e.target.value)}
         >
-          <option value="">Select Secondary Damage Type...</option>
-          {DAMAGE_TYPES.map(type => (
-            <option key={type} value={type}>
-              {type.charAt(0).toUpperCase() + type.slice(1)}
+          <option value="">Select Effect Type...</option>
+          <option value="damage">Secondary Damage</option>
+          <option value="condition">Add Condition</option>
+        </select>
+      </div>
+      <div>
+        <select
+          className="w-1/2 p-2 border rounded"
+          value={selectedAttack}
+          onChange={(e) => setSelectedAttack(e.target.value)}
+        >
+          <option value="">Select Attack to Modify...</option>
+          {existingAttacks.map((attack, index) => (
+            <option key={index} value={attack.name}>
+              {attack.name}
             </option>
           ))}
         </select>
-      )}
-
-      {effectType === 'condition' && (
-        <select
-          className="w-full p-2 border rounded"
-          value={effect}
-          onChange={(e) => setEffect(e.target.value)}
-        >
-          <option value="">Select Condition...</option>
-          {CONDITIONS.map(condition => (
-            <option key={condition} value={condition}>
-              {condition.charAt(0).toUpperCase() + condition.slice(1)}
-            </option>
-          ))}
-        </select>
-      )}
-
+      </div>
+      <div>
+        {effectType === 'damage' && (
+          <select
+            className="w-1/2 p-2 border rounded"
+            value={effect}
+            onChange={(e) => setEffect(e.target.value)}
+          >
+            <option value="">Select Secondary Damage Type...</option>
+            {DAMAGE_TYPES.map(type => (
+              <option key={type} value={type}>
+                {type.charAt(0).toUpperCase() + type.slice(1)}
+              </option>
+            ))}
+          </select>
+        )}
+      </div>
+      <div>
+        {effectType === 'condition' && (
+          <select
+            className="w-1/2 p-2 border rounded"
+            value={effect}
+            onChange={(e) => setEffect(e.target.value)}
+          >
+            <option value="">Select Condition...</option>
+            {CONDITIONS.map(condition => (
+              <option key={condition} value={condition}>
+                {condition.charAt(0).toUpperCase() + condition.slice(1)}
+              </option>
+            ))}
+          </select>
+        )}
+      </div>
       <button
         onClick={handleSubmit}
         disabled={!selectedAttack || !effectType || !effect || availablePoints <= 0}

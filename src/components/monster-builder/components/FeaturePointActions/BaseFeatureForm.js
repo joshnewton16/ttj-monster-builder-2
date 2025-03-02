@@ -32,33 +32,37 @@ export function BaseFeatureForm({ onSubmit, availablePoints, hasFirstFeature }) 
   return (
     <div className="space-y-2">
       <h3 className="font-semibold">Feature</h3>
-      <select 
-        className="w-full p-2 border rounded"
-        onChange={handleFeatureSelect}
-        value=""
-      >
-        <option value="">Select a Feature Template...</option>
-        {SRD_FEATURES.map((feature, index) => (
-          <option key={index} value={index}>
-            {feature.name}
-          </option>
-        ))}
-      </select>
-
-      <input
-        type="text"
-        value={featureTitle}
-        onChange={(e) => setFeatureTitle(e.target.value)}
-        placeholder="Feature Title"
-        className="w-full p-2 border rounded"
-      />
-
-      <textarea
-        value={featureDescription}
-        onChange={(e) => setFeatureDescription(e.target.value)}
-        placeholder="Feature Description"
-        className="w-full p-2 border rounded h-16"
-      />
+      <div>
+        <select 
+          className="w-1/2 p-2 border rounded"
+          onChange={handleFeatureSelect}
+          value=""
+        >
+          <option value="">Select a Feature Template...</option>
+          {SRD_FEATURES.map((feature, index) => (
+            <option key={index} value={index}>
+              {feature.name}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div>
+        <input
+          type="text"
+          value={featureTitle}
+          onChange={(e) => setFeatureTitle(e.target.value)}
+          placeholder="Feature Title"
+          className="w-1/2 p-2 border rounded"
+        />
+      </div>
+      <div>
+        <textarea
+          value={featureDescription}
+          onChange={(e) => setFeatureDescription(e.target.value)}
+          placeholder="Feature Description"
+          className="w-1/2 p-2 border rounded h-16"
+        />
+      </div>
 
       <button 
         onClick={handleSubmit}
