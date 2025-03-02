@@ -3524,7 +3524,7 @@ export const FULL_SPELL_LIST = [
         "causes_damage": false,
         "prevents_damage": false,
         "provides_healing": false,
-        "controls_creatures": true,
+        "controls_creatures": false,
         "movement_enhancement": false
     },
     {

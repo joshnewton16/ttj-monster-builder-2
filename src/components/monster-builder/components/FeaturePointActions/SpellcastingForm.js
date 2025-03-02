@@ -32,15 +32,16 @@ export function SpellcastingForm({ onSubmit, availablePoints, monster, currentMa
   const availableMagicPoints = useMemo(() => {
     // If we already have magic points, use those values
     if (currentMagicPoints && currentMagicPoints.total > 0) {
-      return currentMagicPoints.total - currentMagicPoints.used;
+      return currentMagicPoints.total - currentMagicPoints.used - selectedBasicSpells.length;
     }
-    // Otherwise, calculate from scratch based on selectedBasicSpells
+    // Otherwise, calculate from scratch
     return spellcastingStats.magicPoints - selectedBasicSpells.length;
   }, [currentMagicPoints, spellcastingStats.magicPoints, selectedBasicSpells.length]);
 
-  // Filter only for basic spells (no flags)
-  const basicSpells = useMemo(() => {
+  // Filter only for basic spells (no flags) and exclude already selected spells
+  const availableBasicSpells = useMemo(() => {
     const maxSpellLevel = Math.floor(spellcastingStats.casterLevel / 2);
+    const selectedSpellNames = selectedBasicSpells.map(spell => spell.name);
     
     return FULL_SPELL_LIST.filter(spell => {
       // Check spell level against caster level first
@@ -48,6 +49,10 @@ export function SpellcastingForm({ onSubmit, availablePoints, monster, currentMa
         return false;
       }
 
+      // Exclude already selected spells
+      if (selectedSpellNames.includes(spell.name)) {
+        return false;
+      }
 
       // Level filter
       if (levelFilter !== 'all' && spell.level !== parseInt(levelFilter)) {
@@ -61,7 +66,7 @@ export function SpellcastingForm({ onSubmit, availablePoints, monster, currentMa
              !spell.controls_creatures && 
              !spell.movement_enhancement;
     });
-  }, [levelFilter, spellcastingStats.casterLevel]);
+  }, [levelFilter, spellcastingStats.casterLevel, selectedBasicSpells]);
 
   const handleBasicSpellSelect = (e) => {
     const selectedSpellName = e.target.value;
@@ -69,7 +74,7 @@ export function SpellcastingForm({ onSubmit, availablePoints, monster, currentMa
     
     const selectedSpell = FULL_SPELL_LIST.find(spell => spell.name === selectedSpellName);
     
-    if (selectedSpell && !selectedBasicSpells.some(s => s.name === selectedSpell.name) && availableMagicPoints > 0) {
+    if (selectedSpell && availableMagicPoints > 0) {
       setSelectedBasicSpells([...selectedBasicSpells, selectedSpell]);
     }
   };
@@ -84,7 +89,18 @@ export function SpellcastingForm({ onSubmit, availablePoints, monster, currentMa
     // Format the at-will spells list for display
     const atWillSpellNames = selectedBasicSpells.map(spell => spell.name);
     
-    const newFeature = {
+    // For each basic spell, create a separate feature that costs magic points
+    const basicSpellFeatures = selectedBasicSpells.map(spell => ({
+      name: `Spell: ${spell.name}`,
+      description: `The creature can cast ${spell.name} at will.`,
+      category: 'Abilities',
+      costMagicPoint: true, // This flag is used in ActionsFeatures to identify magic point features
+      magicPointCost: 1, // Each basic spell costs 1 magic point
+      isHidden: true // Don't show this as a separate feature in the UI
+    }));
+    
+    // Create the main spellcasting feature
+    const mainFeature = {
       name: 'Spellcasting',
       category: 'Abilities',
       description: `The creature is a ${spellcastingStats.casterLevel}th-level spellcaster. Its spellcasting ability is ${spellcastingAbility}. ${
@@ -93,15 +109,21 @@ export function SpellcastingForm({ onSubmit, availablePoints, monster, currentMa
       costFeaturePoint: true,
       featurePointCost: 2,
       magicPointsTotal: spellcastingStats.magicPoints,
-      magicPointsUsed: selectedBasicSpells.length, // Each basic spell costs 1 magic point
+      magicPointsUsed: 0, // The individual spell features track this instead
       spellcasting: {
         ability: spellcastingAbility,
         level: spellcastingStats.casterLevel,
         atWillSpells: atWillSpellNames
       }
     };
-
-    onSubmit(newFeature);
+    
+    // Submit spellcasting feature first
+    onSubmit(mainFeature);
+    
+    // Then submit each individual spell feature to track magic point usage
+    basicSpellFeatures.forEach(feature => {
+      onSubmit(feature);
+    });
   };
 
   return (
@@ -131,14 +153,16 @@ export function SpellcastingForm({ onSubmit, availablePoints, monster, currentMa
         <p className="text-sm text-blue-600">
           {currentMagicPoints && currentMagicPoints.total > 0 ? (
             <>
-              Available: {currentMagicPoints.total - currentMagicPoints.used} / {currentMagicPoints.total}
-              <span className="text-gray-500 ml-2">({selectedBasicSpells.length} will be used)</span>
+              Total: {currentMagicPoints.total} | 
+              Already Used: {currentMagicPoints.used} | 
+              New Usage: {selectedBasicSpells.length} | 
+              Will Remain: {availableMagicPoints}
             </>
           ) : (
             <>
               Total: {spellcastingStats.magicPoints} | 
               Used: {selectedBasicSpells.length} | 
-              Available: {spellcastingStats.magicPoints - selectedBasicSpells.length}
+              Available: {availableMagicPoints}
             </>
           )}
         </p>
@@ -179,9 +203,8 @@ export function SpellcastingForm({ onSubmit, availablePoints, monster, currentMa
           disabled={availableMagicPoints <= 0}
         >
           <option value="">Select a Basic Spell...</option>
-          {basicSpells.map((spell) => (
+          {availableBasicSpells.map((spell) => (
             <option key={spell.name} value={spell.name}>
-              {spell.name} (Level {spell.level})
               {spell.name} (Level {spell.level})
             </option>
           ))}
