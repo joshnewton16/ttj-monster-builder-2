@@ -89,11 +89,21 @@ export function FeaturePointActions({
   };
 
   const handleDefenseModify = (modificationType, type) => {
+    console.log('handleDefenseModify called with:', modificationType, type);
+    
     if (modificationType === 'resistance') {
+      console.log('Calling onResistanceModify with:', type);
       onResistanceModify(type);
+    } else if (modificationType === 'damageImmunity') {
+      console.log('Calling onImmunityModify with type damage and:', type);
+      onImmunityModify('damage', type);
+    } else if (modificationType === 'conditionImmunity') {
+      console.log('Calling onImmunityModify with type condition and:', type);
+      onImmunityModify('condition', type);
     } else {
-      onImmunityModify(modificationType === 'damageImmunity' ? 'damage' : 'condition', type);
+      console.log('WARNING: No matching modification type:', modificationType);
     }
+    console.log(monster);
     setSelectedAction('');
   };
 
@@ -216,6 +226,7 @@ export function FeaturePointActions({
       case 'defense':
         return (
           <DefenseModifications
+            monster={monster} 
             onSubmit={handleDefenseModify}
             availablePoints={availablePoints}
           />
