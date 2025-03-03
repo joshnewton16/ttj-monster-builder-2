@@ -24,17 +24,17 @@ export function BasicInfo({ monster, setMonster, onCRChange }) {
       hp >= entry.minHP && hp <= entry.maxHP
     );
     
-    if (!acMatches.length || !hpMatches.length) {
-      return null;
+    if (!acMatches.length) {
+      return 0; // Default to 0 if no AC matches
     }
     
     // Get the highest CR from AC matches
     const acCR = Math.max(...acMatches.map(entry => entry.cr));
     
-    // Get the CR from HP range
-    const hpCR = hpMatches[0].cr;
+    // Get the CR from HP range (default to 0 if no matches)
+    const hpCR = hpMatches.length > 0 ? hpMatches[0].cr : 0;
     
-    // Return the higher of the two CRs
+    // Always average the two values, even if hpCR is 0
     if (acCR !== hpCR) {
       return Math.round((acCR + hpCR) / 2);
     }
@@ -98,6 +98,7 @@ export function BasicInfo({ monster, setMonster, onCRChange }) {
 
   // Update CR when AC and HP change
   useEffect(() => {
+    console.log(monster.hp)
     const newCR = calculateCR(monster.ac, monster.hp);
     if (newCR !== monster.cr) {  // Only update if CR actually changed
       onCRChange(newCR);
