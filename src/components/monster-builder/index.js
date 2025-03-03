@@ -47,23 +47,31 @@ function MonsterBuilder() {
   const [step, setStep] = useState(1);
   const [availablePoints, setAvailablePoints] = useState(10);
   const [monster, setMonster] = useState(initialMonsterState);
+  const [maxPointsForCR, setMaxPointsForCR] = useState(10);
 
-  function handleCRChange(newCR) {
-    const profBonus = Math.floor((newCR - 1) / 4) + 2;
-    let attrPoints = 10;
-    if (newCR >= 2 && newCR <= 5) attrPoints = 20;
-    if (newCR >= 6 && newCR <= 8) attrPoints = 30;
-    if (newCR >= 9 && newCR <= 12) attrPoints = 40;
-    if (newCR >= 13 && newCR <= 15) attrPoints = 50;
-    if (newCR > 15) attrPoints = 60;
-    
-    setMonster(prev => ({
-      ...prev,
-      cr: newCR,
-      proficiencyBonus: profBonus
-    }));
-    setAvailablePoints(attrPoints);
-  }
+// In your parent component where CR is changed, modify the handleCRChange function
+
+function handleCRChange(newCR) {
+  const profBonus = Math.floor((newCR - 1) / 4) + 2;
+  
+  // Calculate max attribute points based on CR
+  let maxAttrPoints = 10;
+  if (newCR >= 2 && newCR <= 5) maxAttrPoints = 20;
+  if (newCR >= 6 && newCR <= 8) maxAttrPoints = 30;
+  if (newCR >= 9 && newCR <= 12) maxAttrPoints = 40;
+  if (newCR >= 13 && newCR <= 15) maxAttrPoints = 50;
+  if (newCR > 15) maxAttrPoints = 60;
+  
+  // Update the monster's CR and proficiency bonus
+  setMonster(prev => ({
+    ...prev,
+    cr: newCR,
+    proficiencyBonus: profBonus
+  }));
+  
+  // Store the maxAttrPoints in state to pass to the Attributes component
+  setMaxPointsForCR(maxAttrPoints);
+}
 
   function renderStep() {
     const stepContent = () => {
@@ -79,6 +87,7 @@ function MonsterBuilder() {
               setMonster={setMonster}
               availablePoints={availablePoints}
               setAvailablePoints={setAvailablePoints}
+              maxPointsForCR={maxPointsForCR}
             />
           );
         case 3:

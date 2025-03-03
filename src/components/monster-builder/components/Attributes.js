@@ -1,19 +1,27 @@
-// Attributes.js
 import React from 'react';
 
-export function Attributes({ monster, setMonster, availablePoints, setAvailablePoints }) {
-  // Calculate total available points including feature points
-  const totalAvailablePoints = availablePoints + (monster.attributePointsFromFeatures || 0);
+export function Attributes({ monster, setMonster, availablePoints, setAvailablePoints, maxPointsForCR }) {
+  // Calculate spent points (how many points above base value 8 have been spent)
+  const calculateSpentPoints = () => {
+    return Object.values(monster.attributes).reduce((total, value) => {
+      return total + (value - 8); // 8 is the base attribute value
+    }, 0);
+  };
+
+  // Calculate total spent and available
+  const spentPoints = calculateSpentPoints();
+  const featurePoints = monster.attributePointsFromFeatures || 0;
+  const totalAvailable = maxPointsForCR + featurePoints - spentPoints;
 
   function handleAttributeChange(attr, value) {
-    if (value >= 4 && value <= 20) {
+    if (value >= 8 && value <= 20) {
       const diff = value - monster.attributes[attr];
-      if (totalAvailablePoints - diff >= 0 || diff < 0) {
+      if (totalAvailable - diff >= 0 || diff < 0) {
         setMonster(prev => ({
           ...prev,
           attributes: { ...prev.attributes, [attr]: value }
         }));
-        setAvailablePoints(prev => prev - diff);
+        // We don't modify availablePoints directly anymore, we compute it from maxPointsForCR and spent points
       }
     }
   }
@@ -22,14 +30,19 @@ export function Attributes({ monster, setMonster, availablePoints, setAvailableP
     <div className="space-y-6">
       <h2 className="text-xl font-bold">Attributes</h2>
       <div>
-        Base Points: {availablePoints}
-        {monster.attributePointsFromFeatures && (
-          <span className="ml-2 text-green-600">
-            (+{monster.attributePointsFromFeatures} from Feature Points)
-          </span>
-        )}
-        <div className="text-lg font-semibold">
-          Total Available: {totalAvailablePoints}
+        <div>
+          Base Points: {maxPointsForCR}
+          {featurePoints > 0 && (
+            <span className="ml-2 text-green-600">
+              (+{featurePoints} from Feature Points)
+            </span>
+          )}
+        </div>
+        <div>
+          Spent Points: {spentPoints}
+        </div>
+        <div className={`text-lg font-semibold ${totalAvailable < 0 ? 'text-red-600 font-bold' : ''}`}>
+          Total Available: {totalAvailable}
         </div>
       </div>
       <div className="attributes-grid">
@@ -41,7 +54,7 @@ export function Attributes({ monster, setMonster, availablePoints, setAvailableP
             <input
               type="number"
               className="attribute-input"
-              min="4"
+              min="8"
               max="20"
               value={value}
               onChange={e => handleAttributeChange(attr, parseInt(e.target.value))}
