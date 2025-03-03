@@ -2,7 +2,7 @@
 import React from 'react';
 import { Trash2 } from 'lucide-react';
 
-export const BasicInfo = ({ monster, setStep, onDeleteMovement, onDeleteSense }) => {
+export const BasicInfo = ({ monster, setStep, onDeleteMovement, onDeleteSense, onDeleteLanguage }) => {
   const renderMovement = () => {
     return (
       <div className="space-y-1">
@@ -56,6 +56,32 @@ const renderSenses = () => {
   );
 };
 
+const renderLanguages = () => {
+  if (!monster.languages?.length) return null;
+  
+  return (
+    <div className="space-y-1">
+      {monster.languages.map((language) => (
+        <div 
+          key={language}
+          className="flex justify-between items-center"
+        >
+          <span>
+            {language.charAt(0).toUpperCase() + language.slice(1)} {language.range} ft.
+          </span>
+          <button
+            onClick={() => onDeleteLanguage(language)}
+            className="p-1 text-red-500 hover:text-red-700"
+            aria-label={`Delete ${language}`}
+          >
+            <Trash2 size={16} />
+          </button>
+        </div>
+      ))}
+    </div>
+  );
+};
+
   return (
     <div className="preview-section mb-4">
       <h3 onClick={() => setStep(1)} className="cursor-pointer hover:text-blue-600">
@@ -74,6 +100,10 @@ const renderSenses = () => {
         <div>
           <strong>Senses:</strong>
           {renderSenses()}
+        </div>
+        <div>
+          <strong>Languages:</strong>
+          {renderLanguages()}
         </div>
       </div>
     </div>

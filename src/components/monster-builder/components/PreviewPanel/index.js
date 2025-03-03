@@ -109,6 +109,17 @@ const PreviewPanel = ({ monster, setMonster, setStep }) => {
     }));
   };
 
+  const handleDeleteLanguage = (languageType) => {
+    setMonster(prev => ({
+      ...prev,
+      languages: prev.languages.filter(language => language !== languageType),
+      features: prev.features.filter(feature => 
+        !(feature.languageModification && 
+          feature.languageModification === languageType)
+      )
+    }));
+  };
+
   // Filter out basic spell features and ensure multiattack only appears in Actions section
   const getFilteredFeaturesByCategory = (features, category) => {
     return features.filter(feature => {
@@ -156,6 +167,7 @@ const PreviewPanel = ({ monster, setMonster, setStep }) => {
             setStep={setStep}
             onDeleteMovement={handleDeleteMovement}
             onDeleteSense={handleDeleteSense}
+            onDeleteLanguage={handleDeleteLanguage}
           />
           
           <AttributesSection 
