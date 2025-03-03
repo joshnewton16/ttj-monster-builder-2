@@ -204,8 +204,7 @@ export function ActionsFeatures({ monster, setMonster }) {
         immunityModification: {
           type: type,
           immunityType: immunityType
-        },
-        isHidden: true
+        }
       };
   
       return {
@@ -225,14 +224,15 @@ export function ActionsFeatures({ monster, setMonster }) {
         resistanceModification: {
           type: 'damage',
           damageType: damageType
-        },
-        isHidden: true
+        }
       };
-  
+
+      console.log('After update: ', monster);  
       return {
         ...prev,
         features: [...prev.features, newFeature]
       };
+
     });
   };
 
