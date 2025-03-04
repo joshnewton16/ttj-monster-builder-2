@@ -208,6 +208,8 @@ export function ActionEconomySpellForm({ onSubmit, availablePoints, monster, mag
           range: actualRange,
           rangeMultiplier: rangeMultiplier
         };
+
+        newSpell.damage = `${newSpell.spellDetails.primaryDamageDice} ${primaryDamageType}`;
         break;
         
       case 'Defense':

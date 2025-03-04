@@ -14,15 +14,17 @@ export const getActionString = (feature, monster) => {
   try {
     let description = '';
     const [dice, ...damageType] = feature.damage.split(' ');
+
+    const attackType = feature.type || (feature.spellDetails ? feature.description : "Attack");
     
     if (feature.doubleDamage) {
       const [count, die] = dice.split('d').map(Number);
       const doubledCount = count * 2;
       const doubledMod = mod * 2;
       const doubledModString = doubledMod >= 0 ? `+${doubledMod}` : doubledMod;
-      description = `${feature.type}: ${doubledCount}d${die}${doubledModString} ${damageType.join(' ')}`;
+      description = `${attackType}: ${doubledCount}d${die}${doubledModString} ${damageType.join(' ')}`;
     } else {
-      description = `${feature.type}: ${dice}${modString} ${damageType.join(' ')}`;
+      description = `${attackType}: ${dice}${modString} ${damageType.join(' ')}`;
     }
 
     if (feature.secondaryEffect) {
