@@ -72,6 +72,19 @@ const MarkdownExporter = ({ monster }) => {
       return `**Languages** :: ${monster.languages.join(', ')}\n`;
     };
 
+    // Format languages if present
+    const formatSenses = () => {
+      if (!monster.senses || monster.senses.length === 0) return '';
+      //return `**Senses** :: ${monster.senses.type.join(', ')}\n`;
+      //console.log(monster.senses.map(sense => {}));
+      const senses = monster.senses.map(
+        sense => {
+          return `${sense.type} (${sense.range} feet)`;
+        })
+        .join(', ');
+      return `**Senses** :: ${senses}\n`
+    };  //return
+
     // Format features
     const formatFeatures = () => {
       if (!monster.features || monster.features.length === 0) return '';
@@ -139,7 +152,7 @@ ___
 |:---:|:---:|:---:|:---:|:---:|:---:|
 |${monster.attributes.str} (${getModifier(monster.attributes.str)})|${monster.attributes.dex} (${getModifier(monster.attributes.dex)})|${monster.attributes.con} (${getModifier(monster.attributes.con)})|${monster.attributes.int} (${getModifier(monster.attributes.int)})|${monster.attributes.wis} (${getModifier(monster.attributes.wis)})|${monster.attributes.cha} (${getModifier(monster.attributes.cha)})|
 ___
-${formatSavingThrows()}${formatSkills()}${monster.senses ? `**Senses** :: ${monster.senses}\n` : ''}${formatLanguages()}**Challenge** :: ${monster.cr} ${monster.xp ? `(${monster.xp} XP)` : ''}
+${formatSavingThrows()}${formatSkills()}***Senses*** :: ${formatSenses()}${formatLanguages()}**Challenge** :: ${monster.cr} ${monster.xp ? `(${monster.xp} XP)` : ''}
 ___
 ${formatFeatures()}
 
@@ -158,6 +171,7 @@ ${formatReactions()}
    */
   const handleExport = () => {
     const markdown = generateMarkdown();
+    console.log(monster);
     navigator.clipboard.writeText(markdown)
       .then(() => {
         alert('Markdown copied to clipboard!');

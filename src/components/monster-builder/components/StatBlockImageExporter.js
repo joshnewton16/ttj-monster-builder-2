@@ -169,8 +169,14 @@ const StatBlockImageExporter = ({ monster }) => {
               
               return `${skillName} ${formattedModifier}`;
             }).join(', ')}</p>` : ''}
-          
-          ${monster.senses ? `<p style="margin: 0;"><strong>Senses</strong> ${monster.senses}</p>` : ''}
+
+          ${monster.senses && monster.senses.length > 0 ? 
+            `<p style="margin: 0;"><strong>Senses</strong> ${monster.senses.map(sense => {
+              let senseName = sense.type;
+              let senseRange = sense.range;
+              
+              return `${senseName} (${senseRange} feet)`;
+            }).join(', ')}</p>` : ''}
           
           ${monster.languages && monster.languages.length > 0 ? 
             `<p style="margin: 0;"><strong>Languages</strong> ${monster.languages.join(', ')}</p>` : ''}
@@ -178,9 +184,9 @@ const StatBlockImageExporter = ({ monster }) => {
           <p style="margin: 0;"><strong>Challenge</strong> ${monster.cr} ${monster.xp ? `(${monster.xp} XP)` : ''}</p>
         </div>
         
-        ${monster.features && monster.features.filter(f => f.category === 'Abilities').length > 0 ? 
+        ${monster.features && monster.features.filter(f => f.category === 'Abilities' && f.isHidden !== true).length > 0 ? 
           `<div style="margin-bottom: 10px;">
-            ${monster.features.filter(f => f.category === 'Abilities').map(feature => 
+            ${monster.features.filter(f => f.category === 'Abilities' && f.isHidden !== true).map(feature => 
               `<p style="margin: 0;"><strong><em>${feature.name}.</em></strong> ${feature.description}</p>`
             ).join('<br/>')}
           </div>` : ''}
