@@ -80,6 +80,7 @@ export function SecondaryEffects({
           </select>
         )}
       </div>
+      
       <button
         onClick={handleSubmit}
         disabled={!selectedAttack || !effectType || !effect || availablePoints <= 0}

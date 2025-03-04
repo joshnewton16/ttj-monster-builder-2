@@ -5,6 +5,7 @@ import {
   SAVINGTHROWS, 
   DAMAGETYPES, 
   CONDITIONS, 
+  OTHEREFFECTS,
   AREAOFEFFECT,
   RANGE_MULTIPLIERS,
   getPrimaryDamageForCR,
@@ -183,6 +184,13 @@ const SpellAttackFields = ({
               {CONDITIONS.map((cond) => (
                 <option key={cond} value={cond}>
                   {cond.charAt(0).toUpperCase() + cond.slice(1)} Condition
+                </option>
+              ))}
+            </optgroup>
+            <optgroup label="Other Effects">
+              {OTHEREFFECTS.map((othereff) => (
+                <option key={othereff} value={othereff}>
+                  {othereff.charAt(0).toUpperCase() + othereff.slice(1)}
                 </option>
               ))}
             </optgroup>

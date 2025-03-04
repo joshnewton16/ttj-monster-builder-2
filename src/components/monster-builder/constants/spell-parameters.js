@@ -46,6 +46,10 @@ export const DURATION = [
     'unconscious'   
   ];
 
+  export const OTHEREFFECTS = [
+    'the targeted area becomes difficult terrain'
+  ]
+
   export const AREAOFEFFECT = [
     'sphere',
     'cube',

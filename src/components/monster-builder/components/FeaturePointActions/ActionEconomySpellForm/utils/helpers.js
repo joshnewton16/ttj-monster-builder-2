@@ -1,6 +1,6 @@
 // components/FeaturePointActions/ActionEconomySpellForm/utils/helpers.js
 
-import { DAMAGETYPES, CONDITIONS } from '../../../../constants/spell-parameters';
+import { DAMAGETYPES, CONDITIONS, OTHEREFFECTS } from '../../../../constants/spell-parameters';
 
 // Get the appropriate category based on casting time
 export const getCategoryFromCastingTime = (castingTime) => {
@@ -36,6 +36,8 @@ export const isSecondaryCondition = (effect) => CONDITIONS.includes(effect);
 
 // Check if secondary effect is damage type
 export const isSecondaryDamage = (effect) => DAMAGETYPES.includes(effect);
+
+export const isSecondaryOther = (effect) => OTHEREFFECTS.includes(effect);
 
 // Format text with capitalized first letter
 export const capitalizeFirstLetter = (text) => {

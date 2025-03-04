@@ -3,6 +3,7 @@
 import { 
   isSecondaryCondition, 
   isSecondaryDamage,
+  isSecondaryOther,
   getRechargeText,
   getCastingTimeText
 } from './helpers';
@@ -51,13 +52,7 @@ export const generateSpellDescription = ({
   const secondaryDamage = getSecondaryDamageForCR(monster.cr);
 
   // Start with name and optional recharge
-  let desc = `${spellName}. `;
-  
-  // Add recharge text if applicable
-  desc += getRechargeText(rechargeOption);
-  
-  // Add casting time
-  desc += `${getCastingTimeText(castingTime)}: `;
+  let desc = `Spell. `;
   
   // Effect based on primary effect type
   switch (primaryEffectType) {
@@ -89,6 +84,7 @@ export const generateSpellDescription = ({
       }
       
       if (isSecondaryCondition(secondaryEffect)) {
+        console.log(secondaryEffect);
         desc += ` and is ${secondaryEffect}`;
         
         if (duration !== 'instantaneous') {
@@ -96,6 +92,8 @@ export const generateSpellDescription = ({
         }
       } else if (isSecondaryDamage(secondaryEffect)) {
         desc += ` plus ${secondaryDamage.dice} ${secondaryEffect} damage`;
+      } else if (isSecondaryOther(secondaryEffect)) {
+        desc += ` and ${secondaryEffect}`;
       }
       break;
       
