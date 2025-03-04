@@ -60,7 +60,7 @@ export const SRD_FEATURES = [
   { name: 'Spider Climb', description: 'Can climb difficult surfaces, including upside down, without making an ability check.' },
   { name: 'Spellcasting', description: 'The creature is a spellcaster.' },
   { name: 'Standing Leap', description: 'Its long jump is up to 30 feet and its high jump is up to 15 feet, with or without a running start.' },
-  { name: 'Telekinetic', description: 'YOu can cast mage hand freely as a cantrip without verbal or material components.' },
+  { name: 'Telekinetic', description: 'You can cast mage hand freely as a cantrip without verbal or material components.' },
   { name: 'Undead Fortitude', description: 'If damage reduces it to 0 hit points, must make a Constitution saving throw to drop to 1 hit point instead.' }
 ].sort((a, b) => a.name.localeCompare(b.name));
 
