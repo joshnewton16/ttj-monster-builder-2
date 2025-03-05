@@ -11,6 +11,7 @@ import StatBlockImageExporter from './components/StatBlockImageExporter'; // Imp
 const initialMonsterState = {
   name: '',
   cr: 0,
+  creaturetype: '',
   baseArmorType: 'Natural Armor',
   customAC: 0,
   ac: 10,

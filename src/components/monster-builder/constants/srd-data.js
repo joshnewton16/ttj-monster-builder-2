@@ -230,3 +230,20 @@ export const getSkillAbility = (skillName) => {
 
 // Get array of just skill names (for backward compatibility)
 export const SRD_SKILL_NAMES = SRD_SKILLS.map(skill => skill.name);
+
+export const CREATURETYPES = [
+  "Aberration",
+  "Beast",
+  "Celestial",
+  "Construct",
+  "Dragon",
+  "Elemental",
+  "Fey",
+  "Fiend",
+  "Giant",
+  "Humanoid",
+  "Monstrosity",
+  "Ooze",
+  "Plant",
+  "Undead"
+];

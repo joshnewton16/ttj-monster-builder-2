@@ -106,7 +106,7 @@ const StatBlockImageExporter = ({ monster }) => {
         <div style="border-bottom: 1px solid #7a200d; margin-bottom: 10px;">
           <h1 style="color: #7a200d; font-size: 24px; margin: 0;">${monster.name || 'Unnamed Monster'}</h1>
           <p style="font-style: italic; margin: 0;">
-            ${monster.size} ${monster.type || 'Creature'}, ${monster.alignment || 'unaligned'}
+            ${monster.size} ${monster.creaturetype || 'Creature'}, ${monster.alignment || 'unaligned'}
           </p>
         </div>
         
@@ -181,7 +181,7 @@ const StatBlockImageExporter = ({ monster }) => {
           ${monster.languages && monster.languages.length > 0 ? 
             `<p style="margin: 0;"><strong>Languages</strong> ${monster.languages.join(', ')}</p>` : ''}
           
-          <p style="margin: 0;"><strong>Challenge</strong> ${monster.cr} ${monster.xp ? `(${monster.xp} XP)` : ''}</p>
+          <p style="margin: 0;"><strong>Challenge Rating</strong> ${monster.cr} ${monster.xp ? `(${monster.xp} XP)` : ''}</p>
         </div>
         
         ${monster.features && monster.features.filter(f => f.category === 'Abilities' && f.isHidden !== true).length > 0 ? 

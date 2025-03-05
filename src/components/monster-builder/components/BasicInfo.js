@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { SIZES, CR_TABLE, SRD_ARMOR, SIZE_MOVEMENT } from '../constants/srd-data';
+import { SIZES, CR_TABLE, SIZE_MOVEMENT, CREATURETYPES } from '../constants/srd-data';
 
 const SPEED_TYPES = ['Walk', 'Fly', 'Swim', 'Climb', 'Burrow'];
 
@@ -125,9 +125,10 @@ export function BasicInfo({ monster, setMonster, onCRChange }) {
                 />
               </label>
             </div>
-            
+          </div>
+          <div className="grid grid-cols-2 gap-4 mb-4">
             {/* Size field */}
-            <div>
+            <div> 
               <label className="block">
                 Size:
                 <select
@@ -141,8 +142,24 @@ export function BasicInfo({ monster, setMonster, onCRChange }) {
                 </select>
               </label>
             </div>
-          </div>
           
+            {/* Size field */}
+            <div>
+              <label className="block">
+                Creature Type:
+                <select
+                  className="w-full p-1 border rounded mt-1"
+                  value={monster.creaturetype || ''}
+                  onChange={e => setMonster(prev => ({ ...prev, creaturetype: e.target.value }))}
+                >
+                  {CREATURETYPES.map(creaturetype => (
+                    <option key={creaturetype} value={creaturetype}>{creaturetype}</option>
+                  ))}
+                </select>
+              </label>
+            </div>
+          </div>
+
           <div className="grid grid-cols-2 gap-4 mb-4">
             {/* Armor Class with description */}
             <div>

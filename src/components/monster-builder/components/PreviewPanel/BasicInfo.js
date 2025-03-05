@@ -67,7 +67,7 @@ const renderLanguages = () => {
           className="flex justify-between items-center"
         >
           <span>
-            {language.charAt(0).toUpperCase() + language.slice(1)} {language.range} ft.
+            {language.charAt(0).toUpperCase() + language.slice(1)} {language.range}
           </span>
           <button
             onClick={() => onDeleteLanguage(language)}
@@ -89,6 +89,7 @@ const renderLanguages = () => {
       </h3>
       <div>
         <div>Name: {monster.name}</div>
+        <div>Creature Type: {monster.creaturetype}</div>
         <div>CR: {monster.cr}</div>
         <div>Proficiency Bonus: {monster.proficiencyBonus}</div>
         <div>AC: {monster.acText}</div>

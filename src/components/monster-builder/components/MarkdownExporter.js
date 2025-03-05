@@ -142,7 +142,7 @@ const MarkdownExporter = ({ monster }) => {
     // Build the complete markdown
     const markdown = `{{monster,frame,wide
 ## ${monster.name}
-*${monster.size} ${monster.type || 'Creature'}, ${monster.alignment || 'unaligned'}*
+*${monster.size} ${monster.creaturetype || 'Creature'}, ${monster.alignment || 'unaligned'}*
 ___
 **Armor Class** :: ${monster.ac} ${monster.acText ? `(${monster.acText})` : ''}
 **Hit Points** :: ${monster.hp} ${monster.hpFormula ? `(${monster.hpFormula})` : ''}
