@@ -1,0 +1,15 @@
+Attribute block should be modified to reflect 2024
+Spell Page modifications:
+	* Durations need to be tweaked to cost more points after instant/1 round.
+	* AOE sizes should cost MPs as it gets bigger.
+	* Spell descriptions are not getting properly updated when damage is doubled.
+	* Descriptions need some nuance. Where does text go when user writes it?
+	* Languages are getting "ft" put after them in preview panel
+Exported images need to be two column if there are more than three Abilities+Actions/BA/RA
++0 should be removed when it applies to damages.
+Multiattack is not at top of Actions when image is rendered.
+
+Complete
+    Resistances don't get added to the state variables.
+    "Challenge" should be "Challenge Rating" on exported image.
+	Creature Types are not on Basic Info page.
