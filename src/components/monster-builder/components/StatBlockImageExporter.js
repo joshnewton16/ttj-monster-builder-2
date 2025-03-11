@@ -274,101 +274,101 @@ const StatBlockImageExporter = ({ monster }) => {
         
         ${useTwoColumns ? 
           `<div>
-            <!-- Section headers that span both columns -->
-            ${actions.length > 0 ? 
-              `<div style="margin-top: 20px; margin-bottom: 10px; border-bottom: 1px solid #7a200d;">
-                <h2 style="color: #7a200d; font-size: 18px; margin: 0;">Actions</h2>
-              </div>` : ''
-            }
-            ${bonusActions.length > 0 ? 
-              `<div style="margin-top: 20px; margin-bottom: 10px; border-bottom: 1px solid #7a200d;">
-                <h2 style="color: #7a200d; font-size: 18px; margin: 0;">Bonus Actions</h2>
-              </div>` : ''
-            }
-            ${reactions.length > 0 ? 
-              `<div style="margin-top: 20px; margin-bottom: 10px; border-bottom: 1px solid #7a200d;">
-                <h2 style="color: #7a200d; font-size: 18px; margin: 0;">Reactions</h2>
-              </div>` : ''
-            }
-            
-            <!-- Two column layout for content -->
-            <div style="display: flex; gap: 20px;">
+            <!-- Two column layout for Abilities (no header) -->
+            <div style="display: flex; gap: 20px; margin-bottom: 20px;">
               <div style="flex: 1;">
-                <!-- Abilities (no header) -->
-                ${abilities.length > 0 ? 
-                  `<div style="margin-bottom: 20px;">
+                <!-- Abilities left column -->
+                ${leftAbilities.length > 0 ? 
+                  `<div>
                     ${leftAbilities.map(feature => 
                       `<p style="margin: 0;"><strong><em>${feature.name}.</em></strong> ${feature.description}</p>`
                     ).join('<br/>')}
                   </div>` : ''
                 }
-                
-                <!-- Actions (no header, content only) -->
-                ${actions.length > 0 ? 
-                  `<div style="margin-bottom: 10px;">
-                    ${leftActions.map(feature => 
-                      `<p style="margin: 0;"><strong><em>${feature.name}.</em></strong> ${feature.description}</p>`
-                    ).join('<br/>')}
-                  </div>` : ''
-                }
-                
-                <!-- Bonus Actions (no header, content only) -->
-                ${bonusActions.length > 0 ? 
-                  `<div style="margin-bottom: 10px;">
-                    ${leftBonusActions.map(feature => 
-                      `<p style="margin: 0;"><strong><em>${feature.name}.</em></strong> ${feature.description}</p>`
-                    ).join('<br/>')}
-                  </div>` : ''
-                }
-                
-                <!-- Reactions (no header, content only) -->
-                ${reactions.length > 0 ? 
-                  `<div style="margin-bottom: 10px;">
-                    ${leftReactions.map(feature => 
-                      `<p style="margin: 0;"><strong><em>${feature.name}.</em></strong> ${feature.description}</p>`
-                    ).join('<br/>')}
-                  </div>` : ''
-                }
               </div>
-              
               <div style="flex: 1;">
-                <!-- Abilities (no header) right column -->
+                <!-- Abilities right column -->
                 ${rightAbilities.length > 0 ? 
-                  `<div style="margin-bottom: 20px;">
+                  `<div>
                     ${rightAbilities.map(feature => 
-                      `<p style="margin: 0;"><strong><em>${feature.name}.</em></strong> ${feature.description}</p>`
-                    ).join('<br/>')}
-                  </div>` : ''
-                }
-                
-                <!-- Actions (no header, content only) right column -->
-                ${rightActions.length > 0 ? 
-                  `<div style="margin-bottom: 10px;">
-                    ${rightActions.map(feature => 
-                      `<p style="margin: 0;"><strong><em>${feature.name}.</em></strong> ${feature.description}</p>`
-                    ).join('<br/>')}
-                  </div>` : ''
-                }
-                
-                <!-- Bonus Actions (no header, content only) right column -->
-                ${rightBonusActions.length > 0 ? 
-                  `<div style="margin-bottom: 10px;">
-                    ${rightBonusActions.map(feature => 
-                      `<p style="margin: 0;"><strong><em>${feature.name}.</em></strong> ${feature.description}</p>`
-                    ).join('<br/>')}
-                  </div>` : ''
-                }
-                
-                <!-- Reactions (no header, content only) right column -->
-                ${rightReactions.length > 0 ? 
-                  `<div style="margin-bottom: 10px;">
-                    ${rightReactions.map(feature => 
                       `<p style="margin: 0;"><strong><em>${feature.name}.</em></strong> ${feature.description}</p>`
                     ).join('<br/>')}
                   </div>` : ''
                 }
               </div>
             </div>
+            
+            <!-- Actions section -->
+            ${actions.length > 0 ? 
+              `<div>
+                <!-- Actions header (full width) -->
+                <div style="margin-bottom: 10px; border-bottom: 1px solid #7a200d;">
+                  <h2 style="color: #7a200d; font-size: 18px; margin: 0;">Actions</h2>
+                </div>
+                
+                <!-- Actions content (two columns) -->
+                <div style="display: flex; gap: 20px; margin-bottom: 20px;">
+                  <div style="flex: 1;">
+                    ${leftActions.map(feature => 
+                      `<p style="margin: 0;"><strong><em>${feature.name}.</em></strong> ${feature.description}</p>`
+                    ).join('<br/>')}
+                  </div>
+                  <div style="flex: 1;">
+                    ${rightActions.map(feature => 
+                      `<p style="margin: 0;"><strong><em>${feature.name}.</em></strong> ${feature.description}</p>`
+                    ).join('<br/>')}
+                  </div>
+                </div>
+              </div>` : ''
+            }
+            
+            <!-- Bonus Actions section -->
+            ${bonusActions.length > 0 ? 
+              `<div>
+                <!-- Bonus Actions header (full width) -->
+                <div style="margin-bottom: 10px; border-bottom: 1px solid #7a200d;">
+                  <h2 style="color: #7a200d; font-size: 18px; margin: 0;">Bonus Actions</h2>
+                </div>
+                
+                <!-- Bonus Actions content (two columns) -->
+                <div style="display: flex; gap: 20px; margin-bottom: 20px;">
+                  <div style="flex: 1;">
+                    ${leftBonusActions.map(feature => 
+                      `<p style="margin: 0;"><strong><em>${feature.name}.</em></strong> ${feature.description}</p>`
+                    ).join('<br/>')}
+                  </div>
+                  <div style="flex: 1;">
+                    ${rightBonusActions.map(feature => 
+                      `<p style="margin: 0;"><strong><em>${feature.name}.</em></strong> ${feature.description}</p>`
+                    ).join('<br/>')}
+                  </div>
+                </div>
+              </div>` : ''
+            }
+            
+            <!-- Reactions section -->
+            ${reactions.length > 0 ? 
+              `<div>
+                <!-- Reactions header (full width) -->
+                <div style="margin-bottom: 10px; border-bottom: 1px solid #7a200d;">
+                  <h2 style="color: #7a200d; font-size: 18px; margin: 0;">Reactions</h2>
+                </div>
+                
+                <!-- Reactions content (two columns) -->
+                <div style="display: flex; gap: 20px; margin-bottom: 20px;">
+                  <div style="flex: 1;">
+                    ${leftReactions.map(feature => 
+                      `<p style="margin: 0;"><strong><em>${feature.name}.</em></strong> ${feature.description}</p>`
+                    ).join('<br/>')}
+                  </div>
+                  <div style="flex: 1;">
+                    ${rightReactions.map(feature => 
+                      `<p style="margin: 0;"><strong><em>${feature.name}.</em></strong> ${feature.description}</p>`
+                    ).join('<br/>')}
+                  </div>
+                </div>
+              </div>` : ''
+            }
           </div>` : 
           `${leftColumnHtml}`
         }
