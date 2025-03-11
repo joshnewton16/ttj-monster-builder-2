@@ -4,9 +4,12 @@ import { getSkillAbility } from '../constants/srd-data'; // Import from your con
 
 /**
  * Component for generating and exporting D&D monster stat blocks as images
+ * Supports toggling between one and two-column layouts
  */
 const StatBlockImageExporter = ({ monster }) => {
   const statBlockRef = useRef(null);
+  // Use ref instead of state to avoid re-render issues
+  const twoColumnsRef = useRef(false);
 
   /**
    * Calculate ability score modifiers
@@ -50,11 +53,28 @@ const StatBlockImageExporter = ({ monster }) => {
   };
 
   /**
-   * Export the stat block as an image
+   * Split features into two columns while maintaining category grouping
    */
-  const handleExportImage = async () => {
+  const distributeFeatures = (features) => {
+    if (!features || features.length === 0) return [[], []];
+    
+    // If only 1 feature, put it in the left column
+    if (features.length === 1) return [features, []];
+    
+    // For 2+ features, split them between columns
+    const half = Math.ceil(features.length / 2);
+    return [features.slice(0, half), features.slice(half)];
+  };
+
+  /**
+   * Generate and show the stat block modal with current settings
+   */
+  const showStatBlockModal = () => {
+    const useTwoColumns = twoColumnsRef.current;
+    
     // Create stat block modal
     const modal = document.createElement('div');
+    modal.id = 'monster-stat-block-modal';
     modal.style.position = 'fixed';
     modal.style.top = '0';
     modal.style.left = '0';
@@ -89,11 +109,79 @@ const StatBlockImageExporter = ({ monster }) => {
     closeButton.onclick = () => {
       document.body.removeChild(modal);
     };
+
+    // Filter monster features by category
+    const abilities = monster.features ? monster.features.filter(f => f.category === 'Abilities' && f.isHidden !== true) : [];
+    const actions = monster.features ? monster.features.filter(f => f.category === 'Actions') : [];
+    const bonusActions = monster.features ? monster.features.filter(f => f.category === 'Bonus Actions') : [];
+    const reactions = monster.features ? monster.features.filter(f => f.category === 'Reactions') : [];
+    
+    // Split features for two-column layout
+    let [leftAbilities, rightAbilities] = useTwoColumns ? distributeFeatures(abilities) : [abilities, []];
+    let [leftActions, rightActions] = useTwoColumns ? distributeFeatures(actions) : [actions, []];
+    let [leftBonusActions, rightBonusActions] = useTwoColumns ? distributeFeatures(bonusActions) : [bonusActions, []];
+    let [leftReactions, rightReactions] = useTwoColumns ? distributeFeatures(reactions) : [reactions, []];
+    
+    // Generate feature HTML for a single category
+    const generateFeatureHtml = (features, category, showHeader = true) => {
+      if (!features || features.length === 0) return '';
+      
+      let header = '';
+      if (showHeader && category !== 'Abilities') {
+        header = `<h2 style="color: #7a200d; font-size: 18px; margin: 0;">${category}</h2>`;
+      }
+      
+      return `
+        <div style="margin-bottom: ${category === 'Abilities' ? '20px' : '10px'};">
+          ${header}
+          ${features.map(feature => 
+            `<p style="margin: 0;"><strong><em>${feature.name}.</em></strong> ${feature.description}</p>`
+          ).join('<br/>')}
+        </div>
+      `;
+    };
+    
+    // Generate columns based on layout preference
+    let leftColumnHtml = '';
+    let rightColumnHtml = '';
+    
+    if (useTwoColumns) {
+      // Two-column layout with categories split between columns
+      // Abilities section
+      if (abilities.length > 0) {
+        leftColumnHtml += generateFeatureHtml(leftAbilities, 'Abilities');
+        rightColumnHtml += generateFeatureHtml(rightAbilities, 'Abilities', false);
+      }
+      
+      // Actions section
+      if (actions.length > 0) {
+        leftColumnHtml += generateFeatureHtml(leftActions, 'Actions');
+        rightColumnHtml += generateFeatureHtml(rightActions, 'Actions', leftActions.length === 0);
+      }
+      
+      // Bonus Actions section
+      if (bonusActions.length > 0) {
+        leftColumnHtml += generateFeatureHtml(leftBonusActions, 'Bonus Actions');
+        rightColumnHtml += generateFeatureHtml(rightBonusActions, 'Bonus Actions', leftBonusActions.length === 0);
+      }
+      
+      // Reactions section
+      if (reactions.length > 0) {
+        leftColumnHtml += generateFeatureHtml(leftReactions, 'Reactions');
+        rightColumnHtml += generateFeatureHtml(rightReactions, 'Reactions', leftReactions.length === 0);
+      }
+    } else {
+      // Single-column layout
+      leftColumnHtml += generateFeatureHtml(abilities, 'Abilities');
+      leftColumnHtml += generateFeatureHtml(actions, 'Actions');
+      leftColumnHtml += generateFeatureHtml(bonusActions, 'Bonus Actions');
+      leftColumnHtml += generateFeatureHtml(reactions, 'Reactions');
+    }
     
     // Set the HTML content of the stat block
     statBlockContainer.innerHTML = `
       <div id="stat-block-to-capture" style="
-        width: 400px;
+        width: ${useTwoColumns ? '800px' : '400px'};
         font-family: 'Noto Serif', 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
         background: #fdf1dc;
         padding: 20px;
@@ -184,48 +272,130 @@ const StatBlockImageExporter = ({ monster }) => {
           <p style="margin: 0;"><strong>Challenge Rating</strong> ${monster.cr} ${monster.xp ? `(${monster.xp} XP)` : ''}</p>
         </div>
         
-        ${monster.features && monster.features.filter(f => f.category === 'Abilities' && f.isHidden !== true).length > 0 ? 
-          `<div style="margin-bottom: 10px;">
-            ${monster.features.filter(f => f.category === 'Abilities' && f.isHidden !== true).map(feature => 
-              `<p style="margin: 0;"><strong><em>${feature.name}.</em></strong> ${feature.description}</p>`
-            ).join('<br/>')}
-          </div>` : ''}
-        
-        ${monster.features && monster.features.filter(f => f.category === 'Actions').length > 0 ? 
-          `<div style="margin-bottom: 10px;">
-            <h2 style="color: #7a200d; font-size: 18px; margin: 0; border-bottom: 1px solid #7a200d;">Actions</h2>
-            ${monster.features.filter(f => f.category === 'Actions').map(action => 
-              `<p style="margin: 0;"><strong><em>${action.name}.</em></strong> ${action.description}</p>`
-            ).join('<br/>')}
-          </div>` : ''}
-        
-        ${monster.features && monster.features.filter(f => f.category === 'Bonus Actions').length > 0 ? 
-          `<div style="margin-bottom: 10px;">
-            <h2 style="color: #7a200d; font-size: 18px; margin: 0; border-bottom: 1px solid #7a200d;">Bonus Actions</h2>
-            ${monster.features.filter(f => f.category === 'Bonus Actions').map(action => 
-              `<p style="margin: 0;"><strong><em>${action.name}.</em></strong> ${action.description}</p>`
-            ).join('<br/>')}
-          </div>` : ''}
-        
-        ${monster.features && monster.features.filter(f => f.category === 'Reactions').length > 0 ? 
-          `<div style="margin-bottom: 10px;">
-            <h2 style="color: #7a200d; font-size: 18px; margin: 0; border-bottom: 1px solid #7a200d;">Reactions</h2>
-            ${monster.features.filter(f => f.category === 'Reactions').map(reaction => 
-              `<p style="margin: 0;"><strong><em>${reaction.name}.</em></strong> ${reaction.description}</p>`
-            ).join('<br/>')}
-          </div>` : ''}
+        ${useTwoColumns ? 
+          `<div>
+            <!-- Section headers that span both columns -->
+            ${actions.length > 0 ? 
+              `<div style="margin-top: 20px; margin-bottom: 10px; border-bottom: 1px solid #7a200d;">
+                <h2 style="color: #7a200d; font-size: 18px; margin: 0;">Actions</h2>
+              </div>` : ''
+            }
+            ${bonusActions.length > 0 ? 
+              `<div style="margin-top: 20px; margin-bottom: 10px; border-bottom: 1px solid #7a200d;">
+                <h2 style="color: #7a200d; font-size: 18px; margin: 0;">Bonus Actions</h2>
+              </div>` : ''
+            }
+            ${reactions.length > 0 ? 
+              `<div style="margin-top: 20px; margin-bottom: 10px; border-bottom: 1px solid #7a200d;">
+                <h2 style="color: #7a200d; font-size: 18px; margin: 0;">Reactions</h2>
+              </div>` : ''
+            }
+            
+            <!-- Two column layout for content -->
+            <div style="display: flex; gap: 20px;">
+              <div style="flex: 1;">
+                <!-- Abilities (no header) -->
+                ${abilities.length > 0 ? 
+                  `<div style="margin-bottom: 20px;">
+                    ${leftAbilities.map(feature => 
+                      `<p style="margin: 0;"><strong><em>${feature.name}.</em></strong> ${feature.description}</p>`
+                    ).join('<br/>')}
+                  </div>` : ''
+                }
+                
+                <!-- Actions (no header, content only) -->
+                ${actions.length > 0 ? 
+                  `<div style="margin-bottom: 10px;">
+                    ${leftActions.map(feature => 
+                      `<p style="margin: 0;"><strong><em>${feature.name}.</em></strong> ${feature.description}</p>`
+                    ).join('<br/>')}
+                  </div>` : ''
+                }
+                
+                <!-- Bonus Actions (no header, content only) -->
+                ${bonusActions.length > 0 ? 
+                  `<div style="margin-bottom: 10px;">
+                    ${leftBonusActions.map(feature => 
+                      `<p style="margin: 0;"><strong><em>${feature.name}.</em></strong> ${feature.description}</p>`
+                    ).join('<br/>')}
+                  </div>` : ''
+                }
+                
+                <!-- Reactions (no header, content only) -->
+                ${reactions.length > 0 ? 
+                  `<div style="margin-bottom: 10px;">
+                    ${leftReactions.map(feature => 
+                      `<p style="margin: 0;"><strong><em>${feature.name}.</em></strong> ${feature.description}</p>`
+                    ).join('<br/>')}
+                  </div>` : ''
+                }
+              </div>
+              
+              <div style="flex: 1;">
+                <!-- Abilities (no header) right column -->
+                ${rightAbilities.length > 0 ? 
+                  `<div style="margin-bottom: 20px;">
+                    ${rightAbilities.map(feature => 
+                      `<p style="margin: 0;"><strong><em>${feature.name}.</em></strong> ${feature.description}</p>`
+                    ).join('<br/>')}
+                  </div>` : ''
+                }
+                
+                <!-- Actions (no header, content only) right column -->
+                ${rightActions.length > 0 ? 
+                  `<div style="margin-bottom: 10px;">
+                    ${rightActions.map(feature => 
+                      `<p style="margin: 0;"><strong><em>${feature.name}.</em></strong> ${feature.description}</p>`
+                    ).join('<br/>')}
+                  </div>` : ''
+                }
+                
+                <!-- Bonus Actions (no header, content only) right column -->
+                ${rightBonusActions.length > 0 ? 
+                  `<div style="margin-bottom: 10px;">
+                    ${rightBonusActions.map(feature => 
+                      `<p style="margin: 0;"><strong><em>${feature.name}.</em></strong> ${feature.description}</p>`
+                    ).join('<br/>')}
+                  </div>` : ''
+                }
+                
+                <!-- Reactions (no header, content only) right column -->
+                ${rightReactions.length > 0 ? 
+                  `<div style="margin-bottom: 10px;">
+                    ${rightReactions.map(feature => 
+                      `<p style="margin: 0;"><strong><em>${feature.name}.</em></strong> ${feature.description}</p>`
+                    ).join('<br/>')}
+                  </div>` : ''
+                }
+              </div>
+            </div>
+          </div>` : 
+          `${leftColumnHtml}`
+        }
       </div>
       
       <div style="margin-top: 20px; text-align: center;">
-        <button id="download-button" style="
-          background-color: #7a200d;
-          color: white;
-          border: none;
-          padding: 10px 20px;
-          font-size: 16px;
-          border-radius: 4px;
-          cursor: pointer;
-        ">Download Image</button>
+        <div style="margin-bottom: 15px;">
+          <button id="layout-toggle-button" style="
+            background-color: #4a76a8;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            margin-right: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+          ">${useTwoColumns ? 'Switch to One Column' : 'Switch to Two Columns'}</button>
+          
+          <button id="download-button" style="
+            background-color: #7a200d;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+          ">Download Image</button>
+        </div>
       </div>
     `;
     
@@ -233,6 +403,18 @@ const StatBlockImageExporter = ({ monster }) => {
     statBlockContainer.appendChild(closeButton);
     modal.appendChild(statBlockContainer);
     document.body.appendChild(modal);
+    
+    // Add click event to layout toggle button
+    document.getElementById('layout-toggle-button').addEventListener('click', () => {
+      // Toggle the layout preference
+      twoColumnsRef.current = !twoColumnsRef.current;
+      
+      // Remove the current modal
+      document.body.removeChild(document.getElementById('monster-stat-block-modal'));
+      
+      // Regenerate the modal with the new layout
+      showStatBlockModal();
+    });
     
     // Add click event to download button
     document.getElementById('download-button').addEventListener('click', async () => {
@@ -264,6 +446,13 @@ const StatBlockImageExporter = ({ monster }) => {
         alert('Failed to generate image. See console for details.');
       }
     });
+  };
+
+  /**
+   * Export the stat block as an image
+   */
+  const handleExportImage = () => {
+    showStatBlockModal();
   };
 
   return (
