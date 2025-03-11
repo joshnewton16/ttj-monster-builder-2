@@ -112,7 +112,20 @@ const StatBlockImageExporter = ({ monster }) => {
 
     // Filter monster features by category
     const abilities = monster.features ? monster.features.filter(f => f.category === 'Abilities' && f.isHidden !== true) : [];
-    const actions = monster.features ? monster.features.filter(f => f.category === 'Actions') : [];
+    
+    // Sort actions to ensure Multiattack appears first
+    const actions = monster.features ? 
+      monster.features
+        .filter(f => f.category === 'Actions')
+        .sort((a, b) => {
+          // If a is Multiattack, it comes first
+          if (a.isMultiattack === true) return -1;
+          // If b is Multiattack, it comes first
+          if (b.isMultiattack === true) return 1;
+          // Otherwise, maintain original order
+          return 0;
+        }) : [];
+        
     const bonusActions = monster.features ? monster.features.filter(f => f.category === 'Bonus Actions') : [];
     const reactions = monster.features ? monster.features.filter(f => f.category === 'Reactions') : [];
     
