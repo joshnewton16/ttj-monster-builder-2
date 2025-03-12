@@ -1,4 +1,4 @@
-Attribute block should be modified to reflect 2024
+
 Spell Page modifications:
 	* Durations need to be tweaked to cost more points after instant/1 round.
 	* AOE sizes should cost MPs as it gets bigger.
@@ -13,3 +13,4 @@ Complete
 	Exported images need to be two column if there are more than three Abilities+Actions/BA/RA
 	Multiattack is not at top of Actions when image is rendered
 	Languages are getting "ft" put after them in preview panel
+	Attribute block should be modified to reflect 2024

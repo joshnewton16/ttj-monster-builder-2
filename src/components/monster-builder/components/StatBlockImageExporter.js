@@ -59,6 +59,26 @@ const StatBlockImageExporter = ({ monster }) => {
     return [features.slice(0, half), features.slice(half)];
   };
 
+  function renderAttributeRow(attributeName, isLastInRow = false) {
+    const upperAttr = attributeName.toUpperCase();
+    const attrScore = monster.attributes[attributeName];
+    const baseModifier = getModifier(attrScore);
+    
+    const hasSavingThrow = monster.savingThrows && monster.savingThrows.includes(attributeName);
+    const savingThrowValue = hasSavingThrow ? 
+      (() => {
+        const modifier = parseInt(baseModifier) + monster.proficiencyBonus;
+        return modifier >= 0 ? `+${modifier}` : `${modifier}`;
+      })() : '-';
+    
+    return `
+      <td style="padding-right: 10px; border-left: 2px solid #999; border-top: 2px solid #999; border-bottom: 2px solid #999;"><p style="margin: 0"><strong>${upperAttr}</strong></p></td>
+      <td style="border-top: 2px solid #999; border-bottom: 2px solid #999;"><p style="margin: 0;">${attrScore}</p></td>
+      <td style="padding-right: 5px; background-color: #f5f5f5; border-top: 2px solid #999; border-bottom: 2px solid #999;"><p style="margin: 0;">${baseModifier}</p></td>
+      <td style="padding-right: 5px; background-color: #f5f5f5; border-right: 2px solid #999; border-top: 2px solid #999; border-bottom: 2px solid #999;"><p style="margin: 0;">${savingThrowValue}</p></td>
+    `;
+  }
+
   /**
    * Generate and show the stat block modal with current settings
    */
@@ -211,42 +231,38 @@ const StatBlockImageExporter = ({ monster }) => {
         </div>
         
         <div style="display: flex; justify-content: space-between; text-align: center; border-bottom: 1px solid #7a200d; margin-bottom: 10px; padding-bottom: 10px;">
-          <div style="flex: 1;">
-            <p style="margin: 0;"><strong>STR</strong></p>
-            <p style="margin: 0;">${monster.attributes.str} (${getModifier(monster.attributes.str)})</p>
-          </div>
-          <div style="flex: 1;">
-            <p style="margin: 0;"><strong>DEX</strong></p>
-            <p style="margin: 0;">${monster.attributes.dex} (${getModifier(monster.attributes.dex)})</p>
-          </div>
-          <div style="flex: 1;">
-            <p style="margin: 0;"><strong>CON</strong></p>
-            <p style="margin: 0;">${monster.attributes.con} (${getModifier(monster.attributes.con)})</p>
-          </div>
-          <div style="flex: 1;">
-            <p style="margin: 0;"><strong>INT</strong></p>
-            <p style="margin: 0;">${monster.attributes.int} (${getModifier(monster.attributes.int)})</p>
-          </div>
-          <div style="flex: 1;">
-            <p style="margin: 0;"><strong>WIS</strong></p>
-            <p style="margin: 0;">${monster.attributes.wis} (${getModifier(monster.attributes.wis)})</p>
-          </div>
-          <div style="flex: 1;">
-            <p style="margin: 0;"><strong>CHA</strong></p>
-            <p style="margin: 0;">${monster.attributes.cha} (${getModifier(monster.attributes.cha)})</p>
-          </div>
+          <table width=450px;>
+            <thead>
+              <tr>
+                <th></th>
+                <th></th>
+                <th style="font-size: 10px;">Mod</th>
+                <th style="font-size: 10px;">Save</th>
+                <th></th>
+                <th></th>
+                <th style="font-size: 10px;">Mod</th>
+                <th style="font-size: 10px;">Save</th>
+                <th></th>
+                <th></th>
+                <th style="font-size: 10px;">Mod</th>
+                <th style="font-size: 10px;">Save</th>                                
+              </tr>
+            </thead>
+            <tr>
+              ${renderAttributeRow('str')}
+              ${renderAttributeRow('dex')}
+              ${renderAttributeRow('con')}
+            </tr>
+            <tr>
+              ${renderAttributeRow('int')}
+              ${renderAttributeRow('wis')}
+              ${renderAttributeRow('cha')}
+            </tr>
+          </table>
         </div>
         
         <div style="border-bottom: 1px solid #7a200d; margin-bottom: 10px; padding-bottom: 10px;">
-          ${monster.savingThrows && monster.savingThrows.length > 0 ? 
-            `<p style="margin: 0;"><strong>Saving Throws</strong> ${monster.savingThrows.map(save => {
-              const attr = save.toLowerCase();
-              const attrScore = monster.attributes[attr];
-              const modifier = parseInt(getModifier(attrScore)) + monster.proficiencyBonus;
-              const formattedModifier = modifier >= 0 ? `+${modifier}` : `${modifier}`;
-              return `${save.toUpperCase()} ${formattedModifier}`;
-            }).join(', ')}</p>` : ''}
-          
+            
           ${monster.skills && monster.skills.length > 0 ? 
             `<p style="margin: 0;"><strong>Skills</strong> ${monster.skills.map(skill => {
               let skillName = '';
