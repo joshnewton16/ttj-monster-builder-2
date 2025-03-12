@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 import html2canvas from 'html2canvas';
 import { getSkillAbility } from '../constants/srd-data'; // Import from your constants file
+import { getModifier } from '../functions/globalFunctions';
 
 /**
  * Component for generating and exporting D&D monster stat blocks as images
@@ -10,14 +11,6 @@ const StatBlockImageExporter = ({ monster }) => {
   const statBlockRef = useRef(null);
   // Use ref instead of state to avoid re-render issues
   const twoColumnsRef = useRef(false);
-
-  /**
-   * Calculate ability score modifiers
-   */
-  const getModifier = (score) => {
-    const modifier = Math.floor((score - 10) / 2);
-    return modifier >= 0 ? `+${modifier}` : `${modifier}`;
-  };
 
   /**
    * Format speeds
