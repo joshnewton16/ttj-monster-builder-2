@@ -7,9 +7,9 @@ export const SAVINGTHROWS = ['STR', 'DEX', 'CON', 'WIS', 'INT', 'CHA']
 export const PRIMARYEFFECTTYPE = ['Spell Attack', 'Defense', 'Healing', 'Adjust Movement', 'Control']
 
 export const DURATION = [
-    'instantaneous',
-    '1 round',
-    '1 minute'
+    {value: 'instantaneous', mpcost: 0},
+    {value: '1 round', mpcost: 0},
+    {value: '1 minute', mpcost: 0}
   ];
 
   export const DAMAGETYPES = [

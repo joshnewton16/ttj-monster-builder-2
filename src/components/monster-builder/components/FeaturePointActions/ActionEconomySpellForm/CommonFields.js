@@ -94,9 +94,9 @@ const CommonFields = ({
               onChange={(e) => setDuration(e.target.value)}
               disabled={disabled}
             >
-              {DURATION.map((dur) => (
-                <option key={dur} value={dur}>
-                  {dur.charAt(0).toUpperCase() + dur.slice(1)}
+              {DURATION.map((durItem) => (
+                <option key={durItem.value} value={durItem.value}>
+                  {durItem.value.charAt(0).toUpperCase() + durItem.value.slice(1)}
                 </option>
               ))}
             </select>
