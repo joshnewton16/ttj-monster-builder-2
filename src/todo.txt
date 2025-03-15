@@ -1,6 +1,6 @@
 
 Spell Page modifications:
-	* AOE sizes should cost MPs as it gets bigger.
+	* Base Cost should be before any additions or subtractions
 	* Spell descriptions are not getting properly updated when damage is doubled.
 	* Descriptions need some nuance. Where does text go when user writes it?
 +0 should be removed when it applies to damages.
@@ -15,3 +15,4 @@ Complete
 	Attribute block should be modified to reflect 2024
 	Spellcasting
 		Durations need to be tweaked to cost more points after instant/1 round.
+		AOE sizes should cost MPs as it gets bigger.
