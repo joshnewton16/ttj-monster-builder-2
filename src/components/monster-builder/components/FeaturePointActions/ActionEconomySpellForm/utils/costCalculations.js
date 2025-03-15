@@ -20,9 +20,9 @@ export const calculateBaseMagicPointCost = ({
 
   // Base cost by casting time (updated costs)
   if (castingTime === 'action') {
-    cost += 2; // Action spells cost 2 MP
+    //cost += 2; // Action spells cost 2 MP
   } else if (castingTime === 'bonus action' || castingTime === 'reaction') {
-    cost += 3; // Bonus action and reaction spells cost 3 MP
+    cost += 1; // Bonus action and reaction spells cost 3 MP
   }
 
   // Additional costs based on primary effect type
@@ -114,6 +114,6 @@ export const calculateBaseMagicPointCost = ({
 };
 
 // Calculate final magic point cost after applying recharge discount
-export const calculateFinalMagicPointCost = (baseCost, rechargeDiscount) => {
-  return Math.max(1, baseCost - rechargeDiscount);
+export const calculateFinalMagicPointCost = (baseCost, featureMagicPointCost, rechargeDiscount) => {
+  return Math.max(1, baseCost + featureMagicPointCost - rechargeDiscount);
 };

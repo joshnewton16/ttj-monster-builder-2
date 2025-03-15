@@ -121,7 +121,8 @@ export function ActionEconomySpellForm({ onSubmit, availablePoints, monster, mag
 
   // Calculate base magic point cost 
   console.log('About to calculate cost, duration is:', duration);
-  const baseMagicPointCost = calculateBaseMagicPointCost({
+  const baseMagicPointCost=2;
+  const featureMagicPointCost = calculateBaseMagicPointCost({
     castingTime,
     primaryEffectType,
     areaOfEffect,
@@ -134,13 +135,13 @@ export function ActionEconomySpellForm({ onSubmit, availablePoints, monster, mag
     duration,
     areaSize // Add this parameter
   });
-  console.log('After calculation, cost is:', baseMagicPointCost);
+  console.log('After calculation, cost is:', baseMagicPointCost,featureMagicPointCost);
   
   // Find the selected recharge option
   const selectedRecharge = getRechargeById(RECHARGE_OPTIONS, rechargeOption);
   
   // Calculate final cost after recharge discount
-  const finalMagicPointCost = calculateFinalMagicPointCost(baseMagicPointCost, selectedRecharge.mpValue);
+  const finalMagicPointCost = calculateFinalMagicPointCost(baseMagicPointCost,featureMagicPointCost, selectedRecharge.mpValue);
   
   // Check if we have enough magic points
   const availableMagicPoints = magicPoints ? (magicPoints.total - magicPoints.used) : 0;
@@ -352,6 +353,7 @@ export function ActionEconomySpellForm({ onSubmit, availablePoints, monster, mag
         maxActionEconomySpells={maxActionEconomySpells}
         monster={monster}
         baseMagicPointCost={baseMagicPointCost}
+        featureMagicPointCost={featureMagicPointCost}
         selectedRecharge={selectedRecharge}
         finalMagicPointCost={finalMagicPointCost}
         availableMagicPoints={availableMagicPoints}

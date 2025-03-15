@@ -1,6 +1,5 @@
-
+Should be able to import the MarkDown code as well as Export
 Spell Page modifications:
-	* Base Cost should be before any additions or subtractions
 	* Spell descriptions are not getting properly updated when damage is doubled.
 	* Descriptions need some nuance. Where does text go when user writes it?
 +0 should be removed when it applies to damages.
@@ -16,3 +15,4 @@ Complete
 	Spellcasting
 		Durations need to be tweaked to cost more points after instant/1 round.
 		AOE sizes should cost MPs as it gets bigger.
+		Base Cost and Feature Cost should be tracked independently

@@ -6,6 +6,7 @@ export const InfoBoxes = ({
   maxActionEconomySpells,
   monster,
   baseMagicPointCost,
+  featureMagicPointCost,
   selectedRecharge,
   finalMagicPointCost,
   availableMagicPoints,
@@ -33,6 +34,10 @@ export const InfoBoxes = ({
           <div className="flex justify-between">
             <span>Base Cost:</span>
             <span>{baseMagicPointCost}</span>
+          </div>
+          <div className="flex justify-between">
+            <span>Feature Cost:</span>
+            <span>{featureMagicPointCost}</span>
           </div>
           <div className="flex justify-between">
             <span>Recharge Discount:</span>
