@@ -68,6 +68,16 @@ export const DURATION = [
     'line'
   ];
 
+  export const RANGEOFEFFECT = [
+    {name: '5 ft', mpCost: 0},
+    {name: '10 ft', mpCost: 0},
+    {name: '20 ft', mpCost: 1},
+    {name: '30 ft', mpCost: 2},
+    {name: '40 ft', mpCost: 3},
+    {name: '50 ft', mpCost: 4},
+  ];
+
+
 // Damage calculation functions
 export const getPrimaryDamageForCR = (cr, proficiencyBonus) => {
   // CR 0-5: 1/2 Proficiency x d8

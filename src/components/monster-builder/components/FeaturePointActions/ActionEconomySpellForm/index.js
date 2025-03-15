@@ -131,7 +131,8 @@ export function ActionEconomySpellForm({ onSubmit, availablePoints, monster, mag
     acBonus,
     healingDice,
     defenseDuration,
-    duration // Add this parameter
+    duration,
+    areaSize // Add this parameter
   });
   console.log('After calculation, cost is:', baseMagicPointCost);
   

@@ -7,6 +7,7 @@ import {
   CONDITIONS, 
   OTHEREFFECTS,
   AREAOFEFFECT,
+  RANGEOFEFFECT,
   RANGE_MULTIPLIERS,
   getPrimaryDamageForCR,
   getSecondaryDamageForCR
@@ -24,6 +25,7 @@ const SpellAttackFields = ({
   secondaryEffect,
   setSecondaryEffect,
   areaOfEffect,
+  rangeOfEffect,
   setAreaOfEffect,
   areaSize,
   setAreaSize,
@@ -125,13 +127,13 @@ const SpellAttackFields = ({
             <div>
               <select
                 className="w-full p-2 border rounded"
-                value={savingThrow}
-                onChange={(e) => setSavingThrow(e.target.value)}
+                value={areaSize}
+                onChange={(e) => setAreaSize(e.target.value)}
                 disabled={disabled}
               >
-                {SAVINGTHROWS.map((save) => (
-                  <option key={save} value={save}>
-                    {save}
+                {RANGEOFEFFECT.map((areaSize) => (
+                  <option key={areaSize.name} value={areaSize.name}>
+                    {areaSize.name.charAt(0).toUpperCase() + areaSize.name.slice(1)}
                   </option>
                 ))}
               </select>

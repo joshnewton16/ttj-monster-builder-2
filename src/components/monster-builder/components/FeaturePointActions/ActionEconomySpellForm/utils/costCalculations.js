@@ -1,6 +1,6 @@
 // components/FeaturePointActions/ActionEconomySpellForm/utils/costCalculations.js
 
-import { RANGE_MULTIPLIERS, DURATION } from '../../../../constants/spell-parameters';
+import { RANGE_MULTIPLIERS, DURATION, RANGEOFEFFECT } from '../../../../constants/spell-parameters';
 
 // Calculate the base magic point cost before recharge discount
 export const calculateBaseMagicPointCost = ({
@@ -13,7 +13,8 @@ export const calculateBaseMagicPointCost = ({
   acBonus,
   healingDice,
   defenseDuration,
-  duration // Add this parameter
+  duration,
+  areaSize // Add this parameter
 }) => {
   let cost = 0;
 
@@ -31,21 +32,26 @@ export const calculateBaseMagicPointCost = ({
       if (areaOfEffect) {
         cost += 1;
       }
+
+      // areaSize costs
+      const areaSizeOption = RANGEOFEFFECT.find(r => r.name === areaSize);
+      if (areaSizeOption) {
+        cost += areaSizeOption.mpCost;
+      } else {
+        // Use a default cost if no match is found
+        cost += 0; // or whatever the default should be
+      }
       
       // Secondary effects cost more
       if (secondaryEffect !== 'none') {
         cost += 1;
       }
 
-      console.log('Duration:', duration);
       // Duration costs
       const durationOption = DURATION.find(r => r.label.toLowerCase() === duration.toLowerCase());
-      console.log('durationOption:', durationOption);
       if (durationOption) {
         cost += durationOption.mpCost;
-        console.log('Duration MP:', durationOption.mpCost);
       } else {
-        console.log('Duration not found in array, using default cost');
         // Use a default cost if no match is found
         cost += 0; // or whatever the default should be
       }
