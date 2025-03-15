@@ -2,8 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   getPrimaryDamageForCR,
-  getSecondaryDamageForCR,
-  DEFENSE_DURATIONS
+  getSecondaryDamageForCR
 } from '../../../constants/spell-parameters';
 
 import CommonFields from './CommonFields';
@@ -121,6 +120,7 @@ export function ActionEconomySpellForm({ onSubmit, availablePoints, monster, mag
   }, [atRechargeLimit, rechargeOption]);
 
   // Calculate base magic point cost 
+  console.log('About to calculate cost, duration is:', duration);
   const baseMagicPointCost = calculateBaseMagicPointCost({
     castingTime,
     primaryEffectType,
@@ -130,8 +130,10 @@ export function ActionEconomySpellForm({ onSubmit, availablePoints, monster, mag
     defenseType,
     acBonus,
     healingDice,
-    defenseDuration // Add this parameter
+    defenseDuration,
+    duration // Add this parameter
   });
+  console.log('After calculation, cost is:', baseMagicPointCost);
   
   // Find the selected recharge option
   const selectedRecharge = getRechargeById(RECHARGE_OPTIONS, rechargeOption);

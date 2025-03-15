@@ -69,7 +69,7 @@ const SpellAttackFields = ({
 
         {/* Saving Throw (only if actionType is saving throw) */}
         {actionType === 'saving throw' && (
-          <div className="w-2/10">
+          <div className="w-1/4">
             <label className="block text-sm font-medium mb-1">
               Saving Throw
             </label>
@@ -91,7 +91,7 @@ const SpellAttackFields = ({
         )} 
 
         {/* Area of Effect */}
-        <div className="w-1/2">
+        <div className={actionType === 'saving throw' ? "w-1/4" : "w-1/2"}>
           <label className="block text-sm font-medium mb-1">
             Area of Effect (Optional)
           </label>
@@ -116,6 +116,28 @@ const SpellAttackFields = ({
             </p>
           )}
         </div>
+
+        {actionType === 'saving throw' && (
+          <div className="w-1/4">
+            <label className="block text-sm font-medium mb-1">
+              Range of Effect
+            </label>
+            <div>
+              <select
+                className="w-full p-2 border rounded"
+                value={savingThrow}
+                onChange={(e) => setSavingThrow(e.target.value)}
+                disabled={disabled}
+              >
+                {SAVINGTHROWS.map((save) => (
+                  <option key={save} value={save}>
+                    {save}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        )} 
       </div>
 
       <div className="flex gap-4">

@@ -1,6 +1,6 @@
 // components/FeaturePointActions/ActionEconomySpellForm/SpellTypeFields/DefenseFields.js
 import React from 'react';
-import { CONDITIONS, DEFENSE_DURATIONS } from '../../../../constants/spell-parameters';
+import { CONDITIONS } from '../../../../constants/spell-parameters';
 
 const DefenseFields = ({
   defenseType,
@@ -81,34 +81,8 @@ const DefenseFields = ({
         )}
       </div>
       
-      {/* Defense Duration */}
-      <div>
-        <label className="block text-sm font-medium mb-1">
-          Duration
-        </label>
-        <div>
-          <select
-            className="w-1/2 p-2 border rounded"
-            value={defenseDuration}
-            onChange={(e) => setDefenseDuration(e.target.value)}
-            disabled={disabled}
-          >
-            {DEFENSE_DURATIONS.map((duration) => (
-              <option key={duration.value} value={duration.value}>
-                {duration.label} {duration.mpCost > 0 ? `(+${duration.mpCost} MP)` : '(Free)'}
-              </option>
-            ))}
-          </select>
-        </div>
-        <p className="text-xs text-gray-600 mt-1">
-          Basic duration is until the end of next turn, extending costs 1 MP per round
-        </p>
-      </div>
     </>
   );
 };
-
-// Export the DEFENSE_DURATIONS constant for use in cost calculations
-export { DEFENSE_DURATIONS };
 
 export default DefenseFields;

@@ -1,6 +1,6 @@
 // components/FeaturePointActions/ActionEconomySpellForm/utils/costCalculations.js
 
-import { RANGE_MULTIPLIERS, DEFENSE_DURATIONS } from '../../../../constants/spell-parameters';
+import { RANGE_MULTIPLIERS, DURATION } from '../../../../constants/spell-parameters';
 
 // Calculate the base magic point cost before recharge discount
 export const calculateBaseMagicPointCost = ({
@@ -12,7 +12,8 @@ export const calculateBaseMagicPointCost = ({
   defenseType,
   acBonus,
   healingDice,
-  defenseDuration // Add this parameter
+  defenseDuration,
+  duration // Add this parameter
 }) => {
   let cost = 0;
 
@@ -35,7 +36,20 @@ export const calculateBaseMagicPointCost = ({
       if (secondaryEffect !== 'none') {
         cost += 1;
       }
-      
+
+      console.log('Duration:', duration);
+      // Duration costs
+      const durationOption = DURATION.find(r => r.label.toLowerCase() === duration.toLowerCase());
+      console.log('durationOption:', durationOption);
+      if (durationOption) {
+        cost += durationOption.mpCost;
+        console.log('Duration MP:', durationOption.mpCost);
+      } else {
+        console.log('Duration not found in array, using default cost');
+        // Use a default cost if no match is found
+        cost += 0; // or whatever the default should be
+      }
+
       // Range costs
       const rangeOption = RANGE_MULTIPLIERS.find(r => r.value === rangeMultiplier);
       if (rangeOption) {
@@ -53,9 +67,17 @@ export const calculateBaseMagicPointCost = ({
       }
       
       // Add cost for extended duration
-      const selectedDuration = DEFENSE_DURATIONS.find(d => d.value === defenseDuration);
-      if (selectedDuration) {
-        cost += selectedDuration.mpCost;
+      console.log('Duration:', duration);
+      // Duration costs
+      const durationDefOption = DURATION.find(r => r.label.toLowerCase() === duration.toLowerCase());
+      console.log('durationDefOption:', durationDefOption);
+      if (durationDefOption) {
+        cost += durationDefOption.mpCost;
+        console.log('Duration MP:', durationDefOption.mpCost);
+      } else {
+        console.log('Duration not found in array, using default cost');
+        // Use a default cost if no match is found
+        cost += 0; // or whatever the default should be
       }
       break;
       

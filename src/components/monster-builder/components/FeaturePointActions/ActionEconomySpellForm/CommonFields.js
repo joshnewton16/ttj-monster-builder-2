@@ -94,11 +94,18 @@ const CommonFields = ({
               onChange={(e) => setDuration(e.target.value)}
               disabled={disabled}
             >
-              {DURATION.map((durItem) => (
-                <option key={durItem.value} value={durItem.value}>
-                  {durItem.value.charAt(0).toUpperCase() + durItem.value.slice(1)}
-                </option>
-              ))}
+              {DURATION
+                .filter(durItem => 
+                  (primaryEffectType === 'Spell Attack' && durItem.spellAttack) ||
+                  (primaryEffectType === 'Defense' && durItem.defense) ||
+                  (primaryEffectType !== 'Spell Attack' && primaryEffectType !== 'Defense' && durItem.value === 'instantaneous')
+                )
+                .map((durItem) => (
+                  <option key={durItem.label} value={durItem.label}>
+                    {durItem.label.charAt(0).toUpperCase() + durItem.label.slice(1)}
+                  </option>
+                ))
+              }
             </select>
           </div>
         </div>

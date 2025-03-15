@@ -7,9 +7,19 @@ export const SAVINGTHROWS = ['STR', 'DEX', 'CON', 'WIS', 'INT', 'CHA']
 export const PRIMARYEFFECTTYPE = ['Spell Attack', 'Defense', 'Healing', 'Adjust Movement', 'Control']
 
 export const DURATION = [
-    {value: 'instantaneous', mpcost: 0},
-    {value: '1 round', mpcost: 0},
-    {value: '1 minute', mpcost: 0}
+    { value: 'instantaneous', label: 'instantaneous', spellAttack: true, defense: true, mpCost: 0},
+    { value: 'next-turn', label: 'Until end of next turn', spellAttack: false, defense: true, mpCost: 0 },
+    { value: '1-round', label: '1 round', spellAttack: true, defense: true, mpCost: 1},
+    { value: '1-minute', label: '1 minute', spellAttack: true, defense: false, mpCost: 2},
+    { value: '2-rounds', label: '2 rounds', spellAttack: false, defense: true, mpCost: 2 },
+    { value: '3-rounds', label: '3 rounds', spellAttack: false, defense: true, mpCost: 3 },
+    { value: '4-rounds', label: '4 rounds', spellAttack: false, defense: true, mpCost: 4 },
+    { value: '5-rounds', label: '5 rounds', spellAttack: false, defense: true, mpCost: 5 },
+    { value: '6-rounds', label: '6 rounds', spellAttack: false, defense: true, mpCost: 6 },
+    { value: '7-rounds', label: '7 rounds', spellAttack: false, defense: true, mpCost: 7 },
+    { value: '8-rounds', label: '8 rounds', spellAttack: false, defense: true, mpCost: 8 },
+    { value: '9-rounds', label: '9 rounds', spellAttack: false, defense: true, mpCost: 9 },
+    { value: '10-rounds', label: '10 rounds', spellAttack: false, defense: true, mpCost: 10 }
   ];
 
   export const DAMAGETYPES = [
@@ -117,18 +127,4 @@ export const RANGE_MULTIPLIERS = [
   { value: 3, label: '3× Range', mpCost: 1 },
   { value: 5, label: '5× Range', mpCost: 2 },
   { value: 10, label: '10× Range', mpCost: 4 }
-];
-
-export const DEFENSE_DURATIONS = [
-  { value: 'next-turn', label: 'Until end of next turn', mpCost: 0 },
-  { value: '1-round', label: '1 round', mpCost: 1 },
-  { value: '2-rounds', label: '2 rounds', mpCost: 2 },
-  { value: '3-rounds', label: '3 rounds', mpCost: 3 },
-  { value: '4-rounds', label: '4 rounds', mpCost: 4 },
-  { value: '5-rounds', label: '5 rounds', mpCost: 5 },
-  { value: '6-rounds', label: '6 rounds', mpCost: 6 },
-  { value: '7-rounds', label: '7 rounds', mpCost: 7 },
-  { value: '8-rounds', label: '8 rounds', mpCost: 8 },
-  { value: '9-rounds', label: '9 rounds', mpCost: 9 },
-  { value: '10-rounds', label: '10 rounds', mpCost: 10 }
 ];
