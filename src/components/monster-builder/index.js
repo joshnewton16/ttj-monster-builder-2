@@ -6,6 +6,7 @@ import { ActionsFeatures } from './components/ActionsFeatures';
 import { FeaturePoints } from './components/FeaturePoints';
 import PreviewPanel from './components/PreviewPanel';
 import MarkdownExporter from './components/MarkdownExporter'; // Import markdown exporter
+import MarkdownImporter from './components/MarkdownImporter';
 import StatBlockImageExporter from './components/StatBlockImageExporter'; // Import image exporter
 
 const initialMonsterState = {
@@ -131,9 +132,12 @@ function handleCRChange(newCR) {
             >
               Next
             </button>
+          </div>
+          <div className="flex justify-start gap-4 mt-6 mb-4">
             {/* Add Export buttons */}
             <MarkdownExporter monster={monster} />
             <StatBlockImageExporter monster={monster} />
+            <MarkdownImporter onImport={(importedMonster) => setMonster(importedMonster)} />          
           </div>
         </div>
         {step >= 2 && (

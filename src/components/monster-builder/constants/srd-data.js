@@ -121,6 +121,7 @@ export const SIZE_MOVEMENT = {
 };
 
 export const CR_TABLE = [
+  { minAC: 13, minHP: 0, maxHP: 70, cr:0 },
   { minAC: 13, minHP: 71, maxHP: 85, cr: 1 },
   { minAC: 13, minHP: 86, maxHP: 100, cr: 2 },
   { minAC: 13, minHP: 101, maxHP: 115, cr: 3 },
