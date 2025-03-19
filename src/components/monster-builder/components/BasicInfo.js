@@ -1,12 +1,13 @@
 import React, { useEffect, useRef } from 'react';
 import { SIZES, CR_TABLE, SIZE_MOVEMENT, CREATURETYPES } from '../constants/srd-data';
+import { calculateAverageHP, calculateCR } from '../functions/globalFunctions';
 
 const SPEED_TYPES = ['Walk', 'Fly', 'Swim', 'Climb', 'Burrow'];
 
 export function BasicInfo({ monster, setMonster, onCRChange }) {
   // Add a ref to track if we're manually adjusting CR
   const isManuallyAdjustingCR = useRef(false);
-  function calculateAverageHP(notation) {
+  /*function calculateAverageHP(notation) {
     if (!notation) return 0;
     
     const match = notation.match(/(\d+)d(\d+)(?:\s*\+\s*(\d+))?/);
@@ -43,29 +44,23 @@ export function BasicInfo({ monster, setMonster, onCRChange }) {
     
     // If results are the same, return either one
     return acCR;
-  }
+  }*/
 
   // Function to adjust AC based on CR
   function adjustACForCR(newCR) {
-    // Find the CR entry in the table
     const crEntry = CR_TABLE.find(entry => entry.cr === newCR);
     
-    if (!crEntry) return monster.ac; // If CR not found in table, keep current AC
+    if (!crEntry) return monster.ac; 
     
-    // If current AC is below the minimum for this CR, increase it to match
     if (monster.ac < crEntry.minAC) {
       return crEntry.minAC;
     }
     
-    // If we're decreasing CR, we might need to decrease AC as well
-    // Find the next CR entry
     const nextCRIndex = CR_TABLE.findIndex(entry => entry.cr === newCR) + 1;
     
     if (nextCRIndex < CR_TABLE.length) {
       const nextCREntry = CR_TABLE[nextCRIndex];
       
-      // If current AC is above or equal to the minimum for the next CR,
-      // decrease it to be just below that threshold
       if (monster.ac >= nextCREntry.minAC) {
         return nextCREntry.minAC - 1;
       }
