@@ -4,6 +4,9 @@ export const calculateModifier = (attributeValue) => {
 };
 
 export const getActionString = (feature, monster) => {
+  console.log('Incoming feature',feature);
+
+
   if (!feature.damage) return feature.description;
 
   const strMod = calculateModifier(monster.attributes.str);
@@ -34,6 +37,8 @@ export const getActionString = (feature, monster) => {
         description += `. ${feature.secondaryEffect.description}`;
       }
     }
+
+    console.log("Description:", description);
 
     return description;
   } catch (error) {

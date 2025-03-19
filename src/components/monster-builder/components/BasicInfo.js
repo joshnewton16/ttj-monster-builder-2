@@ -4,6 +4,8 @@ import { SIZES, CR_TABLE, SIZE_MOVEMENT, CREATURETYPES } from '../constants/srd-
 const SPEED_TYPES = ['Walk', 'Fly', 'Swim', 'Climb', 'Burrow'];
 
 export function BasicInfo({ monster, setMonster, onCRChange }) {
+  // Add a ref to track if we're manually adjusting CR
+  const isManuallyAdjustingCR = useRef(false);
   function calculateAverageHP(notation) {
     if (!notation) return 0;
     
@@ -41,6 +43,78 @@ export function BasicInfo({ monster, setMonster, onCRChange }) {
     
     // If results are the same, return either one
     return acCR;
+  }
+
+  // Function to adjust AC based on CR
+  function adjustACForCR(newCR) {
+    // Find the CR entry in the table
+    const crEntry = CR_TABLE.find(entry => entry.cr === newCR);
+    
+    if (!crEntry) return monster.ac; // If CR not found in table, keep current AC
+    
+    // If current AC is below the minimum for this CR, increase it to match
+    if (monster.ac < crEntry.minAC) {
+      return crEntry.minAC;
+    }
+    
+    // If we're decreasing CR, we might need to decrease AC as well
+    // Find the next CR entry
+    const nextCRIndex = CR_TABLE.findIndex(entry => entry.cr === newCR) + 1;
+    
+    if (nextCRIndex < CR_TABLE.length) {
+      const nextCREntry = CR_TABLE[nextCRIndex];
+      
+      // If current AC is above or equal to the minimum for the next CR,
+      // decrease it to be just below that threshold
+      if (monster.ac >= nextCREntry.minAC) {
+        return nextCREntry.minAC - 1;
+      }
+    }
+    
+    // Otherwise, AC is already appropriate for this CR
+    return monster.ac;
+  }
+  
+  // Function to handle manual CR adjustment
+  function handleCRAdjustment(increment) {
+    // Set the flag to indicate we're manually adjusting
+    isManuallyAdjustingCR.current = true;
+    
+    // Get the current CR - make sure it's a number
+    const currentCR = parseInt(monster.cr) || 0;
+    console.log("Current CR before adjustment:", currentCR, "Type:", typeof currentCR);
+    
+    // Simply increment or decrement by 1, with a minimum of 0
+    const newCR = Math.max(0, currentCR + increment);
+    console.log("New CR after adjustment:", newCR);
+    
+    // If CR didn't change, do nothing
+    if (newCR === currentCR) {
+      isManuallyAdjustingCR.current = false;
+      return;
+    }
+    
+    // Calculate appropriate AC for the new CR
+    const adjustedAC = adjustACForCR(newCR);
+    
+    // Update monster state
+    setMonster(prev => ({
+      ...prev,
+      cr: newCR,
+      ac: adjustedAC,
+      armorClass: adjustedAC.toString(),
+      acText: prev.armorDescription ? 
+        `${adjustedAC} (${prev.armorDescription})` : 
+        `${adjustedAC}`
+    }));
+    
+    // Notify parent component of CR change
+    onCRChange(newCR);
+    
+    // Reset the flag after a short delay to allow state updates to complete
+    setTimeout(() => {
+      isManuallyAdjustingCR.current = false;
+    }, 100);
   }
 
   // Initialize speed array if needed
@@ -98,9 +172,16 @@ export function BasicInfo({ monster, setMonster, onCRChange }) {
 
   // Update CR when AC and HP change
   useEffect(() => {
-    console.log(monster.hp)
+    // Skip automatic recalculation if we're in the middle of manually adjusting CR
+    if (isManuallyAdjustingCR.current) {
+      console.log("Skipping automatic CR calculation during manual adjustment");
+      return;
+    }
+    
     const newCR = calculateCR(monster.ac, monster.hp);
+    console.log("Calculated CR:", newCR, "from AC:", monster.ac, "HP:", monster.hp);
     if (newCR !== monster.cr) {  // Only update if CR actually changed
+      console.log("Updating CR from", monster.cr, "to", newCR);
       onCRChange(newCR);
     }
   }, [monster.ac, monster.hp, monster.cr, onCRChange]);
@@ -217,8 +298,34 @@ export function BasicInfo({ monster, setMonster, onCRChange }) {
                   }}
                 />
               </label>
-              <div className="text-sm mt-1">
-                Average HP: {monster.hp} | CR: {monster.cr}
+              <div className="text-sm mt-1 flex items-center">
+                <span>Average HP: {monster.hp}</span>
+                <span className="mx-2">|</span>
+                <span>CR: {monster.cr}</span>
+                <div className="ml-2 flex">
+                  <button
+                    type="button"
+                    className="px-2 py-0.5 bg-gray-200 hover:bg-gray-300 rounded-l"
+                    onClick={() => {
+                      console.log("Clicked minus button");
+                      handleCRAdjustment(-1);
+                    }}
+                    title="Decrease CR"
+                  >
+                    −
+                  </button>
+                  <button
+                    type="button"
+                    className="px-2 py-0.5 bg-gray-200 hover:bg-gray-300 rounded-r"
+                    onClick={() => {
+                      console.log("Clicked plus button");
+                      handleCRAdjustment(1);
+                    }}
+                    title="Increase CR"
+                  >
+                    +
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -277,7 +384,12 @@ export function BasicInfo({ monster, setMonster, onCRChange }) {
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {CR_TABLE.map((entry, index) => (
-                    <tr key={entry.cr} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                    <tr 
+                      key={entry.cr} 
+                      className={`${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} ${
+                        entry.cr === monster.cr ? 'bg-blue-100' : ''
+                      }`}
+                    >
                       <td className="px-2 py-1 whitespace-nowrap text-xs text-gray-900">{entry.cr}</td>
                       <td className="px-2 py-1 whitespace-nowrap text-xs text-gray-900">{entry.minAC}</td>
                       <td className="px-2 py-1 whitespace-nowrap text-xs text-gray-900">{entry.minHP}</td>
