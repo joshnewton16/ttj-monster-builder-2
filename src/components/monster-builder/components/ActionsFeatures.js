@@ -93,6 +93,26 @@ export function ActionsFeatures({ monster, setMonster }) {
     }));
   };
 
+    // Let's create a function to update the monster when spending a feature point
+  const handleSpendFeaturePoint = () => {
+    // Since we don't have a direct setter for availableFeaturePoints,
+    // we need to update the monster object to reflect the feature point usage
+    
+    // Update the monster to add the attribute points and implicitly spend a feature point
+    setMonster(prevMonster => {
+      // Get the current attributePointsFromFeatures value or default to 0
+      const currentAttributePoints = prevMonster.attributePointsFromFeatures || 0;
+      
+      // Add 2 attribute points
+      return {
+        ...prevMonster,
+        attributePointsFromFeatures: currentAttributePoints + 2,
+        // If you need to track spent feature points explicitly in the monster object:
+        // spentFeaturePoints: (prevMonster.spentFeaturePoints || 0) + 1
+      };
+    });
+  };
+
   const handleMovementModify = (modificationType, speedType) => {
     setMonster(prev => {
       const newSpeed = [...prev.speed];
@@ -141,10 +161,12 @@ export function ActionsFeatures({ monster, setMonster }) {
     
   };
 
-  const handleAttributePoints = () => {
+  const handleAttributeModify = (attributeData) => {
+    console.log('handleAttributeModify called with:', attributeData); // Add logging for debugging
+
     setMonster(prev => ({
       ...prev,
-      attributePointsFromFeatures: 2  // Add 2 attribute points
+      attributePointsFromFeatures: attributeData.attributePointsFromFeatures
     }));
   };
 
@@ -279,7 +301,9 @@ export function ActionsFeatures({ monster, setMonster }) {
         existingAttacks={existingAttacks}
         multiattackCount={multiattackCount}
         monster={monster}
+        setMonster={setMonster} // Make sure to pass this
         availablePoints={availableFeaturePoints}
+        spendFeaturePoint={handleSpendFeaturePoint} 
         onBaseActionSubmit={handleAddAction}
         hasFirstAction={hasFirstAction}
         onFeatureSubmit={handleAddFeature}
@@ -288,7 +312,7 @@ export function ActionsFeatures({ monster, setMonster }) {
         onSecondaryEffect={addSecondaryEffect}
         onDoubleDamage={doubleDamage}
         onMovementModify={handleMovementModify}
-        onAttributePoints={handleAttributePoints}
+        onAttributePoints={handleAttributeModify}
         onSkillModify={handleSkillModify}
         onImmunityModify={handleImmunityModify}
         onResistanceModify={handleResistanceModify}

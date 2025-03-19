@@ -9,8 +9,9 @@ import { MovementAction } from './MovementAction';
 import { SkillAction } from './SkillAction';
 import { DefenseModifications } from './DefenseModifications';
 import { SpellcastingForm } from './SpellcastingForm';
-import { ActionEconomySpellForm } from './ActionEconomySpellForm'; // Adjusted import
+import { ActionEconomySpellForm } from './ActionEconomySpellForm';
 import { SenseAction } from './SenseAction';
+import { AttributeAction } from './AttributeAction'; // Import the new AttributeAction component
 import { LEGENDARYACTIONS } from '../../constants/srd-data';
 
 export function FeaturePointActions({
@@ -29,9 +30,13 @@ export function FeaturePointActions({
   onImmunityModify,
   onResistanceModify,
   onSenseModify,
+  onAttributeModify, // New attribute modify handler
   availablePoints,
   magicPoints,
-  setMagicPoints
+  setMagicPoints,
+  setAvailablePoints, // Make sure this is passed!
+  spendFeaturePoint, // Changed from setAvailablePoints to spendFeaturePoint
+  setMonster
 }) {
   const [selectedAction, setSelectedAction] = useState('');
 
@@ -114,9 +119,33 @@ export function FeaturePointActions({
 
   // Handler for action economy spells
   const handleActionEconomySpell = (spellData) => {
-   
     // Submit the spell feature
     onFeatureSubmit(spellData);
+    
+    // Reset the selected action
+    setSelectedAction('');
+  };
+
+  // Define the handleAttributeModify function with console logs for debugging
+  const handleAttributeModify = (attributeData) => {
+    console.log('handleAttributeModify in FeaturePointActions called with:', attributeData);
+    
+    // We no longer need to update the monster directly since spendFeaturePoint will do that
+    if (typeof spendFeaturePoint === 'function') {
+      // This will update the monster with +2 attribute points and spend a feature point
+      spendFeaturePoint();
+    } else {
+      console.warn('spendFeaturePoint is not a function');
+      
+      // Fallback if spendFeaturePoint isn't available
+      if (setMonster && typeof setMonster === 'function') {
+        setMonster(prevMonster => ({
+          ...prevMonster,
+          attributePointsFromFeatures: 
+            (prevMonster.attributePointsFromFeatures || 0) + 2
+        }));
+      }
+    }
     
     // Reset the selected action
     setSelectedAction('');
@@ -238,6 +267,14 @@ export function FeaturePointActions({
             availablePoints={availablePoints}
           />
         );
+      case 'attributePoints':
+        return (
+          <AttributeAction
+            monster={monster}
+            onSubmit={handleAttributeModify}
+            availablePoints={availablePoints}
+          />
+        );
       default:
         return null;
     }
@@ -289,6 +326,7 @@ export function FeaturePointActions({
         <option value="proficiency">Add Two Skill Proficiencies</option>
         <option value="defense">Add Defense Modification</option>
         <option value="senses">Add Enhanced Senses</option>
+        <option value="attributePoints">Add Attribute Points</option>
       </select>
 
       {renderActionComponent()}
