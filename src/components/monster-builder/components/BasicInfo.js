@@ -172,7 +172,7 @@ export function BasicInfo({ monster, setMonster, onCRChange }) {
       console.log("Skipping automatic CR calculation during manual adjustment");
       return;
     }
-    
+
     const newCR = calculateCR(monster.ac, monster.hp);
     console.log("Calculated CR:", newCR, "from AC:", monster.ac, "HP:", monster.hp);
     if (newCR !== monster.cr) {  // Only update if CR actually changed

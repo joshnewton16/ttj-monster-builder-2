@@ -73,15 +73,13 @@ export const calculateBaseMagicPointCost = ({
       }
       
       // Add cost for extended duration
-      console.log('Duration:', duration);
+
       // Duration costs
       const durationDefOption = DURATION.find(r => r.label.toLowerCase() === duration.toLowerCase());
-      console.log('durationDefOption:', durationDefOption);
+
       if (durationDefOption) {
         cost += durationDefOption.mpCost;
-        console.log('Duration MP:', durationDefOption.mpCost);
       } else {
-        console.log('Duration not found in array, using default cost');
         // Use a default cost if no match is found
         cost += 0; // or whatever the default should be
       }

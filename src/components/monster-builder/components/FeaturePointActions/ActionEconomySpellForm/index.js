@@ -120,7 +120,7 @@ export function ActionEconomySpellForm({ onSubmit, availablePoints, monster, mag
   }, [atRechargeLimit, rechargeOption]);
 
   // Calculate base magic point cost 
-  console.log('About to calculate cost, duration is:', duration);
+
   const baseMagicPointCost=2;
   const featureMagicPointCost = calculateBaseMagicPointCost({
     castingTime,
@@ -135,7 +135,6 @@ export function ActionEconomySpellForm({ onSubmit, availablePoints, monster, mag
     duration,
     areaSize // Add this parameter
   });
-  console.log('After calculation, cost is:', baseMagicPointCost,featureMagicPointCost);
   
   // Find the selected recharge option
   const selectedRecharge = getRechargeById(RECHARGE_OPTIONS, rechargeOption);

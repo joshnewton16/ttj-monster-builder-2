@@ -84,7 +84,6 @@ export const generateSpellDescription = ({
       }
       
       if (isSecondaryCondition(secondaryEffect)) {
-        console.log(secondaryEffect);
         desc += ` and is ${secondaryEffect}`;
         
         if (duration !== 'instantaneous') {

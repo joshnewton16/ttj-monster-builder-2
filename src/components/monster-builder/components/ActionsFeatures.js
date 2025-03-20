@@ -249,7 +249,6 @@ export function ActionsFeatures({ monster, setMonster }) {
         }
       };
 
-      console.log('After update: ', monster);  
       return {
         ...prev,
         features: [...prev.features, newFeature]

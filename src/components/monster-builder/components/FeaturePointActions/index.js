@@ -47,6 +47,7 @@ export function FeaturePointActions({
 
   // Wrap each handler to reset the selectedAction after completion
   const handleBaseAction = (actionData) => {
+    console.log(monster)
     onBaseActionSubmit(actionData);
     setSelectedAction('');
   };
@@ -94,21 +95,17 @@ export function FeaturePointActions({
   };
 
   const handleDefenseModify = (modificationType, type) => {
-    console.log('handleDefenseModify called with:', modificationType, type);
-    
+  
     if (modificationType === 'resistance') {
-      console.log('Calling onResistanceModify with:', type);
       onResistanceModify(type);
     } else if (modificationType === 'damageImmunity') {
-      console.log('Calling onImmunityModify with type damage and:', type);
       onImmunityModify('damage', type);
     } else if (modificationType === 'conditionImmunity') {
-      console.log('Calling onImmunityModify with type condition and:', type);
       onImmunityModify('condition', type);
     } else {
-      console.log('WARNING: No matching modification type:', modificationType);
+
     }
-    console.log(monster);
+
     setSelectedAction('');
   };
 
