@@ -93,22 +93,22 @@ export function ActionsFeatures({ monster, setMonster }) {
     }));
   };
 
-    // Let's create a function to update the monster when spending a feature point
-  const handleSpendFeaturePoint = () => {
-    // Since we don't have a direct setter for availableFeaturePoints,
-    // we need to update the monster object to reflect the feature point usage
-    
-    // Update the monster to add the attribute points and implicitly spend a feature point
-    setMonster(prevMonster => {
-      // Get the current attributePointsFromFeatures value or default to 0
-      const currentAttributePoints = prevMonster.attributePointsFromFeatures || 0;
-      
-      // Add 2 attribute points
+  // Let's create a function to update the monster when spending a feature point
+  const handleAddAttributePoints = () => {
+    setMonster(prev => {
+      const currentAttributePoints = prev.attributePointsFromFeatures || 0;
+
+      const newFeature = {
+        name: `Add Attribute Points`,
+        costFeaturePoint: true,
+        isHidden: true  // Add this flag to indicate it shouldn't be displayed
+      };
+
+      // Add 2 attribute points and feature record
       return {
-        ...prevMonster,
+        ...prev,
         attributePointsFromFeatures: currentAttributePoints + 2,
-        // If you need to track spent feature points explicitly in the monster object:
-        // spentFeaturePoints: (prevMonster.spentFeaturePoints || 0) + 1
+        features: [...prev.features, newFeature]
       };
     });
   };
@@ -302,7 +302,6 @@ export function ActionsFeatures({ monster, setMonster }) {
         monster={monster}
         setMonster={setMonster} // Make sure to pass this
         availablePoints={availableFeaturePoints}
-        spendFeaturePoint={handleSpendFeaturePoint} 
         onBaseActionSubmit={handleAddAction}
         hasFirstAction={hasFirstAction}
         onFeatureSubmit={handleAddFeature}
@@ -312,6 +311,7 @@ export function ActionsFeatures({ monster, setMonster }) {
         onDoubleDamage={doubleDamage}
         onMovementModify={handleMovementModify}
         onAttributePoints={handleAttributeModify}
+        onAddAttributePoints={handleAddAttributePoints}
         onSkillModify={handleSkillModify}
         onImmunityModify={handleImmunityModify}
         onResistanceModify={handleResistanceModify}

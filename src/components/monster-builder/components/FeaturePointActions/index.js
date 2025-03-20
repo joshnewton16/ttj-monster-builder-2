@@ -30,12 +30,11 @@ export function FeaturePointActions({
   onImmunityModify,
   onResistanceModify,
   onSenseModify,
-  onAttributeModify, // New attribute modify handler
+  onAddAttributePoints, // New attribute modify handler
   availablePoints,
   magicPoints,
   setMagicPoints,
   setAvailablePoints, // Make sure this is passed!
-  spendFeaturePoint, // Changed from setAvailablePoints to spendFeaturePoint
   setMonster
 }) {
   const [selectedAction, setSelectedAction] = useState('');
@@ -114,6 +113,12 @@ export function FeaturePointActions({
     setSelectedAction('');
   };
 
+  const handleAddAttributePoints = () => {
+    onAddAttributePoints();
+    setSelectedAction('');
+  };
+  
+
   // Handler for action economy spells
   const handleActionEconomySpell = (spellData) => {
     // Submit the spell feature
@@ -124,29 +129,6 @@ export function FeaturePointActions({
   };
 
   // Define the handleAttributeModify function with console logs for debugging
-  const handleAttributeModify = (attributeData) => {
-    console.log('handleAttributeModify in FeaturePointActions called with:', attributeData);
-    
-    // We no longer need to update the monster directly since spendFeaturePoint will do that
-    if (typeof spendFeaturePoint === 'function') {
-      // This will update the monster with +2 attribute points and spend a feature point
-      spendFeaturePoint();
-    } else {
-      console.warn('spendFeaturePoint is not a function');
-      
-      // Fallback if spendFeaturePoint isn't available
-      if (setMonster && typeof setMonster === 'function') {
-        setMonster(prevMonster => ({
-          ...prevMonster,
-          attributePointsFromFeatures: 
-            (prevMonster.attributePointsFromFeatures || 0) + 2
-        }));
-      }
-    }
-    
-    // Reset the selected action
-    setSelectedAction('');
-  };
 
   const renderActionComponent = () => {
     switch (selectedAction) {
@@ -268,7 +250,7 @@ export function FeaturePointActions({
         return (
           <AttributeAction
             monster={monster}
-            onSubmit={handleAttributeModify}
+            onSubmit={handleAddAttributePoints}
             availablePoints={availablePoints}
           />
         );

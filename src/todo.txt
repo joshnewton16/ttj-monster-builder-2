@@ -11,6 +11,7 @@ Remove alignment from the image
 "Armor Class 15 (15 (Studded Leather))" needs to be fixed
 If the Hit Points don't have any DND Algebraic notation, don't duplicate
 All point allocations should be reviewed.
+Multiattack form, should be a CR between the pull down and the button.
 
 Complete
     Resistances don't get added to the state variables.

@@ -23,7 +23,10 @@ export function AttributeAction({ monster, onSubmit, availablePoints }) {
       const attributeData = {
         attributePointsFromFeatures: newAttributePoints
       };
-      
+      console.log('Current State', monster);
+      console.log('availablePoints: ', availablePoints);
+      console.log('newAttributePoints: ', newAttributePoints);
+      console.log('attributeData: ', attributeData);
       // Submit the data
       onSubmit(attributeData);
     }
