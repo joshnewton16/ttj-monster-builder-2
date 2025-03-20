@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { SRD_ACTIONS } from '../constants/srd-data';
+import { getModifier } from '../functions/globalFunctions';
 
 export function FeaturePoints({ monster, setMonster }) {
   const [selectedOption, setSelectedOption] = useState('');
@@ -33,10 +34,6 @@ export function FeaturePoints({ monster, setMonster }) {
     if (a.cost !== b.cost) return a.cost - b.cost;
     return a.name.localeCompare(b.name);
   });
-
-  function calculateModifier(attributeValue) {
-    return Math.floor((attributeValue - 10) / 2);
-  }
 
   const handleAddAction = (action) => {
     if (!action) return;
@@ -122,8 +119,8 @@ export function FeaturePoints({ monster, setMonster }) {
                 >
                   <option value="">Select an action...</option>
                   {SRD_ACTIONS.map(action => {
-                    const strMod = calculateModifier(monster.attributes.str);
-                    const dexMod = calculateModifier(monster.attributes.dex);
+                    const strMod = getModifier(monster.attributes.str);
+                    const dexMod = getModifier(monster.attributes.dex);
                     const mod = action.useDex ? dexMod : (action.useStr ? strMod : 0);
                     const modString = mod >= 0 ? `+${mod}` : mod;
                     const [dice, ...damageType] = action.damage.split(' ');

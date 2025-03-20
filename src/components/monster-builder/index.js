@@ -3,7 +3,6 @@ import { BasicInfo } from './components/BasicInfo';
 import { Attributes } from './components/Attributes';
 import { Proficiencies } from './components/Proficiencies';
 import { ActionsFeatures } from './components/ActionsFeatures';
-import { FeaturePoints } from './components/FeaturePoints';
 import PreviewPanel from './components/PreviewPanel';
 import MarkdownExporter from './components/MarkdownExporter'; // Import markdown exporter
 import MarkdownImporter from './components/MarkdownImporter';
@@ -95,8 +94,6 @@ function handleCRChange(newCR) {
           return <Proficiencies monster={monster} setMonster={setMonster} />;
         case 4:
           return <ActionsFeatures monster={monster} setMonster={setMonster} />;
-        case 5:
-          return <FeaturePoints monster={monster} setMonster={setMonster} />;
         default:
           return null;
       }

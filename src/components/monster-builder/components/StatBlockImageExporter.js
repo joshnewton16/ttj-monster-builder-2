@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import html2canvas from 'html2canvas';
 import { getSkillAbility } from '../constants/srd-data'; // Import from your constants file
 import { getModifier } from '../functions/globalFunctions';
+import { getActionString } from './PreviewPanel/utils';
 
 /**
  * Component for generating and exporting D&D monster stat blocks as images
@@ -58,26 +59,6 @@ const StatBlockImageExporter = ({ monster }) => {
     const half = Math.ceil(features.length / 2);
     return [features.slice(0, half), features.slice(half)];
   };
-
-  function renderAttributeRow(attributeName, isLastInRow = false) {
-    const upperAttr = attributeName.toUpperCase();
-    const attrScore = monster.attributes[attributeName];
-    const baseModifier = getModifier(attrScore);
-    
-    const hasSavingThrow = monster.savingThrows && monster.savingThrows.includes(attributeName);
-    const savingThrowValue = hasSavingThrow ? 
-      (() => {
-        const modifier = parseInt(baseModifier) + monster.proficiencyBonus;
-        return modifier >= 0 ? `+${modifier}` : `${modifier}`;
-      })() : '-';
-    
-    return `
-      <td style="padding-right: 10px; border-left: 2px solid #999; border-top: 2px solid #999; border-bottom: 2px solid #999;"><p style="margin: 0"><strong>${upperAttr}</strong></p></td>
-      <td style="border-top: 2px solid #999; border-bottom: 2px solid #999;"><p style="margin: 0;">${attrScore}</p></td>
-      <td style="padding-right: 5px; background-color: #f5f5f5; border-top: 2px solid #999; border-bottom: 2px solid #999;"><p style="margin: 0;">${baseModifier}</p></td>
-      <td style="padding-right: 5px; background-color: #f5f5f5; border-right: 2px solid #999; border-top: 2px solid #999; border-bottom: 2px solid #999;"><p style="margin: 0;">${savingThrowValue}</p></td>
-    `;
-  }
 
   /**
    * Generate and show the stat block modal with current settings
@@ -154,14 +135,14 @@ const StatBlockImageExporter = ({ monster }) => {
       
       let header = '';
       if (showHeader && category !== 'Abilities') {
-        header = `<h2 style="color: #7a200d; font-size: 18px; margin: 0;">${category}</h2>`;
+        header = `<h2 style="color: #7a200d; font-size: 18px; margin: 0; border-bottom: 1px solid #7a200d; padding-bottom: 4px; margin-bottom: 8px;">${category}</h2>`;
       }
       
       return `
         <div style="margin-bottom: ${category === 'Abilities' ? '20px' : '10px'};">
           ${header}
           ${features.map(feature => 
-            `<p style="margin: 0;"><strong><em>${feature.name}.</em></strong> ${feature.description}</p>`
+            `<p style="margin: 0;"><strong><em>${feature.name}.</em></strong> ${getActionString(feature, monster)} </p>`
           ).join('<br/>')}
         </div>
       `;
@@ -204,8 +185,8 @@ const StatBlockImageExporter = ({ monster }) => {
       leftColumnHtml += generateFeatureHtml(reactions, 'Reactions');
     }
     
-    // Set the HTML content of the stat block
-    statBlockContainer.innerHTML = `
+    // Create stat block HTML
+    const statBlockHtml = `
       <div id="stat-block-to-capture" style="
         width: ${useTwoColumns ? '800px' : '400px'};
         font-family: 'Noto Serif', 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
@@ -217,52 +198,110 @@ const StatBlockImageExporter = ({ monster }) => {
         background-image: url('https://www.gmbinder.com/images/YKGpEyy.png');
         background-size: cover;
       ">
-        <div style="border-bottom: 1px solid #7a200d; margin-bottom: 10px;">
+        <!-- Title Section -->
+        <div style="margin-bottom: 10px;">
           <h1 style="color: #7a200d; font-size: 24px; margin: 0;">${monster.name || 'Unnamed Monster'}</h1>
-          <p style="font-style: italic; margin: 0;">
+          <p style="font-style: italic; margin: 0 0 8px 0;">
             ${monster.size} ${monster.creaturetype || 'Creature'}, ${monster.alignment || 'unaligned'}
           </p>
+          <div style="border-bottom: 1px solid #7a200d;"></div>
         </div>
         
-        <div style="border-bottom: 1px solid #7a200d; margin-bottom: 10px; padding-bottom: 10px;">
+        <!-- Stats Section -->
+        <div style="margin-bottom: 10px;">
           <p style="margin: 0;"><strong>Armor Class</strong> ${monster.ac} ${monster.acText ? `(${monster.acText})` : ''}</p>
           <p style="margin: 0;"><strong>Hit Points</strong> ${monster.hp} ${monster.hpFormula ? `(${monster.hpFormula})` : ''}</p>
-          <p style="margin: 0;"><strong>Speed</strong> ${formatSpeeds()}</p>
+          <p style="margin: 0 0 8px 0;"><strong>Speed</strong> ${formatSpeeds()}</p>
+          <div style="border-bottom: 1px solid #7a200d;"></div>
         </div>
-        
-        <div style="display: flex; justify-content: space-between; text-align: center; border-bottom: 1px solid #7a200d; margin-bottom: 10px; padding-bottom: 10px;">
-          <table width=450px;>
-            <thead>
-              <tr>
-                <th></th>
-                <th></th>
-                <th style="font-size: 10px;">Mod</th>
-                <th style="font-size: 10px;">Save</th>
-                <th></th>
-                <th></th>
-                <th style="font-size: 10px;">Mod</th>
-                <th style="font-size: 10px;">Save</th>
-                <th></th>
-                <th></th>
-                <th style="font-size: 10px;">Mod</th>
-                <th style="font-size: 10px;">Save</th>                                
-              </tr>
-            </thead>
-            <tr>
-              ${renderAttributeRow('str')}
-              ${renderAttributeRow('dex')}
-              ${renderAttributeRow('con')}
-            </tr>
-            <tr>
-              ${renderAttributeRow('int')}
-              ${renderAttributeRow('wis')}
-              ${renderAttributeRow('cha')}
-            </tr>
-          </table>
+        <div style="margin-bottom: 15px;">
+          <!-- Headers Row -->
+          <div style="display: flex; justify-content: center; margin-bottom: 8px;">
+            <div style="width: 50px; text-align: center;"><strong></strong></div>
+            <div style="width: 50px; text-align: center;"><strong>STR</strong></div>
+            <div style="width: 50px; text-align: center;"><strong>DEX</strong></div>
+            <div style="width: 50px; text-align: center;"><strong>CON</strong></div>
+            <div style="width: 50px; text-align: center;"><strong>INT</strong></div>
+            <div style="width: 50px; text-align: center;"><strong>WIS</strong></div>
+            <div style="width: 50px; text-align: center;"><strong>CHA</strong></div>
+          </div>
+          
+          <!-- Scores Row -->
+          <div style="display: flex; justify-content: center; ">
+            <div style="width: 50px; text-align: center; border: 1px solid #999; padding: 6px 0;"><strong>Score</strong></div>
+            <div style="width: 50px; text-align: center; border: 1px solid #999; padding: 6px 0; border-left: none;">${monster.attributes.str}</div>
+            <div style="width: 50px; text-align: center; border: 1px solid #999; padding: 6px 0; border-left: none;">${monster.attributes.dex}</div>
+            <div style="width: 50px; text-align: center; border: 1px solid #999; padding: 6px 0; border-left: none; ">${monster.attributes.con}</div>
+            <div style="width: 50px; text-align: center; border: 1px solid #999; padding: 6px 0; border-left: none; ">${monster.attributes.int}</div>
+            <div style="width: 50px; text-align: center; border: 1px solid #999; padding: 6px 0; border-left: none; ">${monster.attributes.wis}</div>
+            <div style="width: 50px; text-align: center; border: 1px solid #999; padding: 6px 0; border-left: none; ">${monster.attributes.cha}</div>
+          </div>
+          
+          <!-- Modifiers Row -->
+          <div style="display: flex; justify-content: center; ">
+            <div style="width: 50px; text-align: center; border: 1px solid #999; padding: 6px 0; border-top: none; "><strong>Mod</strong></div>
+            <div style="width: 50px; text-align: center; border: 1px solid #999; border-top: none; border-left: none;  background-color: #f5f5f5; padding: 6px 0;">${getModifier(monster.attributes.str)}</div>
+            <div style="width: 50px; text-align: center; border: 1px solid #999; border-top: none; border-left: none;  background-color: #f5f5f5; padding: 6px 0;">${getModifier(monster.attributes.dex)}</div>
+            <div style="width: 50px; text-align: center; border: 1px solid #999; border-top: none; border-left: none;  background-color: #f5f5f5; padding: 6px 0;">${getModifier(monster.attributes.con)}</div>
+            <div style="width: 50px; text-align: center; border: 1px solid #999; border-top: none; border-left: none;  background-color: #f5f5f5; padding: 6px 0;">${getModifier(monster.attributes.int)}</div>
+            <div style="width: 50px; text-align: center; border: 1px solid #999; border-top: none; border-left: none;  background-color: #f5f5f5; padding: 6px 0;">${getModifier(monster.attributes.wis)}</div>
+            <div style="width: 50px; text-align: center; border: 1px solid #999; border-top: none; border-left: none;  background-color: #f5f5f5; padding: 6px 0;">${getModifier(monster.attributes.cha)}</div>
+          </div>
+          
+          <!-- Saving Throws Row -->
+          <div style="display: flex; justify-content: center; margin-bottom: 8px;">
+            <div style="width: 50px; text-align: center; border: 1px solid #999; padding: 6px 0; border-top: none; "><strong>Save</strong></div>          
+            <div style="width: 50px; text-align: center; border: 1px solid #999; border-top: none; border-left: none;  background-color: #f5f5f5; padding: 6px 0;">
+              ${monster.savingThrows && monster.savingThrows.includes('str') ? 
+                (() => {
+                  const mod = parseInt(getModifier(monster.attributes.str)) + monster.proficiencyBonus;
+                  return mod >= 0 ? `+${mod}` : mod;
+                })() : '-'}
+            </div>
+            <div style="width: 50px; text-align: center; border: 1px solid #999; border-top: none; border-left: none;  background-color: #f5f5f5; padding: 3px 0;">
+              ${monster.savingThrows && monster.savingThrows.includes('dex') ? 
+                (() => {
+                  const mod = parseInt(getModifier(monster.attributes.dex)) + monster.proficiencyBonus;
+                  return mod >= 0 ? `+${mod}` : mod;
+                })() : '-'}
+            </div>
+            <div style="width: 50px; text-align: center; border: 1px solid #999; border-top: none; border-left: none;  background-color: #f5f5f5; padding: 3px 0;">
+              ${monster.savingThrows && monster.savingThrows.includes('con') ? 
+                (() => {
+                  const mod = parseInt(getModifier(monster.attributes.con)) + monster.proficiencyBonus;
+                  return mod >= 0 ? `+${mod}` : mod;
+                })() : '-'}
+            </div>
+            <div style="width: 50px; text-align: center; border: 1px solid #999; border-top: none; border-left: none;  background-color: #f5f5f5; padding: 3px 0;">
+              ${monster.savingThrows && monster.savingThrows.includes('int') ? 
+                (() => {
+                  const mod = parseInt(getModifier(monster.attributes.int)) + monster.proficiencyBonus;
+                  return mod >= 0 ? `+${mod}` : mod;
+                })() : '-'}
+            </div>
+            <div style="width: 50px; text-align: center; border: 1px solid #999; border-top: none; border-left: none;  background-color: #f5f5f5; padding: 3px 0;">
+              ${monster.savingThrows && monster.savingThrows.includes('wis') ? 
+                (() => {
+                  const mod = parseInt(getModifier(monster.attributes.wis)) + monster.proficiencyBonus;
+                  return mod >= 0 ? `+${mod}` : mod;
+                })() : '-'}
+            </div>
+            <div style="width: 50px; text-align: center; border: 1px solid #999; border-top: none; border-left: none;  background-color: #f5f5f5; padding: 3px 0;">
+              ${monster.savingThrows && monster.savingThrows.includes('cha') ? 
+                (() => {
+                  const mod = parseInt(getModifier(monster.attributes.cha)) + monster.proficiencyBonus;
+                  return mod >= 0 ? `+${mod}` : mod;
+                })() : '-'}
+            </div>
+          </div>
+          
+          <!-- Bottom Separator Line -->
+          <div style="padding-top: 4px;">
+            <div style="height: 1px; background-color: #7a200d; margin-top: 8px;"></div>
+          </div>
         </div>
-        
-        <div style="border-bottom: 1px solid #7a200d; margin-bottom: 10px; padding-bottom: 10px;">
-            
+        <!-- Additional Info Section -->
+        <div style="margin-bottom: 10px;">
           ${monster.skills && monster.skills.length > 0 ? 
             `<p style="margin: 0;"><strong>Skills</strong> ${monster.skills.map(skill => {
               let skillName = '';
@@ -291,9 +330,11 @@ const StatBlockImageExporter = ({ monster }) => {
           ${monster.languages && monster.languages.length > 0 ? 
             `<p style="margin: 0;"><strong>Languages</strong> ${monster.languages.join(', ')}</p>` : ''}
           
-          <p style="margin: 0;"><strong>Challenge Rating</strong> ${monster.cr} ${monster.xp ? `(${monster.xp} XP)` : ''}</p>
+          <p style="margin: 0 0 8px 0;"><strong>Challenge Rating</strong> ${monster.cr} ${monster.xp ? `(${monster.xp} XP)` : ''}</p>
+          <div style="border-bottom: 1px solid #7a200d;"></div>
         </div>
         
+        <!-- Features and Actions Section -->
         ${useTwoColumns ? 
           `<div>
             <!-- Two column layout for Abilities (no header) -->
@@ -303,7 +344,7 @@ const StatBlockImageExporter = ({ monster }) => {
                 ${leftAbilities.length > 0 ? 
                   `<div>
                     ${leftAbilities.map(feature => 
-                      `<p style="margin: 0;"><strong><em>${feature.name}.</em></strong> ${feature.description}</p>`
+                      `<p style="margin: 0;"><strong><em>${feature.name}.</em></strong> ${getActionString(feature, monster)}</p>`
                     ).join('<br/>')}
                   </div>` : ''
                 }
@@ -313,7 +354,7 @@ const StatBlockImageExporter = ({ monster }) => {
                 ${rightAbilities.length > 0 ? 
                   `<div>
                     ${rightAbilities.map(feature => 
-                      `<p style="margin: 0;"><strong><em>${feature.name}.</em></strong> ${feature.description}</p>`
+                      `<p style="margin: 0;"><strong><em>${feature.name}.</em></strong> ${getActionString(feature, monster)}</p>`
                     ).join('<br/>')}
                   </div>` : ''
                 }
@@ -324,20 +365,21 @@ const StatBlockImageExporter = ({ monster }) => {
             ${actions.length > 0 ? 
               `<div>
                 <!-- Actions header (full width) -->
-                <div style="margin-bottom: 10px; border-bottom: 1px solid #7a200d;">
-                  <h2 style="color: #7a200d; font-size: 18px; margin: 0;">Actions</h2>
+                <div style="margin-bottom: 10px;">
+                  <h2 style="color: #7a200d; font-size: 18px; margin: 0 0 8px 0;">Actions</h2>
+                  <div style="border-bottom: 1px solid #7a200d;"></div>
                 </div>
                 
                 <!-- Actions content (two columns) -->
                 <div style="display: flex; gap: 20px; margin-bottom: 20px;">
                   <div style="flex: 1;">
                     ${leftActions.map(feature => 
-                      `<p style="margin: 0;"><strong><em>${feature.name}.</em></strong> ${feature.description}</p>`
+                      `<p style="margin: 0;"><strong><em>${feature.name}.</em></strong> ${getActionString(feature, monster)} </p>`
                     ).join('<br/>')}
                   </div>
                   <div style="flex: 1;">
                     ${rightActions.map(feature => 
-                      `<p style="margin: 0;"><strong><em>${feature.name}.</em></strong> ${feature.description}</p>`
+                      `<p style="margin: 0;"><strong><em>${feature.name}.</em></strong> ${getActionString(feature, monster)}</p>`
                     ).join('<br/>')}
                   </div>
                 </div>
@@ -348,20 +390,21 @@ const StatBlockImageExporter = ({ monster }) => {
             ${bonusActions.length > 0 ? 
               `<div>
                 <!-- Bonus Actions header (full width) -->
-                <div style="margin-bottom: 10px; border-bottom: 1px solid #7a200d;">
-                  <h2 style="color: #7a200d; font-size: 18px; margin: 0;">Bonus Actions</h2>
+                <div style="margin-bottom: 10px;">
+                  <h2 style="color: #7a200d; font-size: 18px; margin: 0 0 8px 0;">Bonus Actions</h2>
+                  <div style="border-bottom: 1px solid #7a200d;"></div>
                 </div>
                 
                 <!-- Bonus Actions content (two columns) -->
                 <div style="display: flex; gap: 20px; margin-bottom: 20px;">
                   <div style="flex: 1;">
                     ${leftBonusActions.map(feature => 
-                      `<p style="margin: 0;"><strong><em>${feature.name}.</em></strong> ${feature.description}</p>`
+                      `<p style="margin: 0;"><strong><em>${feature.name}.</em></strong> ${getActionString(feature, monster)}</p>`
                     ).join('<br/>')}
                   </div>
                   <div style="flex: 1;">
                     ${rightBonusActions.map(feature => 
-                      `<p style="margin: 0;"><strong><em>${feature.name}.</em></strong> ${feature.description}</p>`
+                      `<p style="margin: 0;"><strong><em>${feature.name}.</em></strong> ${getActionString(feature, monster)}</p>`
                     ).join('<br/>')}
                   </div>
                 </div>
@@ -372,54 +415,109 @@ const StatBlockImageExporter = ({ monster }) => {
             ${reactions.length > 0 ? 
               `<div>
                 <!-- Reactions header (full width) -->
-                <div style="margin-bottom: 10px; border-bottom: 1px solid #7a200d;">
-                  <h2 style="color: #7a200d; font-size: 18px; margin: 0;">Reactions</h2>
+                <div style="margin-bottom: 10px;">
+                  <h2 style="color: #7a200d; font-size: 18px; margin: 0 0 8px 0;">Reactions</h2>
+                  <div style="border-bottom: 1px solid #7a200d;"></div>
                 </div>
                 
                 <!-- Reactions content (two columns) -->
                 <div style="display: flex; gap: 20px; margin-bottom: 20px;">
                   <div style="flex: 1;">
                     ${leftReactions.map(feature => 
-                      `<p style="margin: 0;"><strong><em>${feature.name}.</em></strong> ${feature.description}</p>`
+                      `<p style="margin: 0;"><strong><em>${feature.name}.</em></strong> ${getActionString(feature, monster)}</p>`
                     ).join('<br/>')}
                   </div>
                   <div style="flex: 1;">
                     ${rightReactions.map(feature => 
-                      `<p style="margin: 0;"><strong><em>${feature.name}.</em></strong> ${feature.description}</p>`
+                      `<p style="margin: 0;"><strong><em>${feature.name}.</em></strong> ${getActionString(feature, monster)}</p>`
                     ).join('<br/>')}
                   </div>
                 </div>
               </div>` : ''
             }
           </div>` : 
-          `${leftColumnHtml}`
+          `<div style="margin-bottom: 20px;">
+            ${abilities.length > 0 ? 
+              `${abilities.map(feature => 
+                `<p style="margin: 0;"><strong><em>${feature.name}.</em></strong> ${getActionString(feature, monster)}</p>`
+              ).join('<br/>')}<br/>` : ''
+            }
+            
+            ${actions.length > 0 ? 
+              `<div style="margin-bottom: 10px;">
+                <h2 style="color: #7a200d; font-size: 18px; margin: 0 0 8px 0;">Actions</h2>
+                <div style="border-bottom: 1px solid #7a200d;"></div>
+                <div style="margin-top: 8px;">
+                  ${actions.map(action => 
+                    `<p style="margin: 0;"><strong><em>${action.name}.</em></strong> ${getActionString(action, monster)}</p>`
+                  ).join('<br/>')}
+                </div>
+              </div>` : ''
+            }
+            
+            ${bonusActions.length > 0 ? 
+              `<div style="margin-bottom: 10px;">
+                <h2 style="color: #7a200d; font-size: 18px; margin: 0 0 8px 0;">Bonus Actions</h2>
+                <div style="border-bottom: 1px solid #7a200d;"></div>
+                <div style="margin-top: 8px;">
+                  ${bonusActions.map(action => 
+                    `<p style="margin: 0;"><strong><em>${action.name}.</em></strong> ${getActionString(action, monster)}</p>`
+                  ).join('<br/>')}
+                </div>
+              </div>` : ''
+            }
+            
+            ${reactions.length > 0 ? 
+              `<div style="margin-bottom: 10px;">
+                <h2 style="color: #7a200d; font-size: 18px; margin: 0 0 8px 0;">Reactions</h2>
+                <div style="border-bottom: 1px solid #7a200d;"></div>
+                <div style="margin-top: 8px;">
+                  ${reactions.map(reaction => 
+                    `<p style="margin: 0;"><strong><em>${reaction.name}.</em></strong> ${getActionString(reaction, monster)}</p>`
+                  ).join('<br/>')}
+                </div>
+              </div>` : ''
+            }
+          </div>`
         }
       </div>
-      
-      <div style="margin-top: 20px; text-align: center;">
-        <div style="margin-bottom: 15px;">
-          <button id="layout-toggle-button" style="
-            background-color: #4a76a8;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            margin-right: 10px;
-            border-radius: 4px;
-            cursor: pointer;
-          ">${useTwoColumns ? 'Switch to One Column' : 'Switch to Two Columns'}</button>
-          
-          <button id="download-button" style="
-            background-color: #7a200d;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            font-size: 16px;
-            border-radius: 4px;
-            cursor: pointer;
-          ">Download Image</button>
-        </div>
-      </div>
     `;
+    
+    // Set the HTML content of the stat block container
+    statBlockContainer.innerHTML = statBlockHtml;
+    
+    // Add buttons for export and layout toggle
+    const buttonsContainer = document.createElement('div');
+    buttonsContainer.style.marginTop = '20px';
+    buttonsContainer.style.textAlign = 'center';
+    buttonsContainer.style.marginBottom = '15px';
+    
+    const layoutToggleButton = document.createElement('button');
+    layoutToggleButton.id = 'layout-toggle-button';
+    layoutToggleButton.textContent = useTwoColumns ? 'Switch to One Column' : 'Switch to Two Columns';
+    layoutToggleButton.style.backgroundColor = '#4a76a8';
+    layoutToggleButton.style.color = 'white';
+    layoutToggleButton.style.border = 'none';
+    layoutToggleButton.style.padding = '8px 16px';
+    layoutToggleButton.style.marginRight = '10px';
+    layoutToggleButton.style.borderRadius = '4px';
+    layoutToggleButton.style.cursor = 'pointer';
+    
+    const downloadButton = document.createElement('button');
+    downloadButton.id = 'download-button';
+    downloadButton.textContent = 'Download Image';
+    downloadButton.style.backgroundColor = '#7a200d';
+    downloadButton.style.color = 'white';
+    downloadButton.style.border = 'none';
+    downloadButton.style.padding = '10px 20px';
+    downloadButton.style.fontSize = '16px';
+    downloadButton.style.borderRadius = '4px';
+    downloadButton.style.cursor = 'pointer';
+    
+    buttonsContainer.appendChild(layoutToggleButton);
+    buttonsContainer.appendChild(downloadButton);
+    
+    statBlockContainer.appendChild(buttonsContainer);
     
     // Add elements to DOM
     statBlockContainer.appendChild(closeButton);
