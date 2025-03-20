@@ -698,11 +698,17 @@
   .w-2\/3 {
     width: calc(2/3 * 100%);
   }
+  .w-2\/5 {
+    width: calc(2/5 * 100%);
+  }
   .w-2\/10 {
     width: calc(2/10 * 100%);
   }
   .w-3 {
     width: calc(var(--spacing) * 3);
+  }
+  .w-3\/20 {
+    width: calc(3/20 * 100%);
   }
   .w-12 {
     width: calc(var(--spacing) * 12);

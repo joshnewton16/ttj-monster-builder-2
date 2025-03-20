@@ -98,7 +98,6 @@ export function BasicInfo({ monster, setMonster, onCRChange }) {
 
   // Update CR when AC and HP change
   useEffect(() => {
-    console.log(monster.hp)
     const newCR = calculateCR(monster.ac, monster.hp);
     if (newCR !== monster.cr) {  // Only update if CR actually changed
       onCRChange(newCR);
