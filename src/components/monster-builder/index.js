@@ -14,7 +14,7 @@ const initialMonsterState = {
   creaturetype: '',
   baseArmorType: 'Natural Armor',
   customAC: 0,
-  ac: 10,
+  ac: 13,
   acText: '',
   diceNotation: '',
   hp: 0,
