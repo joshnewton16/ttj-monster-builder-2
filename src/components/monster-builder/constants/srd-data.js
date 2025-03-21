@@ -88,38 +88,6 @@ export const SRD_FEATURES = [
   { name: 'Undead Fortitude', description: 'If damage reduces it to 0 hit points, must make a Constitution saving throw to drop to 1 hit point instead.' }
 ].sort((a, b) => a.name.localeCompare(b.name));
 
-export const FEATURE_POINT_OPTIONS = [
-  {
-    id: 'action',
-    name: 'Additional Action/Reaction/Bonus Action',
-    cost: 1,
-    type: 'action',
-    description: 'Add one ability, action, reaction, or bonus action'
-  },
-  {
-    id: 'damage',
-    name: 'Secondary Damage Type or Double Damage',
-    cost: 1,
-    type: 'damage',
-    description: 'Add a secondary damage type or ability to an existing attack; or double the damage of an existing attack'
-  },
-  {
-    id: 'movement',
-    name: 'Additional Movement',
-    cost: 1,
-    type: 'movement',
-    description: 'Add Burrow, Swim, Climb, or Fly Speed equal to movement; or add ten feet of additional speed',
-    options: ['Burrow', 'Swim', 'Climb', 'Fly', '+10 ft to existing']
-  }
-].sort((a, b) => {
-  // Sort by cost first
-  if (a.cost !== b.cost) {
-    return a.cost - b.cost;
-  }
-  // Then alphabetically by name
-  return a.name.localeCompare(b.name);
-});
-
 export const SRD_ARMOR = [
   { name: 'Natural Armor', ac: 10 },
   { name: 'Leather', ac: 11 },

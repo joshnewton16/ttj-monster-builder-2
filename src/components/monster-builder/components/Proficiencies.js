@@ -1,6 +1,7 @@
 // Proficiencies.js
 import React from 'react';
 import { SRD_LANGUAGES, SRD_SKILL_NAMES } from '../constants/srd-data';
+import { getProficiencyCount } from '../constants/methodology-calcs';
 
 export function Proficiencies({ monster, setMonster }) {
   return (
@@ -9,7 +10,7 @@ export function Proficiencies({ monster, setMonster }) {
 
       <div className="proficiencies-section">
         <h3 className="font-semibold">
-          Skills (Max: {monster.proficiencyBonus})
+          Skills (Max: {getProficiencyCount(monster)})
         </h3>
         <div className="proficiencies-grid">
           {SRD_SKILL_NAMES.map(skill => (
@@ -18,7 +19,7 @@ export function Proficiencies({ monster, setMonster }) {
                 type="checkbox"
                 checked={monster.skills.includes(skill)}
                 onChange={e => {
-                  if (e.target.checked && monster.skills.length < monster.proficiencyBonus) {
+                  if (e.target.checked && monster.skills.length < getProficiencyCount(monster)) {
                     setMonster(prev => ({
                       ...prev,
                       skills: [...prev.skills, skill]
