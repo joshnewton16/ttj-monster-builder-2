@@ -1,18 +1,13 @@
 Should be able to import the MarkDown code as well as Export
-
 Spell Page modifications:
 	* Spell descriptions are not getting properly updated when damage is doubled.
 	* Descriptions need some nuance. Where does text go when user writes it?
 +0 should be removed when it applies to damages.
-Actions need all SRD weapons
-Languages need an "Any Other" option
 CR calculation is not fully working (I don't think)
 Remove alignment from the image
 "Armor Class 15 (15 (Studded Leather))" needs to be fixed
 If the Hit Points don't have any DND Algebraic notation, don't duplicate
 All point allocations should be reviewed.
-Multiattack form, should be a CR between the pull down and the button.
-Can't add additional Saving Throw proficiencies.
 
 Complete
     Resistances don't get added to the state variables.
@@ -26,3 +21,7 @@ Complete
 		Durations need to be tweaked to cost more points after instant/1 round.
 		AOE sizes should cost MPs as it gets bigger.
 		Base Cost and Feature Cost should be tracked independently
+		Can't add additional Saving Throw proficiencies.
+	Multiattack form, should be a CR between the pull down and the button.
+	Actions need all SRD weapons
+	Languages need an "Any Other" option

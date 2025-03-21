@@ -2,12 +2,6 @@
 import React from 'react';
 
 export function SavingThrowAction({ monster, onSubmit, availablePoints }) {
-  // Calculate spent points (how many points above base value 8 have been spent)
-  const calculateSpentPoints = () => {
-    return Object.values(monster.savingThrows).reduce((total, value) => {
-      return total + value;
-    }, 0);
-  };
 
   // Get saving throw feature points
   const featurePoints = monster.savingThrowsFromFeatures || 0;
