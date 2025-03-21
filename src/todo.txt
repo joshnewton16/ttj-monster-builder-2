@@ -3,7 +3,6 @@ Spell Page modifications:
 	* Spell descriptions are not getting properly updated when damage is doubled.
 	* Descriptions need some nuance. Where does text go when user writes it?
 +0 should be removed when it applies to damages.
-CR calculation is not fully working (I don't think)
 Remove alignment from the image
 "Armor Class 15 (15 (Studded Leather))" needs to be fixed
 If the Hit Points don't have any DND Algebraic notation, don't duplicate
@@ -25,3 +24,4 @@ Complete
 	Multiattack form, should be a CR between the pull down and the button.
 	Actions need all SRD weapons
 	Languages need an "Any Other" option
+	CR calculation is not fully working (I don't think)
