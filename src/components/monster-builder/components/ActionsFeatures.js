@@ -113,6 +113,26 @@ export function ActionsFeatures({ monster, setMonster }) {
     });
   };
 
+  // Let's create a function to update the monster when spending a feature point
+  const handleAddSavingThrow = () => {
+    setMonster(prev => {
+      const currentSavingThrows = prev.savingThrowsFromFeatures || 0;
+
+      const newFeature = {
+        name: `Add Saving Throw`,
+        costFeaturePoint: true,
+        isHidden: true  // Add this flag to indicate it shouldn't be displayed
+      };
+
+      // Add 1 attribute points and feature record
+      return {
+        ...prev,
+        savingThrowsFromFeatures: currentSavingThrows + 1,
+        features: [...prev.features, newFeature]
+      };
+    });
+  };
+
   const handleMovementModify = (modificationType, speedType) => {
     setMonster(prev => {
       const newSpeed = [...prev.speed];
@@ -159,15 +179,6 @@ export function ActionsFeatures({ monster, setMonster }) {
       };
     });
     
-  };
-
-  const handleAttributeModify = (attributeData) => {
-    console.log('handleAttributeModify called with:', attributeData); // Add logging for debugging
-
-    setMonster(prev => ({
-      ...prev,
-      attributePointsFromFeatures: attributeData.attributePointsFromFeatures
-    }));
   };
 
   const handleSkillModify = (type, skills) => {
@@ -310,8 +321,8 @@ export function ActionsFeatures({ monster, setMonster }) {
         onSecondaryEffect={addSecondaryEffect}
         onDoubleDamage={doubleDamage}
         onMovementModify={handleMovementModify}
-        onAttributePoints={handleAttributeModify}
         onAddAttributePoints={handleAddAttributePoints}
+        onAddSavingThrow={handleAddSavingThrow}
         onSkillModify={handleSkillModify}
         onImmunityModify={handleImmunityModify}
         onResistanceModify={handleResistanceModify}

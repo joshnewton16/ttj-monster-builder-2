@@ -6,7 +6,8 @@ export const AttributesSection = ({
   monster, 
   setStep, 
   calculateModifier, 
-  onDeleteAttributePoints 
+  onDeleteAttributePoints, 
+  onDeleteSavingThrowPoints
 }) => {
   return (
     <div className="preview-section">
@@ -30,11 +31,23 @@ export const AttributesSection = ({
       </div>
       {monster.attributePointsFromFeatures && (
         <div className="flex justify-between items-center text-sm text-gray-600 mb-2">
-          <span>+2 Attribute Points from Feature Point</span>
+          <span>+{monster.attributePointsFromFeatures} Attribute Points from Feature Point</span>
           <button
             onClick={onDeleteAttributePoints}
             className="p-1 text-red-500 hover:text-red-700"
             aria-label="Remove attribute points"
+          >
+            <Trash2 size={16} />
+          </button>
+        </div>
+      )}
+      {monster.savingThrowsFromFeatures && (
+        <div className="flex justify-between items-center text-sm text-gray-600 mb-2">
+          <span>+{monster.savingThrowsFromFeatures} Saving Throws from Feature Point</span>
+          <button
+            onClick={onDeleteSavingThrowPoints}
+            className="p-1 text-red-500 hover:text-red-700"
+            aria-label="Remove Saving Throws"
           >
             <Trash2 size={16} />
           </button>

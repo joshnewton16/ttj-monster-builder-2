@@ -12,6 +12,7 @@ Remove alignment from the image
 If the Hit Points don't have any DND Algebraic notation, don't duplicate
 All point allocations should be reviewed.
 Multiattack form, should be a CR between the pull down and the button.
+Can't add additional Saving Throw proficiencies.
 
 Complete
     Resistances don't get added to the state variables.

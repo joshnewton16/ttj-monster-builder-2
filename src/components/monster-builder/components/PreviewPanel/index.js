@@ -64,9 +64,24 @@ const PreviewPanel = ({ monster, setMonster, setStep }) => {
   };
 
   const handleDeleteAttributePoints = () => {
+    console.log(monster);
     setMonster(prev => ({
       ...prev,
-      attributePointsFromFeatures: undefined
+      attributePointsFromFeatures: undefined,
+      features: prev.features.filter(feature => 
+        !(feature.name === 'Add Attribute Points')
+      )
+    }));
+  };
+
+  const handleDeleteSavingThrows = () => {
+    console.log(monster);
+    setMonster(prev => ({
+      ...prev,
+      savingThrowsFromFeatures: undefined,
+      features: prev.features.filter(feature => 
+        !(feature.name === 'Add Saving Throw')
+      )
     }));
   };
 
@@ -175,6 +190,7 @@ const PreviewPanel = ({ monster, setMonster, setStep }) => {
             setStep={setStep}
             calculateModifier={calculateModifier}
             onDeleteAttributePoints={handleDeleteAttributePoints}
+            onDeleteSavingThrowPoints={handleDeleteSavingThrows}
           />
           
           <SkillsSection 

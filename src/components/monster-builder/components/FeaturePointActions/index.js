@@ -12,6 +12,7 @@ import { SpellcastingForm } from './SpellcastingForm';
 import { ActionEconomySpellForm } from './ActionEconomySpellForm';
 import { SenseAction } from './SenseAction';
 import { AttributeAction } from './AttributeAction'; // Import the new AttributeAction component
+import { SavingThrowAction} from './SavingThrowAction';
 import { LEGENDARYACTIONS } from '../../constants/srd-data';
 
 export function FeaturePointActions({
@@ -31,11 +32,10 @@ export function FeaturePointActions({
   onResistanceModify,
   onSenseModify,
   onAddAttributePoints, // New attribute modify handler
+  onAddSavingThrow,
   availablePoints,
   magicPoints,
   setMagicPoints,
-  setAvailablePoints, // Make sure this is passed!
-  setMonster
 }) {
   const [selectedAction, setSelectedAction] = useState('');
 
@@ -115,6 +115,11 @@ export function FeaturePointActions({
 
   const handleAddAttributePoints = () => {
     onAddAttributePoints();
+    setSelectedAction('');
+  };
+
+  const handleAddSavingThrow = () => {
+    onAddSavingThrow();
     setSelectedAction('');
   };
   
@@ -254,6 +259,14 @@ export function FeaturePointActions({
             availablePoints={availablePoints}
           />
         );
+      case 'savingThrow':
+        return (
+          <SavingThrowAction
+            monster={monster}
+            onSubmit={handleAddSavingThrow}
+            availablePoints={availablePoints}
+          />
+        );
       default:
         return null;
     }
@@ -306,6 +319,7 @@ export function FeaturePointActions({
         <option value="defense">Add Defense Modification</option>
         <option value="senses">Add Enhanced Senses</option>
         <option value="attributePoints">Add Attribute Points</option>
+        <option value="savingThrow">Add Saving Throw Proficiency</option>
       </select>
 
       {renderActionComponent()}

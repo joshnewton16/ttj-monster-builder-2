@@ -11,7 +11,9 @@ export function Attributes({ monster, setMonster, availablePoints, setAvailableP
   // Calculate total spent and available
   const spentPoints = calculateSpentPoints();
   const featurePoints = monster.attributePointsFromFeatures || 0;
+  const featureSavingThrows = monster.savingThrowsFromFeatures || 0;
   const totalAvailable = maxPointsForCR + featurePoints - spentPoints;
+  const countSavingThrows = Math.floor(monster.proficiencyBonus / 2);
 
   function handleAttributeChange(attr, value) {
     if (value >= 8 && value <= 20) {
@@ -66,8 +68,13 @@ export function Attributes({ monster, setMonster, availablePoints, setAvailableP
       {/* Added Saving Throws Section */}
       <div className="proficiencies-section">
         <h3 className="section-header">
-          Saving Throws (Max: {Math.floor(monster.proficiencyBonus / 2)})
+          Saving Throws (Max: {countSavingThrows})
         </h3>
+        {featureSavingThrows > 0 && (
+            <span className="ml-2 text-green-600">
+              (+{featureSavingThrows} from Feature Points)
+            </span>
+          )}
         <div className="proficiencies-grid">
           {Object.keys(monster.attributes).map(save => (
             <div key={save} className="proficiency-item">
@@ -75,7 +82,7 @@ export function Attributes({ monster, setMonster, availablePoints, setAvailableP
                 type="checkbox"
                 checked={monster.savingThrows.includes(save)}
                 onChange={e => {
-                  if (e.target.checked && monster.savingThrows.length < Math.floor(monster.proficiencyBonus / 2)) {
+                  if (e.target.checked && monster.savingThrows.length < (countSavingThrows + featureSavingThrows)) {
                     setMonster(prev => ({
                       ...prev,
                       savingThrows: [...prev.savingThrows, save]
