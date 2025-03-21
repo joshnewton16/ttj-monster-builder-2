@@ -23,11 +23,14 @@ export function BasicInfo({ monster, setMonster, onCRChange }) {
     });
   }, [monster.ac, monster.hp, monster.cr, monster.size, monster.speed]);
 
-  // Initialize speed array on first render if needed
+  // Initialize component on first render
   useEffect(() => {
     if (!hasInitialized.current) {
+      console.log("Initializing BasicInfo component");
+      
       // Initialize speeds if not already set
       if (!monster.speed || !Array.isArray(monster.speed)) {
+        console.log("Initializing movement speeds");
         setMonster(prev => ({
           ...prev,
           speed: SPEED_TYPES.map(type => ({ 
@@ -38,10 +41,25 @@ export function BasicInfo({ monster, setMonster, onCRChange }) {
       }
       
       // Set initial CR if HP and AC exist but CR doesn't
-      if (monster.hp && monster.ac && !monster.cr) {
-        const initialCR = calculateCR(monster.ac, monster.hp);
-        console.log("Initial CR calculation:", initialCR);
-        onCRChange(initialCR);
+      if (monster.hp && monster.ac && (!monster.cr || monster.cr === 0)) {
+        console.log("Performing initial CR calculation with AC:", monster.ac, "HP:", monster.hp);
+        
+        const acValue = parseInt(monster.ac);
+        const hpValue = parseInt(monster.hp);
+        
+        if (!isNaN(acValue) && !isNaN(hpValue)) {
+          const initialCR = calculateCR(acValue, hpValue);
+          console.log("Initial CR calculation result:", initialCR);
+          onCRChange(initialCR);
+        } else {
+          console.error("Invalid AC or HP values for initial CR calculation");
+        }
+      } else {
+        console.log("Skipping initial CR calculation:", {
+          hp: monster.hp,
+          ac: monster.ac,
+          cr: monster.cr
+        });
       }
       
       hasInitialized.current = true;
@@ -279,6 +297,12 @@ export function BasicInfo({ monster, setMonster, onCRChange }) {
                     }
 
                     console.log("Setting new HP:", newHP, "from notation:", newNotation);
+
+                    // Skip update if HP calculation failed
+                    if (isNaN(newHP)) {
+                      console.error("Failed to calculate HP from notation:", newNotation);
+                      return;
+                    }
 
                     // Single state update with all related HP fields
                     setMonster(prev => ({ 

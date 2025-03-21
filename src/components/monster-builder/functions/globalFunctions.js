@@ -17,29 +17,21 @@ export function calculateAverageHP(notation) {
   }
 
 export  function calculateCR(ac, hp) {
-    // Find all possible CRs based on AC
-    const acMatches = CR_TABLE.filter(entry => ac >= entry.minAC);
-    
-    // Find all possible CRs based on HP
-    const hpMatches = CR_TABLE.filter(entry => 
-      hp >= entry.minHP && hp <= entry.maxHP
-    );
-    
-    if (!acMatches.length) {
-      return 0; // Default to 0 if no AC matches
-    }
-    
-    // Get the highest CR from AC matches
-    const acCR = Math.max(...acMatches.map(entry => entry.cr));
-    
-    // Get the CR from HP range (default to 0 if no matches)
-    const hpCR = hpMatches.length > 0 ? hpMatches[0].cr : 0;
-    
-    // Always average the two values, even if hpCR is 0
-    if (acCR !== hpCR) {
+    console.log('ac & hp:', ac, hp);
+    // Filter for both criteria
+    const crMatches = CR_TABLE.filter(entry => (ac = entry.minAC && hp >= entry.minHP && hp <= entry.maxHP) )
+    console.log('crMatches: ', crMatches);
+    if (!crMatches.length) {
+      const acMatches = CR_TABLE.filter(entry => ac = entry.minAC);
+      const acCR = Math.max(...acMatches.map(entry => entry.cr));
+      const hpMatches = CR_TABLE.filter(entry => 
+        hp >= entry.minHP && hp <= entry.maxHP
+      );
+      const hpCR = hpMatches.length > 0 ? hpMatches[0].cr : 0;
+      console.log('acCR & hpCR:', acCR, hpCR);
       return Math.round((acCR + hpCR) / 2);
+    } else
+    {
+      return crMatches.cr;
     }
-    
-    // If results are the same, return either one
-    return acCR;
   }
