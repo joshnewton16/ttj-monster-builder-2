@@ -19,10 +19,11 @@ export function calculateAverageHP(notation) {
 export  function calculateCR(ac, hp) {
     console.log('ac & hp:', ac, hp);
     // Filter for both criteria
-    const crMatches = CR_TABLE.filter(entry => (ac = entry.minAC && hp >= entry.minHP && hp <= entry.maxHP) )
+    const crMatches = CR_TABLE.filter(entry => (ac === entry.minAC && hp >= entry.minHP && hp <= entry.maxHP) );
+    console.log('ac matches', CR_TABLE.filter(acmatch => (ac === acmatch.minAC)));
     console.log('crMatches: ', crMatches);
     if (!crMatches.length) {
-      const acMatches = CR_TABLE.filter(entry => ac = entry.minAC);
+      const acMatches = CR_TABLE.filter(entry => ac === entry.minAC);
       const acCR = Math.max(...acMatches.map(entry => entry.cr));
       const hpMatches = CR_TABLE.filter(entry => 
         hp >= entry.minHP && hp <= entry.maxHP
