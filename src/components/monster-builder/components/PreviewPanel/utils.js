@@ -4,8 +4,6 @@ export const calculateModifier = (attributeValue) => {
 };
 
 export const getActionString = (feature, monster) => {
-  console.log('Incoming feature',feature);
-
 
   if (!feature.damage) return feature.description;
 
