@@ -345,37 +345,48 @@ export function BasicInfo({ monster, setMonster, onCRChange }) {
             <h3 className="font-semibold">Movement Speeds</h3>
             <div className="grid grid-cols-2 gap-2">
               {Array.isArray(monster.speed) && SPEED_TYPES.map(speedType => {
-                const currentValue = monster.speed?.find(s => s.type === speedType)?.value || 0;
-                const sizeSpeed = SIZE_MOVEMENT[monster.size] || 30; // default to 30 if size not found
-                
-                return (
-                  <div key={speedType} className="flex items-center gap-2">
-                    <label className="w-16">{speedType}:</label>
-                    <span className="w-12">{currentValue} ft.</span>
-                    <button
-                      type="button"
-                      className={`px-2 py-1 text-sm rounded ${
-                        currentValue === sizeSpeed
-                          ? 'bg-blue-500 text-white' 
-                          : 'bg-gray-200 hover:bg-gray-300'
-                      }`}
-                      onClick={() => {
-                        setMonster(prev => ({
-                          ...prev,
-                          speed: prev.speed.map(s => ({
-                            ...s,
-                            value: s.type === speedType 
-                              ? (s.value === sizeSpeed ? 0 : sizeSpeed) 
-                              : s.value
-                          }))
-                        }));
-                      }}
-                    >
-                      {currentValue === sizeSpeed ? 'Clear' : `Set to ${sizeSpeed}`}
-                    </button>
-                  </div>
-                );
-              })}
+                    const currentValue = monster.speed?.find(s => s.type === speedType)?.value || 0;
+                    const sizeSpeed = SIZE_MOVEMENT[monster.size] || 30; // default to 30 if size not found
+                    
+                    return (
+                      <div key={speedType} className="flex items-center gap-2">
+                        <label className="w-16">{speedType}:</label>
+                        <span className="w-12">{currentValue} ft.</span>
+                        <button
+                          type="button"
+                          className={`px-2 py-1 text-sm rounded ${
+                            currentValue === sizeSpeed
+                              ? 'bg-blue-500 text-white' 
+                              : 'bg-gray-200 hover:bg-gray-300'
+                          }`}
+                          onClick={() => {
+                            setMonster(prev => {
+                              // Create a new speed array with all values set to 0
+                              const newSpeed = prev.speed.map(s => ({
+                                ...s,
+                                value: 0
+                              }));
+                              
+                              // If current button isn't already active, set just this one to sizeSpeed
+                              if (currentValue !== sizeSpeed) {
+                                const targetIndex = newSpeed.findIndex(s => s.type === speedType);
+                                if (targetIndex >= 0) {
+                                  newSpeed[targetIndex].value = sizeSpeed;
+                                }
+                              }
+                              
+                              return {
+                                ...prev,
+                                speed: newSpeed
+                              };
+                            });
+                          }}
+                        >
+                          {currentValue === sizeSpeed ? 'Clear' : `Set to ${sizeSpeed}`}
+                        </button>
+                      </div>
+                    );
+                  })}
             </div>
           </div>
         </div>

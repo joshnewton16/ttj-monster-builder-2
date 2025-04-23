@@ -4,15 +4,13 @@ export const calculateModifier = (attributeValue) => {
 };
 
 export const getActionString = (feature, monster) => {
-  console.log('Incoming feature',feature);
-
 
   if (!feature.damage) return feature.description;
 
   const strMod = calculateModifier(monster.attributes.str);
   const dexMod = calculateModifier(monster.attributes.dex);
   const mod = feature.useDex ? dexMod : (feature.useStr ? strMod : 0);
-  const modString = mod >= 0 ? `+${mod}` : mod;
+  const modString = mod > 0 ? `+${mod}` : '';
   
   try {
     let description = '';

@@ -9,6 +9,7 @@ import { getActionString } from './PreviewPanel/utils';
  * Supports toggling between one and two-column layouts
  */
 const StatBlockImageExporter = ({ monster }) => {
+  
   const statBlockRef = useRef(null);
   // Use ref instead of state to avoid re-render issues
   const twoColumnsRef = useRef(false);
@@ -131,6 +132,7 @@ const StatBlockImageExporter = ({ monster }) => {
     
     // Generate feature HTML for a single category
     const generateFeatureHtml = (features, category, showHeader = true) => {
+      console.log('Current State:', monster);
       if (!features || features.length === 0) return '';
       
       let header = '';
@@ -202,14 +204,14 @@ const StatBlockImageExporter = ({ monster }) => {
         <div style="margin-bottom: 10px;">
           <h1 style="color: #7a200d; font-size: 24px; margin: 0;">${monster.name || 'Unnamed Monster'}</h1>
           <p style="font-style: italic; margin: 0 0 8px 0;">
-            ${monster.size} ${monster.creaturetype || 'Creature'}, ${monster.alignment || 'unaligned'}
+            ${monster.size} ${monster.creaturetype || 'Creature'}
           </p>
           <div style="border-bottom: 1px solid #7a200d;"></div>
         </div>
         
         <!-- Stats Section -->
         <div style="margin-bottom: 10px;">
-          <p style="margin: 0;"><strong>Armor Class</strong> ${monster.ac} ${monster.acText ? `(${monster.acText})` : ''}</p>
+          <p style="margin: 0;"><strong>Armor Class</strong> ${monster.ac} ${monster.armorDescription ? `(${monster.armorDescription})` : ''}</p>
           <p style="margin: 0;"><strong>Hit Points</strong> ${monster.hp} ${monster.hpFormula ? `(${monster.hpFormula})` : ''}</p>
           <p style="margin: 0 0 8px 0;"><strong>Speed</strong> ${formatSpeeds()}</p>
           <div style="border-bottom: 1px solid #7a200d;"></div>
