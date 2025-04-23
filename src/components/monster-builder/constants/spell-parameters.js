@@ -138,3 +138,10 @@ export const RANGE_MULTIPLIERS = [
   { value: 5, label: '5× Range', mpCost: 2 },
   { value: 10, label: '10× Range', mpCost: 4 }
 ];
+
+export const RECHARGE_OPTIONS = [
+  { value: "none", label: "None (At Will)", mpValue: 0 },
+  { value: "recharge4-6", label: "Recharge 4-6", mpValue: 1 },
+  { value: "recharge5-6", label: "Recharge 5-6", mpValue: 2 },
+  { value: "recharge6", label: "Recharge 6", mpValue: 3 }
+];

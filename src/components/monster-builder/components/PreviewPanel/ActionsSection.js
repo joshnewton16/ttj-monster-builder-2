@@ -2,6 +2,8 @@
 import React from 'react';
 import { Trash2 } from 'lucide-react';
 import { getFeaturesByCategory, getActionString } from './utils';
+import {RECHARGE_OPTIONS} from '../../constants/spell-parameters';
+
 
 export const ActionsSection = ({ 
   monster, 
@@ -15,7 +17,11 @@ export const ActionsSection = ({
       <div key={index} className="preview-item">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <div>
-            <strong>{feature.name}.</strong> {getActionString(feature, monster, globalIndex)}
+            <strong>{feature.name}
+            {feature.spellDetails?.recharge && (
+              ` (${RECHARGE_OPTIONS.find(option => option.value === feature.spellDetails.recharge)?.label || feature.spellDetails.recharge})`
+            )}.
+            </strong> {getActionString(feature, monster, globalIndex)}
             {feature.isFirst && (
               <span className="ml-2 text-sm text-green-600">(Primary)</span>
             )}

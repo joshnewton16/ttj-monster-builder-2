@@ -94,6 +94,7 @@ function handleCRChange(newCR) {
         case 3:
           return <Proficiencies monster={monster} setMonster={setMonster} />;
         case 4:
+          console.log(monster);
           return <ActionsFeatures monster={monster} setMonster={setMonster} />;
         default:
           return null;
