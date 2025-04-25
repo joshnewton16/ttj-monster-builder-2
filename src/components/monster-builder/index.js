@@ -6,6 +6,7 @@ import { ActionsFeatures } from './components/ActionsFeatures';
 import PreviewPanel from './components/PreviewPanel';
 import MarkdownExporter from './components/MarkdownExporter'; // Import markdown exporter
 import StateExport from './components/StateExport';
+import StateImport from './components/StateImport';
 import MarkdownImporter from './components/MarkdownImporter';
 import StatBlockImageExporter from './components/StatBlockImageExporter'; // Import image exporter
 
@@ -133,8 +134,8 @@ function handleCRChange(newCR) {
             {/* Add Export buttons */}
             <MarkdownExporter monster={monster} />
             <StateExport monster={monster} />
+            <StateImport setMonster={setMonster} />
             <StatBlockImageExporter monster={monster} />
-            <MarkdownImporter onImport={(importedMonster) => setMonster(importedMonster)} />   
      
           </div>
         </div>
