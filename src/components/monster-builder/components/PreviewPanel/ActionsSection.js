@@ -12,6 +12,8 @@ export const ActionsSection = ({
 }) => {
   const renderFeature = (feature, index) => {
     const globalIndex = monster.features.findIndex(f => f === feature);
+    console.log('feature:', feature)
+    //console.log('getACtionString:', getActionString(feature, monster, globalIndex))
     
     return (
       <div key={index} className="preview-item">

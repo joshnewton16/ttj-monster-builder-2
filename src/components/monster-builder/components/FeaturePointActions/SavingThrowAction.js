@@ -17,13 +17,13 @@ export function SavingThrowAction({ monster, onSubmit, availablePoints }) {
       const savingThrowData = {
         savingThrowsFromFeatures: newSavingThrowPoints
       };
-      console.log('Current State', monster);
-      console.log('availablePoints: ', availablePoints);
-      console.log('newSavingThrowPoints: ', newSavingThrowPoints);
-      console.log('savingThrowData: ', savingThrowData);
+      //console.log('Current State', monster);
+      //console.log('availablePoints: ', availablePoints);
+      //console.log('newSavingThrowPoints: ', newSavingThrowPoints);
+      //console.log('savingThrowData: ', savingThrowData);
       // Submit the data
       onSubmit(savingThrowData);
-      console.log('Current State', monster);
+      //console.log('Current State', monster);
     }
   };
 

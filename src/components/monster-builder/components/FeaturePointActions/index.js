@@ -46,7 +46,7 @@ export function FeaturePointActions({
 
   // Wrap each handler to reset the selectedAction after completion
   const handleBaseAction = (actionData) => {
-    console.log(monster)
+    //console.log(monster)
     onBaseActionSubmit(actionData);
     setSelectedAction('');
   };

@@ -26,11 +26,11 @@ export function BasicInfo({ monster, setMonster, onCRChange }) {
   // Initialize component on first render
   useEffect(() => {
     if (!hasInitialized.current) {
-      console.log("Initializing BasicInfo component");
+      //console.log("Initializing BasicInfo component");
       
       // Initialize speeds if not already set
       if (!monster.speed || !Array.isArray(monster.speed)) {
-        console.log("Initializing movement speeds");
+        //console.log("Initializing movement speeds");
         setMonster(prev => ({
           ...prev,
           speed: SPEED_TYPES.map(type => ({ 
@@ -42,14 +42,14 @@ export function BasicInfo({ monster, setMonster, onCRChange }) {
       
       // Set initial CR if HP and AC exist but CR doesn't
       if (monster.hp && monster.ac && (!monster.cr || monster.cr === 0)) {
-        console.log("Performing initial CR calculation with AC:", monster.ac, "HP:", monster.hp);
+        //console.log("Performing initial CR calculation with AC:", monster.ac, "HP:", monster.hp);
         
         const acValue = parseInt(monster.ac);
         const hpValue = parseInt(monster.hp);
         
         if (!isNaN(acValue) && !isNaN(hpValue)) {
           const initialCR = calculateCR(acValue, hpValue);
-          console.log("Initial CR calculation result:", initialCR);
+          //console.log("Initial CR calculation result:", initialCR);
           onCRChange(initialCR);
         } else {
           console.error("Invalid AC or HP values for initial CR calculation");
@@ -109,22 +109,22 @@ export function BasicInfo({ monster, setMonster, onCRChange }) {
   useEffect(() => {
     // Skip if we're manually adjusting CR
     if (isManuallyAdjustingCR.current) {
-      console.log("Skipping automatic CR calculation during manual adjustment");
+      //console.log("Skipping automatic CR calculation during manual adjustment");
       return;
     }
     
     // Skip if hp or ac are missing
     if (!monster.hp || !monster.ac) {
-      console.log("Skipping CR calculation - missing HP or AC");
+      //console.log("Skipping CR calculation - missing HP or AC");
       return;
     }
 
     const newCR = calculateCR(monster.ac, monster.hp);
-    console.log("Calculated CR:", newCR, "from AC:", monster.ac, "HP:", monster.hp);
+    //console.log("Calculated CR:", newCR, "from AC:", monster.ac, "HP:", monster.hp);
     
     // Only update if CR actually changed and isn't undefined
     if (newCR !== undefined && newCR !== monster.cr) {  
-      console.log("Updating CR from", monster.cr, "to", newCR);
+      //console.log("Updating CR from", monster.cr, "to", newCR);
       onCRChange(newCR);
     }
   }, [monster.ac, monster.hp, monster.cr, onCRChange]);
@@ -159,11 +159,11 @@ export function BasicInfo({ monster, setMonster, onCRChange }) {
     
     // Get the current CR - make sure it's a number
     const currentCR = parseInt(monster.cr) || 0;
-    console.log("Current CR before adjustment:", currentCR);
+    //console.log("Current CR before adjustment:", currentCR);
     
     // Increment or decrement by 1, with a minimum of 0
     const newCR = Math.max(0, currentCR + increment);
-    console.log("New CR after adjustment:", newCR);
+    //console.log("New CR after adjustment:", newCR);
     
     // If CR didn't change, do nothing
     if (newCR === currentCR) {
@@ -296,7 +296,7 @@ export function BasicInfo({ monster, setMonster, onCRChange }) {
                       newHP = calculateAverageHP(newNotation);
                     }
 
-                    console.log("Setting new HP:", newHP, "from notation:", newNotation);
+                    //console.log("Setting new HP:", newHP, "from notation:", newNotation);
 
                     // Skip update if HP calculation failed
                     if (isNaN(newHP)) {

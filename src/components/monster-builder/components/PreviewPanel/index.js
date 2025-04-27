@@ -64,7 +64,7 @@ const PreviewPanel = ({ monster, setMonster, setStep }) => {
   };
 
   const handleDeleteAttributePoints = () => {
-    console.log(monster);
+    //console.log(monster);
     setMonster(prev => ({
       ...prev,
       attributePointsFromFeatures: undefined,
@@ -75,7 +75,7 @@ const PreviewPanel = ({ monster, setMonster, setStep }) => {
   };
 
   const handleDeleteSavingThrows = () => {
-    console.log(monster);
+    //console.log(monster);
     setMonster(prev => ({
       ...prev,
       savingThrowsFromFeatures: undefined,

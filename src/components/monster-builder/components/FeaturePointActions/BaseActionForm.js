@@ -35,7 +35,7 @@ export function BaseActionForm({
   };
 
   const handleSubmit = () => {
-    console.log(actionDescription);
+    //console.log(actionDescription);
     if (!actionTitle || !actionDescription) return;
     
     const actions = isLegendary ? legendaryActions : SRD_ACTIONS;

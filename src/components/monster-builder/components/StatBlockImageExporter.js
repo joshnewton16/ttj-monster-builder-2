@@ -133,7 +133,7 @@ const StatBlockImageExporter = ({ monster }) => {
     
     // Generate feature HTML for a single category
     const generateFeatureHtml = (features, category, showHeader = true) => {
-      console.log('Current State:', monster);
+      //console.log('Current State:', monster);
       if (!features || features.length === 0) return '';
       
       let header = '';
@@ -377,21 +377,21 @@ const StatBlockImageExporter = ({ monster }) => {
                 <div style="display: flex; gap: 20px; margin-bottom: 20px;">
                   <div style="flex: 1;">
                     ${leftActions.map(feature => {
-                        console.log('recharge:', feature.spellDetails?.recharge);
+                        //console.log('recharge:', feature.spellDetails?.recharge);
                         const rechargeText = feature.spellDetails?.recharge 
                         ? ` (${RECHARGE_OPTIONS.find(option => option.value === feature.spellDetails.recharge)?.label || feature.spellDetails.recharge})`
                         : '';
-                        console.log('rechargeText:', rechargeText);
+                        //console.log('rechargeText:', rechargeText);
                       return `<p style="margin: 0;"><strong><em>${feature.name}${rechargeText}.</em></strong> ${getActionString(feature, monster)}</p>`
                       }).join('<br/>')}
                   </div>
                   <div style="flex: 1;">
                     ${rightActions.map(feature => {
-                      console.log('recharge:', feature.spellDetails?.recharge);
+                      //console.log('recharge:', feature.spellDetails?.recharge);
                         const rechargeText = feature.spellDetails?.recharge 
                         ? ` (${RECHARGE_OPTIONS.find(option => option.value === feature.spellDetails.recharge)?.label || feature.spellDetails.recharge})`
                         : '';
-                        console.log('rechargeText:', rechargeText);
+                        //console.log('rechargeText:', rechargeText);
 
                       return `<p style="margin: 0;"><strong><em>${feature.name}${rechargeText}.</em></strong> ${getActionString(feature, monster)}</p>`
                     }).join('<br/>')}
@@ -413,21 +413,21 @@ const StatBlockImageExporter = ({ monster }) => {
                 <div style="display: flex; gap: 20px; margin-bottom: 20px;">
                   <div style="flex: 1;">
                     ${leftBonusActions.map(feature => {
-                        console.log('recharge:', feature.spellDetails?.recharge);
+                        //console.log('recharge:', feature.spellDetails?.recharge);
                         const rechargeText = feature.spellDetails?.recharge 
                         ? ` (${RECHARGE_OPTIONS.find(option => option.value === feature.spellDetails.recharge)?.label || feature.spellDetails.recharge})`
                         : '';
-                        console.log('rechargeText:', rechargeText);
+                        //console.log('rechargeText:', rechargeText);
                       return `<p style="margin: 0;"><strong><em>${feature.name}${rechargeText}.</em></strong> ${getActionString(feature, monster)}</p>`
                       }).join('<br/>')}
                   </div>
                   <div style="flex: 1;">
                     ${rightBonusActions.map(feature => {
-                        console.log('recharge:', feature.spellDetails?.recharge);
+                        //console.log('recharge:', feature.spellDetails?.recharge);
                         const rechargeText = feature.spellDetails?.recharge 
                         ? ` (${RECHARGE_OPTIONS.find(option => option.value === feature.spellDetails.recharge)?.label || feature.spellDetails.recharge})`
                         : '';
-                        console.log('rechargeText:', rechargeText);
+                        //console.log('rechargeText:', rechargeText);
                       return `<p style="margin: 0;"><strong><em>${feature.name}${rechargeText}.</em></strong> ${getActionString(feature, monster)}</p>`
                       }).join('<br/>')}
                   </div>
@@ -448,21 +448,21 @@ const StatBlockImageExporter = ({ monster }) => {
                 <div style="display: flex; gap: 20px; margin-bottom: 20px;">
                   <div style="flex: 1;">
                     ${leftReactions.map(feature => {
-                        console.log('recharge:', feature.spellDetails?.recharge);
+                        //console.log('recharge:', feature.spellDetails?.recharge);
                         const rechargeText = feature.spellDetails?.recharge 
                         ? ` (${RECHARGE_OPTIONS.find(option => option.value === feature.spellDetails.recharge)?.label || feature.spellDetails.recharge})`
                         : '';
-                        console.log('rechargeText:', rechargeText);
+                        //console.log('rechargeText:', rechargeText);
                       return `<p style="margin: 0;"><strong><em>${feature.name}${rechargeText}.</em></strong> ${getActionString(feature, monster)}</p>`
                       }).join('<br/>')}
                   </div>
                   <div style="flex: 1;">
                     ${rightReactions.map(feature => {
-                        console.log('recharge:', feature.spellDetails?.recharge);
+                        //console.log('recharge:', feature.spellDetails?.recharge);
                         const rechargeText = feature.spellDetails?.recharge 
                         ? ` (${RECHARGE_OPTIONS.find(option => option.value === feature.spellDetails.recharge)?.label || feature.spellDetails.recharge})`
                         : '';
-                        console.log('rechargeText:', rechargeText);
+                        //console.log('rechargeText:', rechargeText);
                       return `<p style="margin: 0;"><strong><em>${feature.name}${rechargeText}.</em></strong> ${getActionString(feature, monster)}</p>`
                       }).join('<br/>')}
                   </div>
@@ -473,11 +473,11 @@ const StatBlockImageExporter = ({ monster }) => {
           `<div style="margin-bottom: 20px;">
             ${abilities.length > 0 ? 
               `${abilities.map(feature => {
-                        console.log('recharge:', feature.spellDetails?.recharge);
+                        //console.log('recharge:', feature.spellDetails?.recharge);
                         const rechargeText = feature.spellDetails?.recharge 
                         ? ` (${RECHARGE_OPTIONS.find(option => option.value === feature.spellDetails.recharge)?.label || feature.spellDetails.recharge})`
                         : '';
-                        console.log('rechargeText:', rechargeText);
+                        //console.log('rechargeText:', rechargeText);
                       return `<p style="margin: 0;"><strong><em>${feature.name}${rechargeText}.</em></strong> ${getActionString(feature, monster)}</p>`
                       }).join('<br/>')}<br/>` : ''
             }
