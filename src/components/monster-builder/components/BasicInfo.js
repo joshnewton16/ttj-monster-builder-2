@@ -13,7 +13,7 @@ export function BasicInfo({ monster, setMonster, onCRChange }) {
   const hasInitialized = useRef(false);
 
   // Debug logging to track state changes
-  useEffect(() => {
+  /*useEffect(() => {
     console.log("Monster state updated:", {
       ac: monster.ac,
       hp: monster.hp, 
@@ -22,7 +22,7 @@ export function BasicInfo({ monster, setMonster, onCRChange }) {
       speed: monster.speed
     });
   }, [monster.ac, monster.hp, monster.cr, monster.size, monster.speed]);
-
+  */
   // Initialize component on first render
   useEffect(() => {
     if (!hasInitialized.current) {
@@ -54,13 +54,13 @@ export function BasicInfo({ monster, setMonster, onCRChange }) {
         } else {
           console.error("Invalid AC or HP values for initial CR calculation");
         }
-      } else {
+      } /*else {
         console.log("Skipping initial CR calculation:", {
           hp: monster.hp,
           ac: monster.ac,
           cr: monster.cr
         });
-      }
+      }*/
       
       hasInitialized.current = true;
     }
