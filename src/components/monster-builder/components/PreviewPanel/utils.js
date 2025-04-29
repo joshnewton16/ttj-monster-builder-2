@@ -18,7 +18,16 @@ export const getActionString = (feature, monster) => {
     const [dice, ...damageType] = feature.damage.split(' ');
 
     if (feature.spellDetails) {
-      attackType = feature.type || feature.description;
+      attackType = " " + (feature.type || "") + (feature.description || "");
+      console.log('attackType', attackType)
+      if (feature.doubleDamage) {
+        const [count, die] = dice.split('d').map(Number);
+        const doubledCount = count * 2;
+        const doubledValue = doubledCount + 'd' + die;
+        console.log('doubledValue', doubledValue)
+        attackType = attackType.replace(feature.spellDetails.primaryDamageDice, doubledValue);
+      }
+      description = attackType;
     } else { //double check this logic
       attackType = feature.type || "Attack";
     }
@@ -29,8 +38,8 @@ export const getActionString = (feature, monster) => {
       const doubledCount = count * 2;
       const doubledMod = mod * 2;
       const doubledModString = doubledMod >= 0 ? `+${doubledMod}` : doubledMod;
-      console.log('attackType', attackType)
-      description = `${attackType}: ${doubledCount}d${die}${doubledModString} ${damageType.join(' ')}`;
+      
+      //description = `${attackType}: ${doubledCount}d${die}${doubledModString} ${damageType.join(' ')}`;
     } else {
       description = `${attackType}: ${dice}${modString} ${damageType.join(' ')}`;
     }

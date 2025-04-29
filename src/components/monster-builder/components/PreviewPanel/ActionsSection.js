@@ -19,11 +19,14 @@ export const ActionsSection = ({
       <div key={index} className="preview-item">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <div>
-            <strong>{feature.name}
-            {feature.spellDetails?.recharge && (
-              ` (${RECHARGE_OPTIONS.find(option => option.value === feature.spellDetails.recharge)?.label || feature.spellDetails.recharge})`
-            )}.
-            </strong> {getActionString(feature, monster, globalIndex)}
+            <strong>
+              {feature.spellDetails ? "Spell: " : ""}
+              {feature.name}
+              {feature.spellDetails?.recharge && (
+                ` (${RECHARGE_OPTIONS.find(option => option.value === feature.spellDetails.recharge)?.label || feature.spellDetails.recharge})`
+              )}.
+            </strong>
+            {getActionString(feature, monster, globalIndex)}
             {feature.isFirst && (
               <span className="ml-2 text-sm text-green-600">(Primary)</span>
             )}

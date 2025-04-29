@@ -52,7 +52,7 @@ export const generateSpellDescription = ({
   const secondaryDamage = getSecondaryDamageForCR(monster.cr);
 
   // Start with name and optional recharge
-  let desc = `Spell. `;
+  let desc = ``; //Spell. 
   
   // Effect based on primary effect type
   switch (primaryEffectType) {
@@ -67,7 +67,7 @@ export const generateSpellDescription = ({
         desc += `The target must make a ${savingThrow} saving throw. `;
         
         if (areaOfEffect) {
-          desc += `Each creature in a ${areaSize}-foot ${areaOfEffect} within ${actualRange} feet must make the save. `;
+          desc += `Each creature in a ${areaOfEffect} with a ${areaSize}-foot radius within ${actualRange} feet must make the save. `;
         }
         
         desc += `On a failed save, `;
