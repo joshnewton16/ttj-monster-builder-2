@@ -9,7 +9,7 @@ export function FeaturePointsSummary({
   magicPoints 
 }) {
   return (
-    <div className="bg-gray-100 p-1 rounded">
+    <div className="bg-amber-100 p-1 rounded">
       <h3 className="font-semibold mb-2">Available Choices:</h3>
       <div className="grid grid-cols-3 gap-4">
         <div className="flex items-center">
