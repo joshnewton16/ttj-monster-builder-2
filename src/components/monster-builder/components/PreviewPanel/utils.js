@@ -30,18 +30,18 @@ export const getActionString = (feature, monster) => {
       description = attackType;
     } else { //double check this logic
       attackType = feature.type || "Attack";
-    }
-    
-    
-    if (feature.doubleDamage) {
-      const [count, die] = dice.split('d').map(Number);
-      const doubledCount = count * 2;
-      const doubledMod = mod * 2;
-      const doubledModString = doubledMod >= 0 ? `+${doubledMod}` : doubledMod;
-      
-      //description = `${attackType}: ${doubledCount}d${die}${doubledModString} ${damageType.join(' ')}`;
-    } else {
-      description = `${attackType}: ${dice}${modString} ${damageType.join(' ')}`;
+      console.log(feature.type, attackType);
+      if (feature.doubleDamage) {
+        const [count, die] = dice.split('d').map(Number);
+        const doubledCount = count * 2;
+        const doubledMod = mod * 2;
+        const doubledModString = doubledMod >= 0 ? `+${doubledMod}` : doubledMod;
+        
+        description = `${attackType}: ${doubledCount}d${die}${doubledModString} ${damageType.join(' ')}`;
+      } else {
+        description = `${attackType}: ${dice}${modString} ${damageType.join(' ')}`;
+      }
+
     }
 
     if (feature.secondaryEffect) {
