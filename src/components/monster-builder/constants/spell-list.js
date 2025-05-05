@@ -3295,7 +3295,7 @@ export const FULL_SPELL_LIST = [
       "description": "Choose a creature that you can see within range. A surge of positive energy washes through the creature, causing it to regain 70 hit points. This spell also ends blindness, deafness, and any diseases affecting the target. This spell has no effect on constructs or undead.",
       "causes_damage": false,
       "prevents_damage": false,
-      "provides_healing": false,
+      "provides_healing": true,
       "controls_creatures": false,
       "movement_enhancement": false
     },
@@ -3307,8 +3307,8 @@ export const FULL_SPELL_LIST = [
       "description": "You bring forth a great feast, including magnificent food and drink. The feast takes 1 hour to consume and disappears at the end of that time, and the beneficial effects don\u2019t set in until this hour is over. Up to twelve other creatures can partake of the feast.\n\nA creature that partakes of the feast gains several benefits. The creature is cured of all diseases and poison, becomes immune to poison and being frightened, and makes all Wisdom saving throws with advantage. Its hit point maximum also increases by 2d10, and it gains the same number of hit points. These benefits last for 24 hours",
       "causes_damage": false,
       "prevents_damage": false,
-      "provides_healing": false,
-      "controls_creatures": true,
+      "provides_healing": true,
+      "controls_creatures": false,
       "movement_enhancement": false
     },
     {
@@ -3356,7 +3356,7 @@ export const FULL_SPELL_LIST = [
       "causes_damage": false,
       "prevents_damage": false,
       "provides_healing": false,
-      "controls_creatures": true,
+      "controls_creatures": false,
       "movement_enhancement": false
     },
     {
@@ -3380,7 +3380,7 @@ export const FULL_SPELL_LIST = [
       "causes_damage": false,
       "prevents_damage": false,
       "provides_healing": false,
-      "controls_creatures": false,
+      "controls_creatures": true,
       "movement_enhancement": false
     },
     {
