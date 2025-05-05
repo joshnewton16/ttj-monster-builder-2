@@ -2685,7 +2685,7 @@ export const FULL_SPELL_LIST = [
       "prevents_damage": false,
       "provides_healing": false,
       "controls_creatures": false,
-      "movement_enhancement": true
+      "movement_enhancement": false
     },
     {
       "name": "Cloudkill",
@@ -2709,7 +2709,7 @@ export const FULL_SPELL_LIST = [
       "prevents_damage": false,
       "provides_healing": false,
       "controls_creatures": false,
-      "movement_enhancement": true
+      "movement_enhancement": false
     },
     {
       "name": "Commune",
@@ -2777,7 +2777,7 @@ export const FULL_SPELL_LIST = [
       "level": 5,
       "casting_time": "1 minute",
       "description": "You mentally contact a demigod, the spirit of a long-dead sage, or some other mysterious entity from another plane. Contacting this extraplanar intelligence can strain or even break your mind. When you cast this spell, make a DC 15 Intelligence saving throw. On a failure, you take 6d6 psychic damage and are insane until you finish a long rest. While insane, you can't take actions, can't understand what other creatures say, can't read, and speak only in gibberish. A *[greater restoration](../greater-restoration \"greater restoration (lvl 5)\")* spell cast on you ends this effect.\n\nOn a successful save, you can ask the entity up to five questions. You must ask your questions before the spell ends. The DM answers each question with one word, such as \"yes,\" \"no,\" \"maybe,\" \"never,\" \"irrelevant,\" or \"unclear\" (if the entity doesn't know the answer to the question). If a one-word answer would be misleading, the DM might instead offer a short phrase as an answer.",
-      "causes_damage": true,
+      "causes_damage": false,
       "prevents_damage": false,
       "provides_healing": false,
       "controls_creatures": false,
@@ -2897,7 +2897,7 @@ export const FULL_SPELL_LIST = [
       "level": 4,
       "casting_time": "1 action",
       "description": "You attempt to beguile a beast that you can see within range. It must succeed on a Wisdom saving throw or be charmed by you for the duration. If you or creatures that are friendly to you are fighting it, it has advantage on the saving throw.\n\nWhile the beast is charmed, you have a telepathic link with it as long as the two of you are on the same plane of existence. You can use this telepathic link to issue commands to the creature while you are conscious (no action required), which it does its best to obey. You can specify a simple and general course of action, such as \"Attack that creature\", \"Run over there\", or \"Fetch that object\". If the creature completes the order and doesn't receive further direction from you, it defends and preserves itself to the best of its ability.\n\nYou can use your action to take total and precise control of the target. Until the end of your next turn, the creature takes only the actions you choose, and doesn't do anything that you don't allow it to do. During this time, you can also cause the creature to use a reaction, but this requires you to use your own reaction as well. Each time the target takes damage, it makes a new Wisdom saving throw against the spell. If the saving throw succeeds, the spell ends.",
-      "causes_damage": true,
+      "causes_damage": false,
       "prevents_damage": false,
       "provides_healing": false,
       "controls_creatures": true,
@@ -2909,7 +2909,7 @@ export const FULL_SPELL_LIST = [
       "level": 5,
       "casting_time": "1 action",
       "description": "You attempt to beguile a humanoid that you can see within range. It must succeed on a Wisdom saving throw or be charmed by you for the duration. If you or creatures that are friendly to you are fighting it, it has advantage on the saving throw.\n\nWhile the target is charmed, you have a telepathic link with it as long as the two of you are on the same plane of existence. You can use this telepathic link to issue commands to the creature while you are conscious (no action required), which it does its best to obey. You can specify a simple and general course of action, such as \"Attack that creature\", \"Run over there\", or \"Fetch that object\". If the creature completes the order and doesn't receive further direction from you, it defends and preserves itself to the best of its ability.\n\nYou can use your action to take total and precise control of the target. Until the end of your next turn, the creature takes only the actions you choose, and doesn't do anything that you don't allow it to do. During this time you can also cause the creature to use a reaction, but this requires you to use your own reaction as well. Each time the target takes damage, it makes a new Wisdom saving throw against the spell. If the saving throw succeeds, the spell ends.",
-      "causes_damage": true,
+      "causes_damage": false,
       "prevents_damage": false,
       "provides_healing": false,
       "controls_creatures": true,
@@ -2921,7 +2921,7 @@ export const FULL_SPELL_LIST = [
       "level": 5,
       "casting_time": "1 minute",
       "description": "This spell shapes a creature's dreams. Choose a creature known to you as the target of this spell. The target must be on the same plane of existence as you. Creatures that don't sleep, such as elves, can't be contacted by this spell. You, or a willing creature you touch, enters a trance state, acting as a messenger. While in the trance, the messenger is aware of his or her surroundings, but can't take actions or move.\n\nIf the target is asleep, the messenger appears in the target's dreams and can converse with the target as long as it remains asleep, through the duration of the spell. The messenger can also shape the environment of the dream, creating landscapes, objects, and other images. The messenger can emerge from the trance at any time, ending the effect of the spell early. The target recalls the dream perfectly upon waking. If the target is awake when you cast the spell, the messenger knows it, and can either end the trance (and the spell) or wait for the target to fall asleep, at which point the messenger appears in the target's dreams.\n\nYou can make the messenger appear monstrous and terrifying to the target. If you do, the messenger can deliver a message of no more than ten words and then the target must make a Wisdom saving throw. On a failed save, echoes of the phantasmal monstrosity spawn a nightmare that lasts the duration of the target's sleep and prevents the target from gaining any benefit from that rest. In addition, when the target wakes up, it takes 3d6 psychic damage.\n\nIf you have a body part, lock of hair, clipping from a nail, or similar portion of the target's body, the target makes its saving throw with disadvantage.",
-      "causes_damage": true,
+      "causes_damage": false,
       "prevents_damage": false,
       "provides_healing": false,
       "controls_creatures": false,
@@ -2933,10 +2933,10 @@ export const FULL_SPELL_LIST = [
       "level": 2,
       "casting_time": "1 action",
       "description": "You touch a creature and bestow upon it a magical enhancement. Choose one of the following effects; the target gains that effect until the spell ends.\n\nBear's Endurance: The target has advantage on Constitution Checks. It also gains 2d6 Temporary Hit Points, which are lost when the spell ends.\nBull's Strength: The target has advantage on Strength Checks, and his or her carrying Capacity doubles.\nCat's Grace: The target has advantage on Dexterity Checks. It also doesn't take damage from Falling 20 feet or less if it isn't Incapacitated.\nEagle's Splendor: The target has advantage on Charisma Checks.\nFox's Cunning: The target has advantage on Intelligence Checks.\nOwl's Wisdom: The target has advantage on Wisdom Checks.",
-      "causes_damage": true,
+      "causes_damage": false,
       "prevents_damage": false,
-      "provides_healing": true,
-      "controls_creatures": false,
+      "provides_healing": false,
+      "controls_creatures": true,
       "movement_enhancement": false
     },
     {
@@ -2945,7 +2945,7 @@ export const FULL_SPELL_LIST = [
       "level": 2,
       "casting_time": "1 action",
       "description": "You cause a creature or an object you can see within range to grow larger or smaller for the duration. Choose either a creature or an object that is neither worn nor carried. If the target is unwilling, it can make a Constitution saving throw. On a success, the spell has no effect. If the target is a creature, everything it is wearing and carrying changes size with it. Any item dropped by an affected creature returns to normal size at once.\n\nEnlarge. The target\u2019s size doubles in all dimensions, and its weight is multiplied by eight. This growth increases its size by one category \u2013 from Medium to Large, for example. If there isn\u2019t enough room for the target to double its size, the creature or object attains the maximum possible size in the space available. Until the spell ends, the target also has advantage on Strength checks and Strength saving throws. The target\u2019s weapons also grow to match its new size. While these weapons are enlarged, the target\u2019s attack with them deal 1d4 extra damage.\n\nReduce. The target\u2019s size is halved in all dimensions, and its weight is reduced to one-eighth of normal. This reduction decreases its size by one category \u2013 from Medium to Small, for example. Until the spell ends, the target also has disadvantage on Strength checks and Strength saving throws. The target\u2019s weapons also shrink to match its new size. While these weapons are reduced, the target\u2019s attacks with them deal 1d4 less damage (this can\u2019t reduce the damage below 1).",
-      "causes_damage": true,
+      "causes_damage": false,
       "prevents_damage": false,
       "provides_healing": false,
       "controls_creatures": false,
@@ -3029,7 +3029,7 @@ export const FULL_SPELL_LIST = [
       "level": 4,
       "casting_time": "1 action",
       "description": "Thin and wispy flames wreathe your body for the duration, shedding bright light in a 10-foot radius and dim light for an additional 10 feet, You can end the spell early by using an action to dismiss it.\n\nThe flames provide you with a warm shield or a chill shield, as you choose. The warm shield grants you resistance to cold damage, and the chill shield grants you resistance to fire damage.\n\nIn addition, whenever a creature within 5 feet of you hits you with a melee attack, the shield erupts with flame. The attacker takes 2d8 fire damage from a warm shield, or 2d8 cold damage from a cold shield.",
-      "causes_damage": true,
+      "causes_damage": false,
       "prevents_damage": true,
       "provides_healing": false,
       "controls_creatures": false,
@@ -3113,7 +3113,7 @@ export const FULL_SPELL_LIST = [
       "level": 5,
       "casting_time": "1 minute",
       "description": "You place a magical command on a creature that you can see within range, forcing it to carry out some service or refrain from some action or course of activity as you decide. If the creature can understand you, it must succeed on a Wisdom saving throw or become charmed by you for the duration. While the creature is charmed by you, it takes 5d10 psychic damage each time it acts in a manner directly counter to your instructions, but no more than once each day. A creature that can't understand you is unaffected by the spell.\n\nYou can issue any command you choose, short of an activity that would result in certain death. Should you issue a suicidal command, the spell ends.\n\nYou can end the spell early by using an action to dismiss it. A *[remove curse](../remove-curse/ \"remove curse (lvl 3)\")*, *[greater restoration](../greater-restoration/ \"greater restoration (lvl 5)\")*, or *[wish](../wish/ \"wish (lvl 9)\")* spell also ends it.",
-      "causes_damage": true,
+      "causes_damage": false,
       "prevents_damage": false,
       "provides_healing": false,
       "controls_creatures": true,
@@ -3150,7 +3150,7 @@ export const FULL_SPELL_LIST = [
       "casting_time": "1 action",
       "description": "An immobile, faintly shimmering barrier springs into existence in a 10-foot radius around you and remains for the duration.\n\nAny spell of 5th level or lower cast from outside the barrier can\u2019t affect creatures or objects within it, even if the spell is cast using a higher level spell slot. Such a spell can target creatures and objects within the barrier, but the spell has no effect on them. Similarly, the area within the barrier is excluded from the areas affected by such spells.",
       "causes_damage": false,
-      "prevents_damage": false,
+      "prevents_damage": true,
       "provides_healing": false,
       "controls_creatures": false,
       "movement_enhancement": false
@@ -3176,7 +3176,7 @@ export const FULL_SPELL_LIST = [
       "causes_damage": false,
       "prevents_damage": false,
       "provides_healing": false,
-      "controls_creatures": false,
+      "controls_creatures": true,
       "movement_enhancement": false
     },
     {
@@ -3199,7 +3199,7 @@ export const FULL_SPELL_LIST = [
       "description": "You imbue a creature you touch with positive energy to undo a debilitating effect.  You can reduce the taret's exhaustion level by one, or end one of the following effects on the target:\n\n* One effect that charmed or petrified the target\n\n* One curse, including the target\u2019s attunement to a cursed magic item\n\n* Any reduction to one of the target\u2019s ability scores\n\n* One effect reducing the target\u2019s hit point maximum",
       "causes_damage": false,
       "prevents_damage": false,
-      "provides_healing": false,
+      "provides_healing": true,
       "controls_creatures": true,
       "movement_enhancement": false
     },
@@ -3237,7 +3237,7 @@ export const FULL_SPELL_LIST = [
       "prevents_damage": false,
       "provides_healing": false,
       "controls_creatures": false,
-      "movement_enhancement": false
+      "movement_enhancement": true
     },
     {
       "name": "Hallucinatory Terrain",

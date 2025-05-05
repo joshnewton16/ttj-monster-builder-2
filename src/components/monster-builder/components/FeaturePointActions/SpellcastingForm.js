@@ -19,6 +19,19 @@ export function SpellcastingForm({ onSubmit, availablePoints, monster, currentMa
     return matchingRecord ? matchingRecord.level : 20;
   }
 
+  function getMaxSpellLevel(spellSlots) {
+    // Start from the end of the array (highest spell levels)
+    for (let i = spellSlots.length - 1; i >= 0; i--) {
+      // If we find a spell level with slots > 0, return that level
+      if (spellSlots[i] > 0) {
+        // Add 1 because array indices are 0-based, but spell levels start at 1
+        return i + 1;
+      }
+    }
+    // Return 0 if no spell slots are available
+    return 0;
+  }
+
   // Calculate spellcasting stats based on CR and proficiency
   const spellcastingStats = useMemo(() => {
     const baseStat = getLevelFromCR(monster.cr);
@@ -52,11 +65,20 @@ export function SpellcastingForm({ onSubmit, availablePoints, monster, currentMa
 
   // Filter only for basic spells (no flags) and exclude already selected spells
   const availableBasicSpells = useMemo(() => {
-    const maxSpellLevel = Math.floor(spellcastingStats.casterLevel / 2);
+    // Get the matching record first, same as in spellcastingStats
+    const matchingRecord = SPELLCASTERLEVELS.find(record => String(record.cr) === String(monster.cr));
+    // Then use the spellSlots from that record
+    const maxSpellLevel = getMaxSpellLevel(matchingRecord ? matchingRecord.spellSlots : [0,0,0,0,0,0,0,0,0]);
+    console.log(matchingRecord);
+    console.log(maxSpellLevel);
     const selectedSpellNames = selectedBasicSpells.map(spell => spell.name);
     
     return FULL_SPELL_LIST.filter(spell => {
       // Check spell level against caster level first
+      if (spell.name === 'Remove Curse') {
+        console.log('Remove Curse', spell.level, maxSpellLevel);
+      }
+
       if (spell.level > maxSpellLevel) {
         return false;
       }
@@ -83,7 +105,7 @@ export function SpellcastingForm({ onSubmit, availablePoints, monster, currentMa
              !spell.controls_creatures && 
              !spell.movement_enhancement;
     });
-  }, [levelFilter, spellcastingStats.casterLevel, selectedBasicSpells, spellCountByLevel]);
+  }, [levelFilter, selectedBasicSpells, spellCountByLevel, monster.cr]);
 
   const handleBasicSpellSelect = (e) => {
     const selectedSpellName = e.target.value;
@@ -307,11 +329,18 @@ export function SpellcastingForm({ onSubmit, availablePoints, monster, currentMa
           >
             <option value="all">All Levels</option>
             <option value="0">Cantrips (Level 0)</option>
-            {[...Array(Math.floor(spellcastingStats.casterLevel / 2))].map((_, i) => (
-              <option key={i + 1} value={i + 1}>
-                Level {i + 1}
-              </option>
-            ))}
+            {/* Get the matching record first */}
+            {(() => {
+              const matchingRecord = SPELLCASTERLEVELS.find(record => String(record.cr) === String(monster.cr));
+              // Then use the spellSlots from that record
+              const maxSpellLevel = getMaxSpellLevel(matchingRecord ? matchingRecord.spellSlots : [0,0,0,0,0,0,0,0,0]);
+              
+              return [...Array(maxSpellLevel)].map((_, i) => (
+                <option key={i + 1} value={i + 1}>
+                  Level {i + 1}
+                </option>
+              ));
+            })()}
           </select>
         </div>
       </div>
