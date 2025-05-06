@@ -296,7 +296,7 @@ export function ActionsFeatures({ monster, setMonster }) {
     .reduce((total, feature) => total + (feature.magicPointCost || 0), 0);
 
   return (
-    <div className="space-y-1">
+    <div className="space-y-1 outline-double p-5">
       <h2 className="text-xl font-bold">Actions and Features</h2>
       
       <FeaturePointsSummary
