@@ -7,7 +7,6 @@ import PreviewPanel from './components/PreviewPanel';
 import MarkdownExporter from './components/MarkdownExporter'; // Import markdown exporter
 import StateExport from './components/StateExport';
 import StateImport from './components/StateImport';
-import MarkdownImporter from './components/MarkdownImporter';
 import StatBlockImageExporter from './components/StatBlockImageExporter'; // Import image exporter
 
 const initialMonsterState = {
@@ -115,7 +114,16 @@ function handleCRChange(newCR) {
           maxWidth: '65%'
         }}>
           {stepContent()}
+
           <div className="flex justify-start gap-4 mt-6 mb-4">
+            {/* Add Export buttons */}
+            <MarkdownExporter monster={monster} />
+            <StateExport monster={monster} />
+            <StateImport setMonster={setMonster} />
+            <StatBlockImageExporter monster={monster} />
+     
+          </div>
+          <div className="flex justify-start gap-4 mt-6 mb-4 outline-double p-4">
             <button
               className="nav-button prev-button"
               onClick={() => setStep(prev => Math.max(1, prev - 1))}
@@ -129,14 +137,6 @@ function handleCRChange(newCR) {
             >
               Next
             </button>
-          </div>
-          <div className="flex justify-start gap-4 mt-6 mb-4">
-            {/* Add Export buttons */}
-            <MarkdownExporter monster={monster} />
-            <StateExport monster={monster} />
-            <StateImport setMonster={setMonster} />
-            <StatBlockImageExporter monster={monster} />
-     
           </div>
         </div>
         {step >= 2 && (
