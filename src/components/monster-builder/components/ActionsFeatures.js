@@ -56,7 +56,7 @@ export function ActionsFeatures({ monster, setMonster }) {
 
   // Get existing attacks that can be modified
   const existingAttacks = monster.features.filter(f => 
-    f.category === 'Actions' && f.damage && !f.isMultiattack
+    (f.category === 'Actions' || f.category === 'Bonus Actions' || f.category === 'Reactions') && f.damage && !f.isMultiattack
   );
 
   // Check for existing multiattack and get its count
