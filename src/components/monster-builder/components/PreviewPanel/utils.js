@@ -29,10 +29,12 @@ export const getActionString = (feature, monster) => {
       }
       description = attackType;
     } else { //double check this logic
-      if (feature.type ===' Custom') {
-        attackType = feature.description;
+      // Melee or Ranged Weapon Attack: +5 to hit, reach 5 ft. or range 20/60 ft., one target. Hit: 4 (1d4 + 2) piercing damage.
+      // Battleaxe. Melee: 1d8 slashing (versatile: 1d10)
+      if (feature.type === 'Custom') {
+        attackType = " " + feature.description;
       } else {
-        attackType = feature.type || "Attack";
+        attackType = " " + feature.type + " Attack: +" + (mod + monster.proficiencyBonus) + " to hit, reach 5 ft., one target. Hit" ;
       }
 
       console.log(feature.type, attackType);
