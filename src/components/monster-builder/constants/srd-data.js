@@ -85,7 +85,8 @@ export const SRD_FEATURES = [
   { name: 'Spellcasting', description: 'The creature is a spellcaster.' },
   { name: 'Standing Leap', description: 'Its long jump is up to 30 feet and its high jump is up to 15 feet, with or without a running start.' },
   { name: 'Telekinetic', description: 'You can cast mage hand freely as a cantrip without verbal or material components.' },
-  { name: 'Undead Fortitude', description: 'If damage reduces it to 0 hit points, must make a Constitution saving throw to drop to 1 hit point instead.' }
+  { name: 'Undead Fortitude', description: 'If damage reduces it to 0 hit points, must make a Constitution saving throw to drop to 1 hit point instead.' },
+  { name: 'Tool Proficiency', description: '<CHARACTER> is proficient with <Up to two Tool Kits>.' }
 ].sort((a, b) => a.name.localeCompare(b.name));
 
 export const SRD_ARMOR = [
