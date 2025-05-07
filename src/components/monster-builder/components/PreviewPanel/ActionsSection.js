@@ -12,7 +12,8 @@ export const ActionsSection = ({
 }) => {
   const renderFeature = (feature, index) => {
     const globalIndex = monster.features.findIndex(f => f === feature);
-    console.log('feature:', feature)
+    //console.log('feature:', feature, globalIndex)
+    //console.log(monster)
     //console.log('getACtionString:', getActionString(feature, monster, globalIndex))
     
     return (

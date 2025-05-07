@@ -86,7 +86,9 @@ export const AbilitiesSection = ({
   };
 
   const renderFeature = (feature, index) => {
-    const globalIndex = features.findIndex(f => f === feature);
+    const globalIndex = monster.features.findIndex(f => f === feature);
+    //console.log('Ab Section Feature', feature);
+    //console.log('Ab Section globalIndex', globalIndex);
 
     return (
       <div key={index} className="preview-item">

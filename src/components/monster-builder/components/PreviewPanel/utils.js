@@ -19,12 +19,12 @@ export const getActionString = (feature, monster) => {
 
     if (feature.spellDetails) {
       attackType = " " + (feature.type || "") + (feature.description || "");
-      console.log('attackType', attackType)
+      //console.log('attackType', attackType)
       if (feature.doubleDamage) {
         const [count, die] = dice.split('d').map(Number);
         const doubledCount = count * 2;
         const doubledValue = doubledCount + 'd' + die;
-        console.log('doubledValue', doubledValue)
+        //console.log('doubledValue', doubledValue)
         attackType = attackType.replace(feature.spellDetails.primaryDamageDice, doubledValue);
       }
       description = attackType;
@@ -37,7 +37,7 @@ export const getActionString = (feature, monster) => {
         attackType = " " + feature.type + " Attack: +" + (mod + monster.proficiencyBonus) + " to hit, reach 5 ft., one target. Hit" ;
       }
 
-      console.log(feature.type, attackType);
+      //console.log(feature.type, attackType);
       if (feature.doubleDamage) {
         const [count, die] = dice.split('d').map(Number);
         const doubledCount = count * 2;

@@ -13,6 +13,9 @@ const PreviewPanel = ({ monster, setMonster, setStep }) => {
     const featureToDelete = monster.features[index];
     const category = featureToDelete.category;
     const wasFirst = featureToDelete.isFirst;
+    console.log('before delete', monster);
+    console.log('feature', feature);
+    console.log('index', index );
 
     setMonster(prev => {
       const newFeatures = prev.features.filter((_, i) => i !== index);
@@ -36,6 +39,8 @@ const PreviewPanel = ({ monster, setMonster, setStep }) => {
           };
         }
       }
+
+      console.log('after delete', monster);
 
       return {
         ...prev,
