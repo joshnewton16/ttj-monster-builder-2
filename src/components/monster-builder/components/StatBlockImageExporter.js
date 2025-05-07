@@ -31,7 +31,7 @@ const StatBlockImageExporter = ({ monster }) => {
   const getSkillBonus = (skill) => {
     let skillName = '';
     let ability = '';
-    
+    console.log('skill', skill);
     // Handle both string and object formats for skills
     if (typeof skill === 'string') {
       skillName = skill;
@@ -43,9 +43,18 @@ const StatBlockImageExporter = ({ monster }) => {
     
     // Calculate the base ability modifier
     const abilityMod = parseInt(getModifier(monster.attributes[ability]));
-    
+    let intExpertise = 0;
+    // Add Expertise
+    if (monster.expertise && monster.expertise.length > 0) { 
+      monster.expertise.map(expertise => {
+        if (expertise === skill) {
+          intExpertise = monster.proficiencyBonus;
+        }
+      })
+    }
+
     // Add proficiency bonus
-    return abilityMod + monster.proficiencyBonus;
+    return abilityMod + intExpertise + monster.proficiencyBonus;
   };
 
   /**

@@ -29,6 +29,7 @@ export function SkillAction({ monster, onSubmit, type }) {
   };
 
   const handleSubmit = () => {
+    console.log('monster', monster);
     if ((type === 'expertise' && selectedSkills.length === 1) ||
         (type === 'proficiency' && selectedSkills.length === 2)) {
       onSubmit(type, selectedSkills);
