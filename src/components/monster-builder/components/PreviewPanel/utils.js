@@ -29,7 +29,12 @@ export const getActionString = (feature, monster) => {
       }
       description = attackType;
     } else { //double check this logic
-      attackType = feature.type || "Attack";
+      if (feature.type ===' Custom') {
+        attackType = feature.description;
+      } else {
+        attackType = feature.type || "Attack";
+      }
+
       console.log(feature.type, attackType);
       if (feature.doubleDamage) {
         const [count, die] = dice.split('d').map(Number);

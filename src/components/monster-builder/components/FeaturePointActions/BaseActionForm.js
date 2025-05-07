@@ -16,6 +16,7 @@ export function BaseActionForm({
   const [attackType, setAttackType] = useState('melee');
   const [damageDice, setDamageDice] = useState('1d6');
   const [damageType, setDamageType] = useState('slashing');
+  const [doesNotDealDamage, setDoesNotDealDamage] = useState(false);
 
   const handleActionSelect = (e) => {
     const actions = isLegendary ? legendaryActions : SRD_ACTIONS;
@@ -48,13 +49,25 @@ export function BaseActionForm({
 
   // Update description when attack properties change
   useEffect(() => {
-    if (attackType && damageDice && damageType) {
-      const modifier = attackType === 'melee' ? '+STR' : '+DEX';
+    if (!doesNotDealDamage && attackType && damageDice && damageType) {
+      let modifier;
+      if (attackType === 'melee') {
+        modifier = '+STR';
+      } else if (attackType === 'melee-dex') {
+        modifier = '+DEX';
+      } else if (attackType === 'ranged') {
+        modifier = '+DEX';
+      }
+      
       const damageText = `${damageDice} ${modifier} ${damageType}`;
       // Always update the description when attack properties change
-      setActionDescription(`${attackType === 'melee' ? 'Melee' : 'Ranged'} Weapon Attack - ${damageText}`);
+      const attackTypeText = attackType === 'melee' || attackType === 'melee-dex' ? 'Melee' : 'Ranged';
+      setActionDescription(`${attackTypeText} Weapon Attack - ${damageText}`);
+    } else if (doesNotDealDamage) {
+      // Optionally set a default description for non-damaging actions
+      setActionDescription('');
     }
-  }, [attackType, damageDice, damageType]);
+  }, [attackType, damageDice, damageType, doesNotDealDamage]);
 
   const handleSubmit = () => {
     if (!actionTitle || !actionDescription) return;
@@ -66,9 +79,9 @@ export function BaseActionForm({
       name: actionTitle,
       category: isLegendary ? 'Legendary' : actionType,
       type: srdAction?.type || 'Custom',
-      damage: damageDice ? `${damageDice} ${damageType}` : '',
-      useStr: attackType === 'melee',
-      useDex: attackType === 'ranged',
+      damage: doesNotDealDamage ? '' : `${damageDice} ${damageType}`,
+      useStr: !doesNotDealDamage && attackType === 'melee',
+      useDex: !doesNotDealDamage && (attackType === 'ranged' || attackType === 'melee-dex'),
       description: actionDescription,
     };
 
@@ -92,6 +105,7 @@ export function BaseActionForm({
     setAttackType('melee');
     setDamageDice('1d6');
     setDamageType('slashing');
+    setDoesNotDealDamage(false);
   };
 
   return (
@@ -164,61 +178,77 @@ export function BaseActionForm({
       {/* New attack properties form section */}
       <div className="p-3 border rounded bg-gray-50">
         <h4 className="font-medium mb-2">Attack Properties</h4>
-        <div className="grid grid-cols-3 gap-2">
-          {/* Attack Type */}
-          <div>
-            <label className="block text-sm mb-1">Attack Type</label>
-            <select
-              value={attackType}
-              onChange={(e) => {
-                setAttackType(e.target.value);
-                // Immediately trigger description update handled in useEffect
-              }}
-              className="w-full p-2 border rounded"
-            >
-              <option value="melee">Melee (STR)</option>
-              <option value="ranged">Ranged (DEX)</option>
-            </select>
-          </div>
-          
-          {/* Damage Dice */}
-          <div>
-            <label className="block text-sm mb-1">Damage Dice</label>
-            <select
-              value={damageDice}
-              onChange={(e) => {
-                setDamageDice(e.target.value);
-                // Immediately trigger description update handled in useEffect
-              }}
-              className="w-full p-2 border rounded"
-            >
-              <option value="1d4">1d4</option>
-              <option value="1d6">1d6</option>
-              <option value="1d8">1d8</option>
-              <option value="1d10">1d10</option>
-              <option value="1d12">1d12</option>
-              <option value="2d6">2d6</option>
-              <option value="2d8">2d8</option>
-            </select>
-          </div>
-          
-          {/* Damage Type */}
-          <div>
-            <label className="block text-sm mb-1">Damage Type</label>
-            <select
-              value={damageType}
-              onChange={(e) => {
-                setDamageType(e.target.value);
-                // Immediately trigger description update handled in useEffect
-              }}
-              className="w-full p-2 border rounded"
-            >
-              <option value="bludgeoning">Bludgeoning</option>
-              <option value="piercing">Piercing</option>
-              <option value="slashing">Slashing</option>
-            </select>
-          </div>
+        {/* Does not deal damage checkbox */}
+        <div className="mb-3">
+          <label className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              checked={doesNotDealDamage}
+              onChange={(e) => setDoesNotDealDamage(e.target.checked)}
+              className="h-4 w-4"
+            />
+            <span>Does not deal damage</span>
+          </label>
         </div>
+
+        {!doesNotDealDamage && (
+          <div className="grid grid-cols-3 gap-2">
+            {/* Attack Type */}
+            <div>
+              <label className="block text-sm mb-1">Attack Type</label>
+              <select
+                value={attackType}
+                onChange={(e) => {
+                  setAttackType(e.target.value);
+                  // Immediately trigger description update handled in useEffect
+                }}
+                className="w-full p-2 border rounded"
+              >
+                <option value="melee">Melee (STR)</option>
+                <option value="melee-dex">Melee (DEX)</option>
+                <option value="ranged">Ranged (DEX)</option>
+              </select>
+            </div>
+            
+            {/* Damage Dice */}
+            <div>
+              <label className="block text-sm mb-1">Damage Dice</label>
+              <select
+                value={damageDice}
+                onChange={(e) => {
+                  setDamageDice(e.target.value);
+                  // Immediately trigger description update handled in useEffect
+                }}
+                className="w-full p-2 border rounded"
+              >
+                <option value="1d4">1d4</option>
+                <option value="1d6">1d6</option>
+                <option value="1d8">1d8</option>
+                <option value="1d10">1d10</option>
+                <option value="1d12">1d12</option>
+                <option value="2d6">2d6</option>
+                <option value="2d8">2d8</option>
+              </select>
+            </div>
+            
+            {/* Damage Type */}
+            <div>
+              <label className="block text-sm mb-1">Damage Type</label>
+              <select
+                value={damageType}
+                onChange={(e) => {
+                  setDamageType(e.target.value);
+                  // Immediately trigger description update handled in useEffect
+                }}
+                className="w-full p-2 border rounded"
+              >
+                <option value="bludgeoning">Bludgeoning</option>
+                <option value="piercing">Piercing</option>
+                <option value="slashing">Slashing</option>
+              </select>
+            </div>
+          </div>
+        )}
       </div>
       
       <div>
