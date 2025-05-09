@@ -225,9 +225,12 @@ export function ActionEconomySpellForm({ onSubmit, availablePoints, monster, mag
         };
         break;
         
-      case 'Healing':
+      case 'Healing':        
         newSpell.spellDetails = {
           ...newSpell.spellDetails,
+          areaSize: areaOfEffect ? areaSize : null,
+          range: actualRange,
+          rangeMultiplier: rangeMultiplier,
           healingDice
         };
         break;
@@ -309,6 +312,8 @@ export function ActionEconomySpellForm({ onSubmit, availablePoints, monster, mag
           <HealingFields
             healingDice={healingDice}
             setHealingDice={setHealingDice}
+            setRangeMultiplier={setRangeMultiplier}
+            baseRange={baseRange}
             disabled={atActionEconomySpellLimit}
           />
         );
