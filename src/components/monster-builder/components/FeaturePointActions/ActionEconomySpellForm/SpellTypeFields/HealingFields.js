@@ -11,7 +11,6 @@ const HealingFields = ({
   disabled, 
   monster
 }) => {
-  console.log(baseRange, rangeMultiplier);
 
   return (
     <div className="flex gap-4">
