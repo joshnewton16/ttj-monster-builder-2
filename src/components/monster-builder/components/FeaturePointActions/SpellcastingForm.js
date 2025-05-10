@@ -16,7 +16,7 @@ export function SpellcastingForm({ onSubmit, availablePoints, monster, currentMa
     const matchingRecord = SPELLCASTERLEVELS.find(record => String(record.cr) === crString);
     
     // Return the level if found, otherwise provide a fallback
-    return matchingRecord ? matchingRecord.level : 20;
+    return matchingRecord ? matchingRecord.level : 2;
   }
 
   function getMaxSpellLevel(spellSlots) {

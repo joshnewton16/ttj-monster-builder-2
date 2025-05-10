@@ -16,7 +16,7 @@ export function Attributes({ monster, setMonster, availablePoints, setAvailableP
   const totalAvailable = maxPointsForCR + featurePoints - spentPoints;
 
   function handleAttributeChange(attr, value) {
-    if (value >= 8 && value <= 20) {
+    if (value >= 4 && value <= 20) {
       const diff = value - monster.attributes[attr];
       if (totalAvailable - diff >= 0 || diff < 0) {
         setMonster(prev => ({
@@ -56,7 +56,7 @@ export function Attributes({ monster, setMonster, availablePoints, setAvailableP
             <input
               type="number"
               className="attribute-input"
-              min="8"
+              min="4"
               max="20"
               value={value}
               onChange={e => handleAttributeChange(attr, parseInt(e.target.value))}
