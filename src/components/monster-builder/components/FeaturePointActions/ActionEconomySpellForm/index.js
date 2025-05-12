@@ -104,6 +104,20 @@ export function ActionEconomySpellForm({ onSubmit, availablePoints, monster, mag
     return monster.speed.some(s => s.type === type && s.value > 0);
   };
 
+  const getImageDisplayName = (name, recharge) => {
+    let imageDisplayName = "Spell: " + name;
+    
+    if (recharge) {
+      imageDisplayName = imageDisplayName + " (" + (
+        RECHARGE_OPTIONS.find(option => option.value === recharge)?.label 
+        || recharge
+      ) + ")";
+    }
+    
+    console.log('imageDisplayName', imageDisplayName);
+    return imageDisplayName;
+  };
+
   // Handle area of effect changes and update action type accordingly
   useEffect(() => {
     // If area effect is selected, force saving throw
@@ -186,6 +200,7 @@ export function ActionEconomySpellForm({ onSubmit, availablePoints, monster, mag
       costFeaturePoint: false,
       costMagicPoint: true,
       magicPointCost: finalMagicPointCost,
+      imageDisplayName: getImageDisplayName(spellName, rechargeOption !== 'none' ? rechargeOption : null),
       spellDetails: {
         primaryEffectType,
         castingTime,

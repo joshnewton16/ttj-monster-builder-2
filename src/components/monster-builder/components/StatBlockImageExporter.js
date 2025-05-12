@@ -3,7 +3,6 @@ import html2canvas from 'html2canvas';
 import { getSkillAbility } from '../constants/srd-data'; // Import from your constants file
 import { getModifier } from '../functions/globalFunctions';
 import { getActionString } from './PreviewPanel/utils';
-import {RECHARGE_OPTIONS} from '../constants/spell-parameters';
 
 /**
  * Component for generating and exporting D&D monster stat blocks as images
@@ -76,6 +75,17 @@ const StatBlockImageExporter = ({ monster }) => {
    */
   const showStatBlockModal = () => {
     const useTwoColumns = twoColumnsRef.current;
+
+    //Troubleshooting block
+    console.log(monster);
+    if (Array.isArray(monster.features)) {
+      monster.features.forEach(feature => {
+        console.log(feature?.imageDisplayName || feature?.name || "Unnamed Feature");
+      });
+    } else {
+      // If monster.features is a single object (not an array)
+      console.log(monster.features?.imageDisplayName || monster.features?.name || "Unnamed Feature");
+    }
     
     // Create stat block modal
     const modal = document.createElement('div');
@@ -154,7 +164,7 @@ const StatBlockImageExporter = ({ monster }) => {
         <div style="margin-bottom: ${category === 'Abilities' ? '20px' : '10px'};">
           ${header}
           ${features.map(feature => 
-            `<p style="margin: 0;"><strong><em>${feature.name}.</em></strong> ${getActionString(feature, monster)} </p>`
+            `<p style="margin: 0;"><strong><em>${feature.imageDisplayName || feature.name}.</em></strong> ${getActionString(feature, monster)} </p>`
           ).join('<br/>')}
         </div>
       `;
@@ -356,7 +366,7 @@ const StatBlockImageExporter = ({ monster }) => {
                 ${leftAbilities.length > 0 ? 
                   `<div>
                     ${leftAbilities.map(feature => 
-                      `<p style="margin: 0;"><strong><em>${feature.name}.</em></strong> ${getActionString(feature, monster)}</p>`
+                      `<p style="margin: 0;"><strong><em>${feature.imageDisplayName || feature.name}.</em></strong> ${getActionString(feature, monster)}</p>`
                     ).join('<br/>')}
                   </div>` : ''
                 }
@@ -366,7 +376,7 @@ const StatBlockImageExporter = ({ monster }) => {
                 ${rightAbilities.length > 0 ? 
                   `<div>
                     ${rightAbilities.map(feature => 
-                      `<p style="margin: 0;"><strong><em>${feature.name}.</em></strong> ${getActionString(feature, monster)}</p>`
+                      `<p style="margin: 0;"><strong><em>${feature.imageDisplayName || feature.name}.</em></strong> ${getActionString(feature, monster)}</p>`
                     ).join('<br/>')}
                   </div>` : ''
                 }
@@ -386,23 +396,12 @@ const StatBlockImageExporter = ({ monster }) => {
                 <div style="display: flex; gap: 20px; margin-bottom: 20px;">
                   <div style="flex: 1;">
                     ${leftActions.map(feature => {
-                        //console.log('recharge:', feature.spellDetails?.recharge);
-                        const rechargeText = feature.spellDetails?.recharge 
-                        ? ` (${RECHARGE_OPTIONS.find(option => option.value === feature.spellDetails.recharge)?.label || feature.spellDetails.recharge})`
-                        : '';
-                        //console.log('rechargeText:', rechargeText);
-                      return `<p style="margin: 0;"><strong><em>${feature.name}${rechargeText}.</em></strong> ${getActionString(feature, monster)}</p>`
+                      return `<p style="margin: 0;"><strong><em>${feature.imageDisplayName || feature.name}.</em></strong> ${getActionString(feature, monster)}</p>`
                       }).join('<br/>')}
                   </div>
                   <div style="flex: 1;">
                     ${rightActions.map(feature => {
-                      //console.log('recharge:', feature.spellDetails?.recharge);
-                        const rechargeText = feature.spellDetails?.recharge 
-                        ? ` (${RECHARGE_OPTIONS.find(option => option.value === feature.spellDetails.recharge)?.label || feature.spellDetails.recharge})`
-                        : '';
-                        //console.log('rechargeText:', rechargeText);
-
-                      return `<p style="margin: 0;"><strong><em>${feature.name}${rechargeText}.</em></strong> ${getActionString(feature, monster)}</p>`
+                      return `<p style="margin: 0;"><strong><em>${feature.imageDisplayName || feature.name}.</em></strong> ${getActionString(feature, monster)}</p>`
                     }).join('<br/>')}
                   </div>
                 </div>
@@ -422,22 +421,12 @@ const StatBlockImageExporter = ({ monster }) => {
                 <div style="display: flex; gap: 20px; margin-bottom: 20px;">
                   <div style="flex: 1;">
                     ${leftBonusActions.map(feature => {
-                        //console.log('recharge:', feature.spellDetails?.recharge);
-                        const rechargeText = feature.spellDetails?.recharge 
-                        ? ` (${RECHARGE_OPTIONS.find(option => option.value === feature.spellDetails.recharge)?.label || feature.spellDetails.recharge})`
-                        : '';
-                        //console.log('rechargeText:', rechargeText);
-                      return `<p style="margin: 0;"><strong><em>${feature.name}${rechargeText}.</em></strong> ${getActionString(feature, monster)}</p>`
+                      return `<p style="margin: 0;"><strong><em>${feature.imageDisplayName || feature.name}.</em></strong> ${getActionString(feature, monster)}</p>`
                       }).join('<br/>')}
                   </div>
                   <div style="flex: 1;">
                     ${rightBonusActions.map(feature => {
-                        //console.log('recharge:', feature.spellDetails?.recharge);
-                        const rechargeText = feature.spellDetails?.recharge 
-                        ? ` (${RECHARGE_OPTIONS.find(option => option.value === feature.spellDetails.recharge)?.label || feature.spellDetails.recharge})`
-                        : '';
-                        //console.log('rechargeText:', rechargeText);
-                      return `<p style="margin: 0;"><strong><em>${feature.name}${rechargeText}.</em></strong> ${getActionString(feature, monster)}</p>`
+                      return `<p style="margin: 0;"><strong><em>${feature.imageDisplayName || feature.name}.</em></strong> ${getActionString(feature, monster)}</p>`
                       }).join('<br/>')}
                   </div>
                 </div>
@@ -457,22 +446,12 @@ const StatBlockImageExporter = ({ monster }) => {
                 <div style="display: flex; gap: 20px; margin-bottom: 20px;">
                   <div style="flex: 1;">
                     ${leftReactions.map(feature => {
-                        //console.log('recharge:', feature.spellDetails?.recharge);
-                        const rechargeText = feature.spellDetails?.recharge 
-                        ? ` (${RECHARGE_OPTIONS.find(option => option.value === feature.spellDetails.recharge)?.label || feature.spellDetails.recharge})`
-                        : '';
-                        //console.log('rechargeText:', rechargeText);
-                      return `<p style="margin: 0;"><strong><em>${feature.name}${rechargeText}.</em></strong> ${getActionString(feature, monster)}</p>`
+                      return `<p style="margin: 0;"><strong><em>${feature.imageDisplayName || feature.name}.</em></strong> ${getActionString(feature, monster)}</p>`
                       }).join('<br/>')}
                   </div>
                   <div style="flex: 1;">
                     ${rightReactions.map(feature => {
-                        //console.log('recharge:', feature.spellDetails?.recharge);
-                        const rechargeText = feature.spellDetails?.recharge 
-                        ? ` (${RECHARGE_OPTIONS.find(option => option.value === feature.spellDetails.recharge)?.label || feature.spellDetails.recharge})`
-                        : '';
-                        //console.log('rechargeText:', rechargeText);
-                      return `<p style="margin: 0;"><strong><em>${feature.name}${rechargeText}.</em></strong> ${getActionString(feature, monster)}</p>`
+                      return `<p style="margin: 0;"><strong><em>${feature.imageDisplayName || feature.name}.</em></strong> ${getActionString(feature, monster)}</p>`
                       }).join('<br/>')}
                   </div>
                 </div>
@@ -482,12 +461,7 @@ const StatBlockImageExporter = ({ monster }) => {
           `<div style="margin-bottom: 20px;">
             ${abilities.length > 0 ? 
               `${abilities.map(feature => {
-                        //console.log('recharge:', feature.spellDetails?.recharge);
-                        const rechargeText = feature.spellDetails?.recharge 
-                        ? ` (${RECHARGE_OPTIONS.find(option => option.value === feature.spellDetails.recharge)?.label || feature.spellDetails.recharge})`
-                        : '';
-                        //console.log('rechargeText:', rechargeText);
-                      return `<p style="margin: 0;"><strong><em>${feature.name}${rechargeText}.</em></strong> ${getActionString(feature, monster)}</p>`
+                      return `<p style="margin: 0;"><strong><em>${feature.imageDisplayName || feature.name}.</em></strong> ${getActionString(feature, monster)}</p>`
                       }).join('<br/>')}<br/>` : ''
             }
             
@@ -497,7 +471,7 @@ const StatBlockImageExporter = ({ monster }) => {
                 <div style="border-bottom: 1px solid #7a200d;"></div>
                 <div style="margin-top: 8px;">
                   ${actions.map(action => 
-                    `<p style="margin: 0;"><strong><em>${action.name}.</em></strong> ${getActionString(action, monster)}</p>`
+                    `<p style="margin: 0;"><strong><em>${action.imageDisplayName || action.name}.</em></strong> ${getActionString(action, monster)}</p>`
                   ).join('<br/>')}
                 </div>
               </div>` : ''
@@ -509,7 +483,7 @@ const StatBlockImageExporter = ({ monster }) => {
                 <div style="border-bottom: 1px solid #7a200d;"></div>
                 <div style="margin-top: 8px;">
                   ${bonusActions.map(action => 
-                    `<p style="margin: 0;"><strong><em>${action.name}.</em></strong> ${getActionString(action, monster)}</p>`
+                    `<p style="margin: 0;"><strong><em>${action.imageDisplayName || action.name}.</em></strong> ${getActionString(action, monster)}</p>`
                   ).join('<br/>')}
                 </div>
               </div>` : ''
@@ -521,7 +495,7 @@ const StatBlockImageExporter = ({ monster }) => {
                 <div style="border-bottom: 1px solid #7a200d;"></div>
                 <div style="margin-top: 8px;">
                   ${reactions.map(reaction => 
-                    `<p style="margin: 0;"><strong><em>${reaction.name}.</em></strong> ${getActionString(reaction, monster)}</p>`
+                    `<p style="margin: 0;"><strong><em>${reaction.imageDisplayName || reaction.name}.</em></strong> ${getActionString(reaction, monster)}</p>`
                   ).join('<br/>')}
                 </div>
               </div>` : ''
