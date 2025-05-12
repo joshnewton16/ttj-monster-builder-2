@@ -98,7 +98,8 @@ const CommonFields = ({
                 .filter(durItem => 
                   (primaryEffectType === 'Spell Attack' && durItem.spellAttack) ||
                   (primaryEffectType === 'Defense' && durItem.defense) ||
-                  (primaryEffectType !== 'Spell Attack' && primaryEffectType !== 'Defense' && durItem.value === 'instantaneous')
+                  (primaryEffectType === 'Control' && durItem.control) ||
+                  (primaryEffectType !== 'Spell Attack' && primaryEffectType !== 'Defense' && primaryEffectType !== 'Control' && durItem.value === 'instantaneous')
                 )
                 .map((durItem) => (
                   <option key={durItem.label} value={durItem.label}>

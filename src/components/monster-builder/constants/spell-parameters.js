@@ -7,10 +7,10 @@ export const SAVINGTHROWS = ['STR', 'DEX', 'CON', 'WIS', 'INT', 'CHA']
 export const PRIMARYEFFECTTYPE = ['Spell Attack', 'Defense', 'Healing', 'Adjust Movement', 'Control']
 
 export const DURATION = [
-    { value: 'instantaneous', label: 'instantaneous', spellAttack: true, defense: true, mpCost: 0},
-    { value: 'next-turn', label: 'Until end of next turn', spellAttack: false, defense: true, mpCost: 0 },
-    { value: '1-round', label: '1 round', spellAttack: true, defense: true, mpCost: 1},
-    { value: '1-minute', label: '1 minute', spellAttack: true, defense: false, mpCost: 2},
+    { value: 'instantaneous', label: 'instantaneous', spellAttack: true, defense: true, control: true, mpCost: 0},
+    { value: 'next-turn', label: 'Until end of next turn', spellAttack: false, defense: true, control: true, mpCost: 0 },
+    { value: '1-round', label: '1 round', spellAttack: true, defense: true, control: true, mpCost: 1},
+    { value: '1-minute', label: '1 minute', spellAttack: true, defense: false, control: true, mpCost: 2},
     { value: '2-rounds', label: '2 rounds', spellAttack: false, defense: true, mpCost: 2 },
     { value: '3-rounds', label: '3 rounds', spellAttack: false, defense: true, mpCost: 3 },
     { value: '4-rounds', label: '4 rounds', spellAttack: false, defense: true, mpCost: 4 },
