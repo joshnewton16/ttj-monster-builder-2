@@ -1,7 +1,18 @@
 import React from 'react';
 import { getSavingThrowCount } from '../constants/methodology-calcs';
 
-export function Attributes({ monster, setMonster, availablePoints, setAvailablePoints, maxPointsForCR }) {
+export function Attributes({ monster, setMonster }) {
+  let maxPointsForCR = 10;
+  
+  if (monster.cr >= 2 && monster.cr <= 5) maxPointsForCR = 20;
+  if (monster.cr >= 6 && monster.cr <= 8) maxPointsForCR = 25;
+  if (monster.cr >= 9 && monster.cr <= 12) maxPointsForCR = 30;
+  if (monster.cr >= 13 && monster.cr <= 15) maxPointsForCR = 35;
+  if (monster.cr > 15) maxPointsForCR = 40;
+
+  //TroubleShooting
+  //console.log('maxPointsForCR', maxPointsForCR);
+
   // Calculate spent points (how many points above base value 8 have been spent)
   const calculateSpentPoints = () => {
     return Object.values(monster.attributes).reduce((total, value) => {

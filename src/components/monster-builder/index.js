@@ -86,9 +86,6 @@ function handleCRChange(newCR) {
             <Attributes 
               monster={monster} 
               setMonster={setMonster}
-              availablePoints={availablePoints}
-              setAvailablePoints={setAvailablePoints}
-              maxPointsForCR={maxPointsForCR}
             />
           );
         case 3:
