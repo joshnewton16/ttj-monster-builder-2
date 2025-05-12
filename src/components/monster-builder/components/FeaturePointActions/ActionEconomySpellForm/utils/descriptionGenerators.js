@@ -157,7 +157,7 @@ export const generateSpellDescription = ({
   
   // Add any additional description
   if (description) {
-    desc += ` ${description}`;
+    desc = `${description}` + desc;
   }
   
   return desc;
