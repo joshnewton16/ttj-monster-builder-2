@@ -1,6 +1,6 @@
 // components/PreviewPanel/ActionsSection.js
 import React from 'react';
-import { Trash2 } from 'lucide-react';
+import { Trash2, Edit } from 'lucide-react';
 import { getFeaturesByCategory, getActionString } from './utils';
 import {RECHARGE_OPTIONS} from '../../constants/spell-parameters';
 
@@ -8,7 +8,8 @@ import {RECHARGE_OPTIONS} from '../../constants/spell-parameters';
 export const ActionsSection = ({ 
   monster, 
   setStep,
-  onDeleteFeature
+  onDeleteFeature,
+  onEditFeature
 }) => {
   const renderFeature = (feature, index) => {
     const globalIndex = monster.features.findIndex(f => f === feature);
@@ -32,6 +33,15 @@ export const ActionsSection = ({
               <span className="ml-2 text-sm text-green-600">(Primary)</span>
             )}
           </div>
+            <button
+              onClick={() => {
+              console.log('Edit button clicked!', feature, globalIndex);
+              onEditFeature(feature, globalIndex);
+              }}
+              className="p-1 text-blue-500 hover:text-blue-700"
+              aria-label="Edit feature">
+              <Edit size={16} />
+            </button>
           <button
             onClick={() => onDeleteFeature(feature, globalIndex)}
             className="p-1 text-red-500 hover:text-red-700"

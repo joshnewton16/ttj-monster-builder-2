@@ -6,7 +6,14 @@ import { useFeaturePoints } from '../hooks/useFeaturePoints';
 import { useFeatureModification } from '../hooks/useFeatureModification';
 import { SIZE_MOVEMENT } from '../constants/srd-data';
 
-export function ActionsFeatures({ monster, setMonster }) {
+export function ActionsFeatures({ 
+  monster, 
+  setMonster,
+  // NEW: Add editing props
+  editingFeature,
+  setEditingFeature,
+  updateFeatureAtIndex
+}) {
   // Add magic points state
   const [magicPoints, setMagicPoints] = useState({
     total: 0,
@@ -97,13 +104,11 @@ export function ActionsFeatures({ monster, setMonster }) {
   const handleAddAttributePoints = () => {
     setMonster(prev => {
       const currentAttributePoints = prev.attributePointsFromFeatures || 0;
-
       const newFeature = {
         name: `Add Attribute Points`,
         costFeaturePoint: true,
         isHidden: true  // Add this flag to indicate it shouldn't be displayed
       };
-
       // Add 2 attribute points and feature record
       return {
         ...prev,
@@ -117,13 +122,11 @@ export function ActionsFeatures({ monster, setMonster }) {
   const handleAddSavingThrow = () => {
     setMonster(prev => {
       const currentSavingThrows = prev.savingThrowsFromFeatures || 0;
-
       const newFeature = {
         name: `Add Saving Throw`,
         costFeaturePoint: true,
         isHidden: true  // Add this flag to indicate it shouldn't be displayed
       };
-
       // Add 1 attribute points and feature record
       return {
         ...prev,
@@ -137,12 +140,10 @@ export function ActionsFeatures({ monster, setMonster }) {
     setMonster(prev => {
       const newSpeed = [...prev.speed];
       const speedIndex = newSpeed.findIndex(s => s.type === speedType);
-
       if (speedIndex === -1) {
         console.error('Speed type not found:', speedType);
         return prev;
       }
-
       // Get the original base speed from SIZE_MOVEMENT
       const baseSpeed = SIZE_MOVEMENT[prev.size]?.Walk || 30;
       
@@ -158,7 +159,6 @@ export function ActionsFeatures({ monster, setMonster }) {
           value: newSpeed[speedIndex].value + 10
         };
       }
-
       const newFeature = {
         name: `${speedType} Movement Modification`,
         description: modificationType === 'new' 
@@ -171,7 +171,6 @@ export function ActionsFeatures({ monster, setMonster }) {
         },
         isHidden: true  // Add this flag to indicate it shouldn't be displayed
       };
-
       return {
         ...prev,
         speed: newSpeed,
@@ -183,7 +182,6 @@ export function ActionsFeatures({ monster, setMonster }) {
 
   const handleSkillModify = (type, skills) => {
     setMonster(prev => {
-
       const newFeature = {
         name: `${skills} Modification`,
         description: type === 'expertise' 
@@ -196,7 +194,6 @@ export function ActionsFeatures({ monster, setMonster }) {
         },
         isHidden: true  // Add this flag to indicate it shouldn't be displayed
       };
-
       if (type === 'expertise') {
         return {
           ...prev,
@@ -206,7 +203,6 @@ export function ActionsFeatures({ monster, setMonster }) {
       } else {
         const currentSkillCount = prev.skills.length;
         const willNeedFeaturePoint = currentSkillCount >= monster.proficiencyBonus;
-
         return {
           ...prev,
           skills: [...prev.skills, ...skills],
@@ -259,12 +255,10 @@ export function ActionsFeatures({ monster, setMonster }) {
           damageType: damageType
         }
       };
-
       return {
         ...prev,
         features: [...prev.features, newFeature]
       };
-
     });
   };
 
@@ -281,7 +275,6 @@ export function ActionsFeatures({ monster, setMonster }) {
         },
         isHidden: true
       };
-
       return {
         ...prev,
         senses: [...(prev.senses || []), { type: senseType, range: range }],
@@ -306,7 +299,7 @@ export function ActionsFeatures({ monster, setMonster }) {
         hasFirstFeature={hasFirstFeature}
         magicPoints={magicPoints.total > 0 ? magicPoints : null}
       />
-
+      
       <FeaturePointActions
         existingAttacks={existingAttacks}
         multiattackCount={multiattackCount}
@@ -329,6 +322,10 @@ export function ActionsFeatures({ monster, setMonster }) {
         onSenseModify={handleSenseModify}
         magicPoints={magicPoints}
         setMagicPoints={setMagicPoints}
+        // NEW: Pass editing props to FeaturePointActions
+        editingFeature={editingFeature}
+        setEditingFeature={setEditingFeature}
+        updateFeatureAtIndex={updateFeatureAtIndex}
       />
     </div>
   );

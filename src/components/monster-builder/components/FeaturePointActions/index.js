@@ -1,5 +1,5 @@
 // components/FeaturePointActions/index.js
-import React, { useState } from 'react';
+import React, { useState, useEffect  } from 'react';
 import { BaseActionForm } from './BaseActionForm';
 import { BaseFeatureForm } from './BaseFeatureForm';
 import { MultiattackAction } from './MultiattackAction';
@@ -36,8 +36,21 @@ export function FeaturePointActions({
   availablePoints,
   magicPoints,
   setMagicPoints,
+  editingFeature,        // ADD THIS
+  setEditingFeature,     // ADD THIS
+  updateFeatureAtIndex   // ADD THIS
 }) {
+  
   const [selectedAction, setSelectedAction] = useState('');
+
+      // ADD THIS useEffect:
+  useEffect(() => {
+    if (editingFeature && editingFeature.type === 'non-spell') {
+      setSelectedAction('baseAction');
+    } else if (editingFeature && editingFeature.type === 'spell') {
+      setSelectedAction('actionEconomySpell');
+    }
+  }, [editingFeature]);
 
   // Check if the monster has spellcasting
   const hasSpellcasting = monster.features.some(
@@ -143,6 +156,9 @@ export function FeaturePointActions({
             onSubmit={handleBaseAction}
             availablePoints={availablePoints}
             hasFirstAction={hasFirstAction}
+            editingFeature={editingFeature}           // ADD THIS
+            setEditingFeature={setEditingFeature}     // ADD THIS  
+            updateFeatureAtIndex={updateFeatureAtIndex} // ADD THIS
           />
         );
       case 'baseFeature':

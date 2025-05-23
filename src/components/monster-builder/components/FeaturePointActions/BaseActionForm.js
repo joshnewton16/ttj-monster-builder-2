@@ -6,7 +6,11 @@ export function BaseActionForm({
   availablePoints, 
   hasFirstAction,
   isLegendary = false,
-  legendaryActions = []
+  legendaryActions = [],
+  // NEW: Add editing props
+  editingFeature,
+  setEditingFeature,
+  updateFeatureAtIndex
 }) {
   const [actionTitle, setActionTitle] = useState('');
   const [actionDescription, setActionDescription] = useState('');
@@ -17,6 +21,74 @@ export function BaseActionForm({
   const [damageDice, setDamageDice] = useState('1d6');
   const [damageType, setDamageType] = useState('slashing');
   const [doesNotDealDamage, setDoesNotDealDamage] = useState(false);
+
+  // NEW: useEffect to populate form when editing
+  useEffect(() => {
+    console.log('BaseActionForm useEffect triggered, editingFeature:', editingFeature);
+    
+    if (editingFeature && editingFeature.type === 'non-spell') {
+      console.log('Populating form with feature:', editingFeature.feature);
+      populateFormFromFeature(editingFeature.feature);
+    } else if (!editingFeature) {
+      console.log('No editing feature, resetting form');
+      resetForm();
+    }
+  }, [editingFeature]);
+
+  // NEW: Function to populate form with existing feature data
+  const populateFormFromFeature = (feature) => {
+    console.log('Populating form with data:', feature);
+    
+    setActionTitle(feature.name || '');
+    setActionDescription(feature.description || '');
+    setActionType(feature.category || 'Actions');
+    
+    // Populate attack properties
+    if (feature.useStr) {
+      setAttackType('melee');
+    } else if (feature.useDex) {
+      // You might need to adjust this logic based on how you distinguish melee-dex vs ranged
+      setAttackType('ranged'); // Default to ranged for DEX
+    }
+    
+    // Extract damage dice from damage string (e.g., "1d4 slashing" -> "1d4")
+    if (feature.damage) {
+      const damageMatch = feature.damage.match(/(\d+d\d+)/);
+      if (damageMatch) {
+        setDamageDice(damageMatch[1]);
+        console.log('Set damage dice to:', damageMatch[1]);
+      }
+      
+      // Extract damage type (e.g., "1d4 slashing" -> "slashing")
+      const damageTypeMatch = feature.damage.match(/(bludgeoning|piercing|slashing)/i);
+      if (damageTypeMatch) {
+        setDamageType(damageTypeMatch[1].toLowerCase());
+        console.log('Set damage type to:', damageTypeMatch[1].toLowerCase());
+      }
+    }
+    
+    // Set doesNotDealDamage based on whether damage exists
+    setDoesNotDealDamage(!feature.damage || feature.damage === '');
+    
+    console.log('Form populated successfully');
+  };
+
+  // NEW: Function to reset the form
+  const resetForm = () => {
+    setActionTitle('');
+    setActionDescription('');
+    setActionType('Actions');
+    setAttackType('melee');
+    setDamageDice('1d6');
+    setDamageType('slashing');
+    setDoesNotDealDamage(false);
+  };
+
+  // NEW: Function to handle canceling edit
+  const handleCancelEdit = () => {
+    setEditingFeature(null);
+    resetForm();
+  };
 
   const handleActionSelect = (e) => {
     const actions = isLegendary ? legendaryActions : SRD_ACTIONS;
@@ -69,6 +141,7 @@ export function BaseActionForm({
     }
   }, [attackType, damageDice, damageType, doesNotDealDamage]);
 
+  // UPDATED: Handle both editing and adding
   const handleSubmit = () => {
     if (!actionTitle || !actionDescription) return;
     
@@ -98,18 +171,36 @@ export function BaseActionForm({
       newAction.costFeaturePoint = true;
     }
 
-    onSubmit(newAction);
-    setActionTitle('');
-    setActionDescription('');
-    setActionType('Actions');
-    setAttackType('melee');
-    setDamageDice('1d6');
-    setDamageType('slashing');
-    setDoesNotDealDamage(false);
+    // NEW: Handle edit vs add
+    if (editingFeature) {
+      console.log('Updating existing feature');
+      updateFeatureAtIndex(editingFeature.globalIndex, newAction);
+    } else {
+      console.log('Adding new feature');
+      onSubmit(newAction);
+    }
+    
+    resetForm();
   };
 
   return (
     <div className="space-y-2">
+      {/* NEW: Show editing indicator */}
+      {editingFeature && (
+        <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded">
+          <p className="text-blue-800">
+            Editing: <strong>{editingFeature.feature.name}</strong>
+          </p>
+          <button 
+            type="button" 
+            onClick={handleCancelEdit}
+            className="text-blue-600 hover:text-blue-800 text-sm underline"
+          >
+            Cancel Edit
+          </button>
+        </div>
+      )}
+
       <h3 className="font-semibold">
         {isLegendary ? 'Legendary Action' : 'Action'}
       </h3>
@@ -264,7 +355,8 @@ export function BaseActionForm({
         disabled={!actionTitle || !actionDescription || availablePoints < (isLegendary ? 2 : 1)}
         className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-400"
       >
-        Add {isLegendary ? 'Legendary Action' : actionType.slice(0, -1)}
+        {/* NEW: Update button text based on editing state */}
+        {editingFeature ? 'Update' : 'Add'} {isLegendary ? 'Legendary Action' : actionType.slice(0, -1)}
       </button>
     </div>
   );

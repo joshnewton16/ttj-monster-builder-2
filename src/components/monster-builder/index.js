@@ -38,18 +38,47 @@ const initialMonsterState = {
   features: []
 };
 
-// CSS styles should be added to your application's CSS file
-// .monster-builder {
-//   max-width: 1400px; /* Increased from default */
-//   width: 95%;
-//   margin: 0 auto;
-// }
-
 function MonsterBuilder() {
   const [step, setStep] = useState(1);
   const [availablePoints, setAvailablePoints] = useState(10);
   const [monster, setMonster] = useState(initialMonsterState);
   const [maxPointsForCR, setMaxPointsForCR] = useState(10);
+  
+  // NEW: Add editing state
+  const [editingFeature, setEditingFeature] = useState(null);
+
+  // NEW: Edit handler
+  const handleEditFeature = (feature, globalIndex) => {
+    console.log('handleEditFeature called!', feature, globalIndex);
+    const allowedCategories = ['Actions', 'Bonus Actions', 'Reactions'];
+    if (!allowedCategories.includes(feature.category)) {
+      return;
+    }
+
+    const featureType = feature.spellDetails ? 'spell' : 'non-spell';
+    console.log('Feature type determined:', featureType);
+
+    setEditingFeature({
+      feature,
+      globalIndex,
+      type: featureType
+    });
+    
+    console.log('Setting step to 4');
+    // Navigate to ActionsFeatures step
+    setStep(4);
+  };
+
+  // NEW: Update feature function
+  const updateFeatureAtIndex = (globalIndex, updatedFeatureData) => {
+    setMonster(prevMonster => ({
+      ...prevMonster,
+      features: prevMonster.features.map((feature, index) => 
+        index === globalIndex ? { ...feature, ...updatedFeatureData } : feature
+      )
+    }));
+    setEditingFeature(null);
+  };
 
 // In your parent component where CR is changed, modify the handleCRChange function
 
@@ -92,7 +121,16 @@ function handleCRChange(newCR) {
           return <Proficiencies monster={monster} setMonster={setMonster} />;
         case 4:
           //console.log(monster);
-          return <ActionsFeatures monster={monster} setMonster={setMonster} />;
+          return (
+            <ActionsFeatures 
+              monster={monster} 
+              setMonster={setMonster}
+              // NEW: Pass editing props to ActionsFeatures
+              editingFeature={editingFeature}
+              setEditingFeature={setEditingFeature}
+              updateFeatureAtIndex={updateFeatureAtIndex}
+            />
+          );
         default:
           return null;
       }
@@ -148,7 +186,13 @@ function handleCRChange(newCR) {
             marginBottom: '20px',
             boxSizing: 'border-box'
           }}>
-            <PreviewPanel monster={monster} setMonster={setMonster} setStep={setStep}/>
+            <PreviewPanel 
+              monster={monster} 
+              setMonster={setMonster} 
+              setStep={setStep}
+              // NEW: Pass edit handler to PreviewPanel
+              onEditFeature={handleEditFeature}
+            />
           </div>
         )}
       </div>

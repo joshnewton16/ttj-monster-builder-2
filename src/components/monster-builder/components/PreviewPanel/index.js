@@ -7,7 +7,7 @@ import { AbilitiesSection } from './AbilitiesSection';
 import { ActionsSection } from './ActionsSection';
 import { calculateModifier, getFeaturesByCategory } from './utils';
 
-const PreviewPanel = ({ monster, setMonster, setStep }) => {
+const PreviewPanel = ({ monster, setMonster, setStep, onEditFeature }) => {
   const handleDeleteFeature = (feature, index) => {
     // Get the actual feature from the monster features array using the index
     const featureToDelete = monster.features[index];
@@ -218,6 +218,7 @@ const PreviewPanel = ({ monster, setMonster, setStep }) => {
           setStep={setStep}
           onDeleteFeature={handleDeleteFeature}
           features={actionFeatures}
+          onEditFeature={onEditFeature}         // ADD THIS
         />
         </div>
       </div>
