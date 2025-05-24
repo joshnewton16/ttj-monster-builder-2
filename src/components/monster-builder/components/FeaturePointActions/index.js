@@ -197,6 +197,9 @@ export function FeaturePointActions({
             monster={monster}
             magicPoints={magicPoints}
             setMagicPoints={setMagicPoints}
+            editingFeature={editingFeature}
+            setEditingFeature={setEditingFeature}
+            updateFeatureAtIndex={updateFeatureAtIndex}
           />
         );
       case 'legendaryAction':

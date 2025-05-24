@@ -37,7 +37,16 @@ const RECHARGE_OPTIONS = [
   { value: "recharge6", label: "Recharge 6", mpValue: 3 }
 ];
 
-export function ActionEconomySpellForm({ onSubmit, availablePoints, monster, magicPoints, setMagicPoints }) {
+export function ActionEconomySpellForm({ 
+    onSubmit, 
+    availablePoints, 
+    monster, 
+    magicPoints, 
+    setMagicPoints,
+    editingFeature,
+    setEditingFeature,
+    updateFeatureAtIndex }) 
+  {
   // Common fields for all spell types
   const [spellName, setSpellName] = useState('');
   const [castingTime, setCastingTime] = useState('action');
@@ -46,6 +55,7 @@ export function ActionEconomySpellForm({ onSubmit, availablePoints, monster, mag
   const [rechargeOption, setRechargeOption] = useState('none');
   const [primaryEffectType, setPrimaryEffectType] = useState('Spell Attack');
   const [rangeMultiplier, setRangeMultiplier] = useState(1);
+  const [hasRefundedOriginalCost, setHasRefundedOriginalCost] = useState(false);
   
   // Type-specific state - these will be managed in the parent component
   // but modified by child components
@@ -74,6 +84,139 @@ export function ActionEconomySpellForm({ onSubmit, availablePoints, monster, mag
   // Control state
   const [controlCondition, setControlCondition] = useState('charmed');
   const [controlSavingThrow, setControlSavingThrow] = useState('WIS');
+
+  useEffect(() => {
+    console.log('ActionEconomySpellForm useEffect triggered, editingFeature:', editingFeature);
+    
+    if (editingFeature && editingFeature.type === 'spell') {
+      console.log('Populating spell form with feature:', editingFeature.feature);
+      populateSpellFormFromFeature(editingFeature.feature);
+
+      // Refund the original spell's magic point cost
+      const originalCost = editingFeature.feature.magicPointCost || 0;
+      if (originalCost > 0 && magicPoints && !hasRefundedOriginalCost) {
+        console.log('Refunding original spell cost:', originalCost);
+        setMagicPoints(prev => ({
+          ...prev,
+          used: Math.max(0, prev.used - originalCost)
+        }));
+        setHasRefundedOriginalCost(true);
+      }
+    } else if (!editingFeature) {
+      console.log('No editing feature, resetting spell form');
+      resetSpellForm();
+    }
+  }, [editingFeature]);
+
+  const populateSpellFormFromFeature = (feature) => {
+    console.log('Populating spell form with data:', feature);
+    
+    const { spellDetails } = feature;
+    
+    // Common fields
+    setSpellName(feature.name || '');
+    setDescription(''); // Additional description field
+    
+    if (spellDetails) {
+      // Common spell details
+      setPrimaryEffectType(spellDetails.primaryEffectType || 'Spell Attack');
+      setCastingTime(spellDetails.castingTime || 'action');
+      setDuration(spellDetails.duration || 'instantaneous');
+      setRechargeOption(spellDetails.recharge || 'none');
+      setRangeMultiplier(spellDetails.rangeMultiplier || 1);
+      
+      // Spell Attack specific fields
+      if (spellDetails.primaryEffectType === 'Spell Attack') {
+        setActionType(spellDetails.actionType || 'spell attack');
+        setSavingThrow(spellDetails.savingThrow || 'DEX');
+        setPrimaryDamageType(spellDetails.primaryDamageType || 'fire');
+        setSecondaryEffect(spellDetails.secondaryEffect || 'none');
+        setAreaOfEffect(spellDetails.areaOfEffect || '');
+        setAreaSize(spellDetails.areaSize || 10);
+      }
+      
+      // Defense specific fields
+      if (spellDetails.primaryEffectType === 'Defense') {
+        setDefenseType(spellDetails.defenseType || 'ac');
+        setAcBonus(spellDetails.acBonus || 2);
+        setImmunityCondition(spellDetails.immunityCondition || 'blinded');
+        setDefenseDuration(spellDetails.defenseDuration || 'next-turn');
+      }
+      
+      // Healing specific fields
+      if (spellDetails.primaryEffectType === 'Healing') {
+        setHealingDice(spellDetails.healingDice || 1);
+      }
+      
+      // Movement specific fields
+      if (spellDetails.primaryEffectType === 'Adjust Movement') {
+        setMovementAction(spellDetails.movementAction || 'add');
+        setMovementType(spellDetails.movementType || 'fly');
+      }
+      
+      // Control specific fields
+      if (spellDetails.primaryEffectType === 'Control') {
+        setControlCondition(spellDetails.controlCondition || 'charmed');
+        setControlSavingThrow(spellDetails.controlSavingThrow || 'WIS');
+      }
+    }
+    
+    console.log('Spell form populated successfully');
+  };
+
+  const resetSpellForm = () => {
+    setSpellName('');
+    setCastingTime('action');
+    setDuration('instantaneous');
+    setDescription('');
+    setRechargeOption('none');
+    setPrimaryEffectType('Spell Attack');
+    setRangeMultiplier(1);
+    
+    // Reset Spell Attack fields
+    setActionType('spell attack');
+    setSavingThrow('DEX');
+    setPrimaryDamageType('fire');
+    setSecondaryEffect('none');
+    setAreaOfEffect('');
+    setAreaSize(10);
+    
+    // Reset Defense fields
+    setDefenseType('ac');
+    setAcBonus(2);
+    setImmunityCondition('blinded');
+    setDefenseDuration('next-turn');
+    
+    // Reset Healing fields
+    setHealingDice(1);
+    
+    // Reset Movement fields
+    setMovementAction('add');
+    setMovementType('fly');
+    
+    // Reset Control fields
+    setControlCondition('charmed');
+    setControlSavingThrow('WIS');
+
+    // Reset the refund flag
+    setHasRefundedOriginalCost(false);
+  };
+
+  const handleCancelEdit = () => {
+  // If we refunded the cost, restore it when canceling
+    if (hasRefundedOriginalCost && editingFeature) {
+      const originalCost = editingFeature.feature.magicPointCost || 0;
+      console.log('Restoring original spell cost on cancel:', originalCost);
+      setMagicPoints(prev => ({
+        ...prev,
+        used: prev.used + originalCost
+      }));
+    }
+    
+    setEditingFeature(null);
+    resetSpellForm();
+    setHasRefundedOriginalCost(false);
+  };
   
   // Find highest movement speed for base range
   const baseRange = getBaseRange(monster);
@@ -272,15 +415,42 @@ export function ActionEconomySpellForm({ onSubmit, availablePoints, monster, mag
         break;
     }
 
-    // Update magic points in parent component
-    if (setMagicPoints && magicPoints) {
-      setMagicPoints({
-        ...magicPoints,
-        used: magicPoints.used + finalMagicPointCost
-      });
-    }
+    // NEW: Handle edit vs add
+    if (editingFeature) {
+      console.log('Updating existing spell');
+      
+      // Calculate the cost difference
+      const originalCost = editingFeature.feature.magicPointCost || 0;
+      const newCost = finalMagicPointCost;
+      const costDifference = newCost - originalCost;
+      
+      console.log('Original cost:', originalCost, 'New cost:', newCost, 'Difference:', costDifference);
+      
+      // Update magic points based on the difference
+      // Note: We already refunded the original cost, so we just need to charge the new cost
+      if (setMagicPoints && magicPoints) {
+        setMagicPoints(prev => ({
+          ...prev,
+          used: prev.used + newCost  // Add the new cost (original was already refunded)
+        }));
+      }
+      updateFeatureAtIndex(editingFeature.globalIndex, newSpell);
+      setHasRefundedOriginalCost(false);
+    } else {
+      console.log('Adding new spell');
+      
+      // Update magic points in parent component
+      if (setMagicPoints && magicPoints) {
+        setMagicPoints({
+          ...magicPoints,
+          used: magicPoints.used + finalMagicPointCost
+        });
+      }
 
-    onSubmit(newSpell);
+      onSubmit(newSpell);
+    }
+    
+    resetSpellForm();
   };
 
   // Render the specific fields based on the selected primary effect type
@@ -365,6 +535,20 @@ export function ActionEconomySpellForm({ onSubmit, availablePoints, monster, mag
   return (
     <div className="space-y-4 mt-4">
       <h3 className="font-semibold">Add Action Economy Spell</h3>
+      {editingFeature && (
+        <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded">
+          <p className="text-blue-800">
+            Editing Spell: <strong>{editingFeature.feature.name}</strong>
+          </p>
+          <button 
+            type="button" 
+            onClick={handleCancelEdit}
+            className="text-blue-600 hover:text-blue-800 text-sm underline"
+          >
+            Cancel Edit
+          </button>
+        </div>
+      )}
 
       {/* Info and warning boxes */}
       <InfoBoxes
@@ -462,7 +646,9 @@ export function ActionEconomySpellForm({ onSubmit, availablePoints, monster, mag
         disabled={!spellName || !hasEnoughMagicPoints || atActionEconomySpellLimit}
         className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-400"
       >
-        {atActionEconomySpellLimit 
+      {editingFeature 
+        ? `Update Spell` 
+        : atActionEconomySpellLimit 
           ? "Maximum Spells Reached" 
           : `Add Spell (-${finalMagicPointCost} Magic ${finalMagicPointCost === 1 ? 'Point' : 'Points'})`}
       </button>
