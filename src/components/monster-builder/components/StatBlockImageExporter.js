@@ -207,32 +207,128 @@ const StatBlockImageExporter = ({ monster }) => {
       leftColumnHtml += generateFeatureHtml(reactions, 'Reactions');
     }
     
-    // Create stat block HTML
-    const statBlockHtml = `
-      <div id="stat-block-to-capture" style="
-        width: ${useTwoColumns ? '800px' : '400px'};
-        font-family: 'Noto Serif', 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
-        background: #fdf1dc;
-        padding: 20px;
-        border: 1px solid #ddd;
-        box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-        position: relative;
-        background-image: url('https://www.gmbinder.com/images/YKGpEyy.png');
-        background-size: cover;
-      ">
-        <!-- Title Section -->
-        <div style="margin-bottom: 10px;">
-          <h1 style="color: #7a200d; font-size: 24px; margin: 0;">${monster.name || 'Unnamed Monster'}</h1>
-          <p style="font-style: italic; margin: 0 0 8px 0;">
-            ${monster.size} ${monster.creaturetype || 'Creature'}
-          </p>
-          <div style="border-bottom: 1px solid #7a200d;"></div>
+  // Create stat block HTML
+  const statBlockHtml = `
+    <div id="stat-block-to-capture" style="
+      width: ${useTwoColumns ? '800px' : '400px'};
+      font-family: 'Noto Serif', 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+      background: #fdf1dc;
+      padding: 20px;
+      border: 1px solid #ddd;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+      position: relative;
+      background-image: url('https://www.gmbinder.com/images/YKGpEyy.png');
+      background-size: cover;
+    ">
+      <!-- Title Section -->
+      <div style="margin-bottom: 10px;">
+        <h1 style="color: #7a200d; font-size: 24px; margin: 0;">${monster.name || 'Unnamed Monster'}</h1>
+        <p style="font-style: italic; margin: 0 0 8px 0;">
+          ${monster.size} ${monster.creaturetype || 'Creature'}
+        </p>
+        <div style="border-bottom: 1px solid #7a200d;"></div>
+      </div>
+      
+      <!-- Stats Section - Layout changes based on column preference -->
+      ${useTwoColumns ? `
+        <!-- Two Column Layout: Attributes on left, AC/HP/Speed on right -->
+        <div style="display: flex; gap: 20px; margin-bottom: 15px;">
+          <!-- Left side: Attributes Table -->
+          <div style="flex: 1;">
+            <!-- Headers Row -->
+            <div style="display: flex; justify-content: center; margin-bottom: 8px;">
+              <div style="width: 50px; text-align: center;"><strong></strong></div>
+              <div style="width: 50px; text-align: center;"><strong>STR</strong></div>
+              <div style="width: 50px; text-align: center;"><strong>DEX</strong></div>
+              <div style="width: 50px; text-align: center;"><strong>CON</strong></div>
+              <div style="width: 50px; text-align: center;"><strong>INT</strong></div>
+              <div style="width: 50px; text-align: center;"><strong>WIS</strong></div>
+              <div style="width: 50px; text-align: center;"><strong>CHA</strong></div>
+            </div>
+            
+            <!-- Scores Row -->
+            <div style="display: flex; justify-content: center;">
+              <div style="width: 50px; text-align: center; border: 1px solid #999; padding: 6px 0;"><strong>Score</strong></div>
+              <div style="width: 50px; text-align: center; border: 1px solid #999; padding: 6px 0; border-left: none;">${monster.attributes.str}</div>
+              <div style="width: 50px; text-align: center; border: 1px solid #999; padding: 6px 0; border-left: none;">${monster.attributes.dex}</div>
+              <div style="width: 50px; text-align: center; border: 1px solid #999; padding: 6px 0; border-left: none;">${monster.attributes.con}</div>
+              <div style="width: 50px; text-align: center; border: 1px solid #999; padding: 6px 0; border-left: none;">${monster.attributes.int}</div>
+              <div style="width: 50px; text-align: center; border: 1px solid #999; padding: 6px 0; border-left: none;">${monster.attributes.wis}</div>
+              <div style="width: 50px; text-align: center; border: 1px solid #999; padding: 6px 0; border-left: none;">${monster.attributes.cha}</div>
+            </div>
+            
+            <!-- Modifiers Row -->
+            <div style="display: flex; justify-content: center;">
+              <div style="width: 50px; text-align: center; border: 1px solid #999; padding: 6px 0; border-top: none;"><strong>Mod</strong></div>
+              <div style="width: 50px; text-align: center; border: 1px solid #999; border-top: none; border-left: none; background-color: #f5f5f5; padding: 6px 0;">${getModifier(monster.attributes.str)}</div>
+              <div style="width: 50px; text-align: center; border: 1px solid #999; border-top: none; border-left: none; background-color: #f5f5f5; padding: 6px 0;">${getModifier(monster.attributes.dex)}</div>
+              <div style="width: 50px; text-align: center; border: 1px solid #999; border-top: none; border-left: none; background-color: #f5f5f5; padding: 6px 0;">${getModifier(monster.attributes.con)}</div>
+              <div style="width: 50px; text-align: center; border: 1px solid #999; border-top: none; border-left: none; background-color: #f5f5f5; padding: 6px 0;">${getModifier(monster.attributes.int)}</div>
+              <div style="width: 50px; text-align: center; border: 1px solid #999; border-top: none; border-left: none; background-color: #f5f5f5; padding: 6px 0;">${getModifier(monster.attributes.wis)}</div>
+              <div style="width: 50px; text-align: center; border: 1px solid #999; border-top: none; border-left: none; background-color: #f5f5f5; padding: 6px 0;">${getModifier(monster.attributes.cha)}</div>
+            </div>
+            
+            <!-- Saving Throws Row -->
+            <div style="display: flex; justify-content: center;">
+              <div style="width: 50px; text-align: center; border: 1px solid #999; padding: 6px 0; border-top: none;"><strong>Save</strong></div>          
+              <div style="width: 50px; text-align: center; border: 1px solid #999; border-top: none; border-left: none; background-color: #f5f5f5; padding: 6px 0;">
+                ${monster.savingThrows && monster.savingThrows.includes('str') ? 
+                  (() => {
+                    const mod = parseInt(getModifier(monster.attributes.str)) + monster.proficiencyBonus;
+                    return mod >= 0 ? `+${mod}` : mod;
+                  })() : '-'}
+              </div>
+              <div style="width: 50px; text-align: center; border: 1px solid #999; border-top: none; border-left: none; background-color: #f5f5f5; padding: 3px 0;">
+                ${monster.savingThrows && monster.savingThrows.includes('dex') ? 
+                  (() => {
+                    const mod = parseInt(getModifier(monster.attributes.dex)) + monster.proficiencyBonus;
+                    return mod >= 0 ? `+${mod}` : mod;
+                  })() : '-'}
+              </div>
+              <div style="width: 50px; text-align: center; border: 1px solid #999; border-top: none; border-left: none; background-color: #f5f5f5; padding: 3px 0;">
+                ${monster.savingThrows && monster.savingThrows.includes('con') ? 
+                  (() => {
+                    const mod = parseInt(getModifier(monster.attributes.con)) + monster.proficiencyBonus;
+                    return mod >= 0 ? `+${mod}` : mod;
+                  })() : '-'}
+              </div>
+              <div style="width: 50px; text-align: center; border: 1px solid #999; border-top: none; border-left: none; background-color: #f5f5f5; padding: 3px 0;">
+                ${monster.savingThrows && monster.savingThrows.includes('int') ? 
+                  (() => {
+                    const mod = parseInt(getModifier(monster.attributes.int)) + monster.proficiencyBonus;
+                    return mod >= 0 ? `+${mod}` : mod;
+                  })() : '-'}
+              </div>
+              <div style="width: 50px; text-align: center; border: 1px solid #999; border-top: none; border-left: none; background-color: #f5f5f5; padding: 3px 0;">
+                ${monster.savingThrows && monster.savingThrows.includes('wis') ? 
+                  (() => {
+                    const mod = parseInt(getModifier(monster.attributes.wis)) + monster.proficiencyBonus;
+                    return mod >= 0 ? `+${mod}` : mod;
+                  })() : '-'}
+              </div>
+              <div style="width: 50px; text-align: center; border: 1px solid #999; border-top: none; border-left: none; background-color: #f5f5f5; padding: 3px 0;">
+                ${monster.savingThrows && monster.savingThrows.includes('cha') ? 
+                  (() => {
+                    const mod = parseInt(getModifier(monster.attributes.cha)) + monster.proficiencyBonus;
+                    return mod >= 0 ? `+${mod}` : mod;
+                  })() : '-'}
+              </div>
+            </div>
+          </div>
+          
+          <!-- Right side: AC, HP, Speed -->
+          <div style="flex: 1; display: flex; flex-direction: column; justify-content: center;">
+            <p style="margin: 0 0 8px 0;"><strong>Armor Class</strong> ${monster.ac} ${monster.armorDescription ? `(${monster.armorDescription})` : ''}</p>
+            <p style="margin: 0 0 8px 0;"><strong>Hit Points</strong> ${monster.hp} ${monster.hpFormula && monster.hpFormula !== monster.hp.toString() ? `(${monster.hpFormula})` : ''}</p>
+            <p style="margin: 0 0 8px 0;"><strong>Speed</strong> ${formatSpeeds()}</p>
+          </div>
         </div>
-        
-        <!-- Stats Section -->
+        <div style="border-bottom: 1px solid #7a200d; margin-bottom: 10px;"></div>
+      ` : `
+        <!-- Single Column Layout: Original stacked layout -->
         <div style="margin-bottom: 10px;">
           <p style="margin: 0;"><strong>Armor Class</strong> ${monster.ac} ${monster.armorDescription ? `(${monster.armorDescription})` : ''}</p>
-          <p style="margin: 0;"><strong>Hit Points</strong> ${monster.hp} ${monster.hpFormula ? `(${monster.hpFormula})` : ''}</p>
+          <p style="margin: 0;"><strong>Hit Points</strong> ${monster.hp} ${monster.hpFormula && monster.hpFormula !== monster.hp.toString() ? `(${monster.hpFormula})` : ''}</p>
           <p style="margin: 0 0 8px 0;"><strong>Speed</strong> ${formatSpeeds()}</p>
           <div style="border-bottom: 1px solid #7a200d;"></div>
         </div>
@@ -249,66 +345,66 @@ const StatBlockImageExporter = ({ monster }) => {
           </div>
           
           <!-- Scores Row -->
-          <div style="display: flex; justify-content: center; ">
+          <div style="display: flex; justify-content: center;">
             <div style="width: 50px; text-align: center; border: 1px solid #999; padding: 6px 0;"><strong>Score</strong></div>
             <div style="width: 50px; text-align: center; border: 1px solid #999; padding: 6px 0; border-left: none;">${monster.attributes.str}</div>
             <div style="width: 50px; text-align: center; border: 1px solid #999; padding: 6px 0; border-left: none;">${monster.attributes.dex}</div>
-            <div style="width: 50px; text-align: center; border: 1px solid #999; padding: 6px 0; border-left: none; ">${monster.attributes.con}</div>
-            <div style="width: 50px; text-align: center; border: 1px solid #999; padding: 6px 0; border-left: none; ">${monster.attributes.int}</div>
-            <div style="width: 50px; text-align: center; border: 1px solid #999; padding: 6px 0; border-left: none; ">${monster.attributes.wis}</div>
-            <div style="width: 50px; text-align: center; border: 1px solid #999; padding: 6px 0; border-left: none; ">${monster.attributes.cha}</div>
+            <div style="width: 50px; text-align: center; border: 1px solid #999; padding: 6px 0; border-left: none;">${monster.attributes.con}</div>
+            <div style="width: 50px; text-align: center; border: 1px solid #999; padding: 6px 0; border-left: none;">${monster.attributes.int}</div>
+            <div style="width: 50px; text-align: center; border: 1px solid #999; padding: 6px 0; border-left: none;">${monster.attributes.wis}</div>
+            <div style="width: 50px; text-align: center; border: 1px solid #999; padding: 6px 0; border-left: none;">${monster.attributes.cha}</div>
           </div>
           
           <!-- Modifiers Row -->
-          <div style="display: flex; justify-content: center; ">
-            <div style="width: 50px; text-align: center; border: 1px solid #999; padding: 6px 0; border-top: none; "><strong>Mod</strong></div>
-            <div style="width: 50px; text-align: center; border: 1px solid #999; border-top: none; border-left: none;  background-color: #f5f5f5; padding: 6px 0;">${getModifier(monster.attributes.str)}</div>
-            <div style="width: 50px; text-align: center; border: 1px solid #999; border-top: none; border-left: none;  background-color: #f5f5f5; padding: 6px 0;">${getModifier(monster.attributes.dex)}</div>
-            <div style="width: 50px; text-align: center; border: 1px solid #999; border-top: none; border-left: none;  background-color: #f5f5f5; padding: 6px 0;">${getModifier(monster.attributes.con)}</div>
-            <div style="width: 50px; text-align: center; border: 1px solid #999; border-top: none; border-left: none;  background-color: #f5f5f5; padding: 6px 0;">${getModifier(monster.attributes.int)}</div>
-            <div style="width: 50px; text-align: center; border: 1px solid #999; border-top: none; border-left: none;  background-color: #f5f5f5; padding: 6px 0;">${getModifier(monster.attributes.wis)}</div>
-            <div style="width: 50px; text-align: center; border: 1px solid #999; border-top: none; border-left: none;  background-color: #f5f5f5; padding: 6px 0;">${getModifier(monster.attributes.cha)}</div>
+          <div style="display: flex; justify-content: center;">
+            <div style="width: 50px; text-align: center; border: 1px solid #999; padding: 6px 0; border-top: none;"><strong>Mod</strong></div>
+            <div style="width: 50px; text-align: center; border: 1px solid #999; border-top: none; border-left: none; background-color: #f5f5f5; padding: 6px 0;">${getModifier(monster.attributes.str)}</div>
+            <div style="width: 50px; text-align: center; border: 1px solid #999; border-top: none; border-left: none; background-color: #f5f5f5; padding: 6px 0;">${getModifier(monster.attributes.dex)}</div>
+            <div style="width: 50px; text-align: center; border: 1px solid #999; border-top: none; border-left: none; background-color: #f5f5f5; padding: 6px 0;">${getModifier(monster.attributes.con)}</div>
+            <div style="width: 50px; text-align: center; border: 1px solid #999; border-top: none; border-left: none; background-color: #f5f5f5; padding: 6px 0;">${getModifier(monster.attributes.int)}</div>
+            <div style="width: 50px; text-align: center; border: 1px solid #999; border-top: none; border-left: none; background-color: #f5f5f5; padding: 6px 0;">${getModifier(monster.attributes.wis)}</div>
+            <div style="width: 50px; text-align: center; border: 1px solid #999; border-top: none; border-left: none; background-color: #f5f5f5; padding: 6px 0;">${getModifier(monster.attributes.cha)}</div>
           </div>
           
           <!-- Saving Throws Row -->
           <div style="display: flex; justify-content: center; margin-bottom: 8px;">
-            <div style="width: 50px; text-align: center; border: 1px solid #999; padding: 6px 0; border-top: none; "><strong>Save</strong></div>          
-            <div style="width: 50px; text-align: center; border: 1px solid #999; border-top: none; border-left: none;  background-color: #f5f5f5; padding: 6px 0;">
+            <div style="width: 50px; text-align: center; border: 1px solid #999; padding: 6px 0; border-top: none;"><strong>Save</strong></div>          
+            <div style="width: 50px; text-align: center; border: 1px solid #999; border-top: none; border-left: none; background-color: #f5f5f5; padding: 6px 0;">
               ${monster.savingThrows && monster.savingThrows.includes('str') ? 
                 (() => {
                   const mod = parseInt(getModifier(monster.attributes.str)) + monster.proficiencyBonus;
                   return mod >= 0 ? `+${mod}` : mod;
                 })() : '-'}
             </div>
-            <div style="width: 50px; text-align: center; border: 1px solid #999; border-top: none; border-left: none;  background-color: #f5f5f5; padding: 3px 0;">
+            <div style="width: 50px; text-align: center; border: 1px solid #999; border-top: none; border-left: none; background-color: #f5f5f5; padding: 3px 0;">
               ${monster.savingThrows && monster.savingThrows.includes('dex') ? 
                 (() => {
                   const mod = parseInt(getModifier(monster.attributes.dex)) + monster.proficiencyBonus;
                   return mod >= 0 ? `+${mod}` : mod;
                 })() : '-'}
             </div>
-            <div style="width: 50px; text-align: center; border: 1px solid #999; border-top: none; border-left: none;  background-color: #f5f5f5; padding: 3px 0;">
+            <div style="width: 50px; text-align: center; border: 1px solid #999; border-top: none; border-left: none; background-color: #f5f5f5; padding: 3px 0;">
               ${monster.savingThrows && monster.savingThrows.includes('con') ? 
                 (() => {
                   const mod = parseInt(getModifier(monster.attributes.con)) + monster.proficiencyBonus;
                   return mod >= 0 ? `+${mod}` : mod;
                 })() : '-'}
             </div>
-            <div style="width: 50px; text-align: center; border: 1px solid #999; border-top: none; border-left: none;  background-color: #f5f5f5; padding: 3px 0;">
+            <div style="width: 50px; text-align: center; border: 1px solid #999; border-top: none; border-left: none; background-color: #f5f5f5; padding: 3px 0;">
               ${monster.savingThrows && monster.savingThrows.includes('int') ? 
                 (() => {
                   const mod = parseInt(getModifier(monster.attributes.int)) + monster.proficiencyBonus;
                   return mod >= 0 ? `+${mod}` : mod;
                 })() : '-'}
             </div>
-            <div style="width: 50px; text-align: center; border: 1px solid #999; border-top: none; border-left: none;  background-color: #f5f5f5; padding: 3px 0;">
+            <div style="width: 50px; text-align: center; border: 1px solid #999; border-top: none; border-left: none; background-color: #f5f5f5; padding: 3px 0;">
               ${monster.savingThrows && monster.savingThrows.includes('wis') ? 
                 (() => {
                   const mod = parseInt(getModifier(monster.attributes.wis)) + monster.proficiencyBonus;
                   return mod >= 0 ? `+${mod}` : mod;
                 })() : '-'}
             </div>
-            <div style="width: 50px; text-align: center; border: 1px solid #999; border-top: none; border-left: none;  background-color: #f5f5f5; padding: 3px 0;">
+            <div style="width: 50px; text-align: center; border: 1px solid #999; border-top: none; border-left: none; background-color: #f5f5f5; padding: 3px 0;">
               ${monster.savingThrows && monster.savingThrows.includes('cha') ? 
                 (() => {
                   const mod = parseInt(getModifier(monster.attributes.cha)) + monster.proficiencyBonus;
@@ -322,39 +418,41 @@ const StatBlockImageExporter = ({ monster }) => {
             <div style="height: 1px; background-color: #7a200d; margin-top: 8px;"></div>
           </div>
         </div>
-        <!-- Additional Info Section -->
-        <div style="margin-bottom: 10px;">
-          ${monster.skills && monster.skills.length > 0 ? 
-            `<p style="margin: 0;"><strong>Skills</strong> ${monster.skills.map(skill => {
-              let skillName = '';
-              
-              // Handle both string and object formats for skills
-              if (typeof skill === 'string') {
-                skillName = skill;
-              } else if (typeof skill === 'object') {
-                skillName = skill.name || '';
-              }
-              
-              const skillBonus = getSkillBonus(skill);
-              const formattedModifier = skillBonus >= 0 ? `+${skillBonus}` : `${skillBonus}`;
-              
-              return `${skillName} ${formattedModifier}`;
-            }).join(', ')}</p>` : ''}
+      `}
+      
+      <!-- Additional Info Section -->
+      <div style="margin-bottom: 10px;">
+        ${monster.skills && monster.skills.length > 0 ? 
+          `<p style="margin: 0;"><strong>Skills</strong> ${monster.skills.map(skill => {
+            let skillName = '';
+            
+            // Handle both string and object formats for skills
+            if (typeof skill === 'string') {
+              skillName = skill;
+            } else if (typeof skill === 'object') {
+              skillName = skill.name || '';
+            }
+            
+            const skillBonus = getSkillBonus(skill);
+            const formattedModifier = skillBonus >= 0 ? `+${skillBonus}` : `${skillBonus}`;
+            
+            return `${skillName} ${formattedModifier}`;
+          }).join(', ')}</p>` : ''}
 
-          ${monster.senses && monster.senses.length > 0 ? 
-            `<p style="margin: 0;"><strong>Senses</strong> ${monster.senses.map(sense => {
-              let senseName = sense.type;
-              let senseRange = sense.range;
-              
-              return `${senseName} (${senseRange} feet)`;
-            }).join(', ')}</p>` : ''}
-          
-          ${monster.languages && monster.languages.length > 0 ? 
-            `<p style="margin: 0;"><strong>Languages</strong> ${monster.languages.join(', ')}</p>` : ''}
-          
-          <p style="margin: 0 0 8px 0;"><strong>Challenge Rating</strong> ${monster.cr} ${monster.xp ? `(${monster.xp} XP)` : ''}</p>
-          <div style="border-bottom: 1px solid #7a200d;"></div>
-        </div>
+        ${monster.senses && monster.senses.length > 0 ? 
+          `<p style="margin: 0;"><strong>Senses</strong> ${monster.senses.map(sense => {
+            let senseName = sense.type;
+            let senseRange = sense.range;
+            
+            return `${senseName} (${senseRange} feet)`;
+          }).join(', ')}</p>` : ''}
+        
+        ${monster.languages && monster.languages.length > 0 ? 
+          `<p style="margin: 0;"><strong>Languages</strong> ${monster.languages.join(', ')}</p>` : ''}
+        
+        <p style="margin: 0 0 8px 0;"><strong>Challenge Rating</strong> ${monster.cr} ${monster.xp ? `(${monster.xp} XP)` : ''}</p>
+        <div style="border-bottom: 1px solid #7a200d;"></div>
+      </div>
         
         <!-- Features and Actions Section -->
         ${useTwoColumns ? 
