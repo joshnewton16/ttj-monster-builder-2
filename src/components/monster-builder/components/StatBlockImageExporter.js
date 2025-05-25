@@ -159,9 +159,9 @@ const StatBlockImageExporter = ({ monster }) => {
       if (showHeader && category !== 'Abilities') {
         header = `<h2 style="color: #7a200d; font-size: 18px; margin: 0; border-bottom: 1px solid #7a200d; padding-bottom: 4px; margin-bottom: 8px;">${category}</h2>`;
       }
-      
+      //<div style="margin-bottom: ${category === 'Abilities' ? '20px' : '10px'};">
       return `
-        <div style="margin-bottom: ${category === 'Abilities' ? '20px' : '10px'};">
+        <div>
           ${header}
           ${features.map(feature => 
             `<p style="margin: 0;"><strong><em>${feature.imageDisplayName || feature.name}.</em></strong> ${getActionString(feature, monster)} </p>`
@@ -388,12 +388,12 @@ const StatBlockImageExporter = ({ monster }) => {
               `<div>
                 <!-- Actions header (full width) -->
                 <div style="margin-bottom: 10px;">
-                  <h2 style="color: #7a200d; font-size: 18px; margin: 0 0 8px 0;">Actions</h2>
+                  <h2 style="color: #7a200d; font-size: 18px; margin: 0 0 4px 0;">Actions</h2>
                   <div style="border-bottom: 1px solid #7a200d;"></div>
                 </div>
                 
                 <!-- Actions content (two columns) -->
-                <div style="display: flex; gap: 20px; margin-bottom: 20px;">
+                <div style="display: flex; gap: 20px;">
                   <div style="flex: 1;">
                     ${leftActions.map(feature => {
                       return `<p style="margin: 0;"><strong><em>${feature.imageDisplayName || feature.name}.</em></strong> ${getActionString(feature, monster)}</p>`
@@ -413,12 +413,12 @@ const StatBlockImageExporter = ({ monster }) => {
               `<div>
                 <!-- Bonus Actions header (full width) -->
                 <div style="margin-bottom: 10px;">
-                  <h2 style="color: #7a200d; font-size: 18px; margin: 0 0 8px 0;">Bonus Actions</h2>
+                  <h2 style="color: #7a200d; font-size: 18px; margin: 0 0 4px 0;">Bonus Actions</h2>
                   <div style="border-bottom: 1px solid #7a200d;"></div>
                 </div>
                 
                 <!-- Bonus Actions content (two columns) -->
-                <div style="display: flex; gap: 20px; margin-bottom: 20px;">
+                <div style="display: flex; gap: 20px;">
                   <div style="flex: 1;">
                     ${leftBonusActions.map(feature => {
                       return `<p style="margin: 0;"><strong><em>${feature.imageDisplayName || feature.name}.</em></strong> ${getActionString(feature, monster)}</p>`
@@ -438,12 +438,12 @@ const StatBlockImageExporter = ({ monster }) => {
               `<div>
                 <!-- Reactions header (full width) -->
                 <div style="margin-bottom: 10px;">
-                  <h2 style="color: #7a200d; font-size: 18px; margin: 0 0 8px 0;">Reactions</h2>
+                  <h2 style="color: #7a200d; font-size: 18px; margin: 0 0 4px 0;">Reactions</h2>
                   <div style="border-bottom: 1px solid #7a200d;"></div>
                 </div>
                 
                 <!-- Reactions content (two columns) -->
-                <div style="display: flex; gap: 20px; margin-bottom: 20px;">
+                <div style="display: flex; gap: 20px;">
                   <div style="flex: 1;">
                     ${leftReactions.map(feature => {
                       return `<p style="margin: 0;"><strong><em>${feature.imageDisplayName || feature.name}.</em></strong> ${getActionString(feature, monster)}</p>`
@@ -458,7 +458,7 @@ const StatBlockImageExporter = ({ monster }) => {
               </div>` : ''
             }
           </div>` : 
-          `<div style="margin-bottom: 20px;">
+          `<div>
             ${abilities.length > 0 ? 
               `${abilities.map(feature => {
                       return `<p style="margin: 0;"><strong><em>${feature.imageDisplayName || feature.name}.</em></strong> ${getActionString(feature, monster)}</p>`
@@ -467,7 +467,7 @@ const StatBlockImageExporter = ({ monster }) => {
             
             ${actions.length > 0 ? 
               `<div style="margin-bottom: 10px;">
-                <h2 style="color: #7a200d; font-size: 18px; margin: 0 0 8px 0;">Actions</h2>
+                <h2 style="color: #7a200d; font-size: 18px; margin: 0 0 4px 0;">Actions</h2>
                 <div style="border-bottom: 1px solid #7a200d;"></div>
                 <div style="margin-top: 8px;">
                   ${actions.map(action => 
@@ -479,7 +479,7 @@ const StatBlockImageExporter = ({ monster }) => {
             
             ${bonusActions.length > 0 ? 
               `<div style="margin-bottom: 10px;">
-                <h2 style="color: #7a200d; font-size: 18px; margin: 0 0 8px 0;">Bonus Actions</h2>
+                <h2 style="color: #7a200d; font-size: 18px; margin: 0 0 4px 0;">Bonus Actions</h2>
                 <div style="border-bottom: 1px solid #7a200d;"></div>
                 <div style="margin-top: 8px;">
                   ${bonusActions.map(action => 
@@ -491,7 +491,7 @@ const StatBlockImageExporter = ({ monster }) => {
             
             ${reactions.length > 0 ? 
               `<div style="margin-bottom: 10px;">
-                <h2 style="color: #7a200d; font-size: 18px; margin: 0 0 8px 0;">Reactions</h2>
+                <h2 style="color: #7a200d; font-size: 18px; margin: 0 0 4px 0;">Reactions</h2>
                 <div style="border-bottom: 1px solid #7a200d;"></div>
                 <div style="margin-top: 8px;">
                   ${reactions.map(reaction => 
