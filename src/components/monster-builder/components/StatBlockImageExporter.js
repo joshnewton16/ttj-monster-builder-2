@@ -57,20 +57,6 @@ const StatBlockImageExporter = ({ monster }) => {
   };
 
   /**
-   * Split features into two columns while maintaining category grouping
-   */
-  const distributeFeatures = (features) => {
-    if (!features || features.length === 0) return [[], []];
-    
-    // If only 1 feature, put it in the left column
-    if (features.length === 1) return [features, []];
-    
-    // For 2+ features, split them between columns
-    const half = Math.ceil(features.length / 2);
-    return [features.slice(0, half), features.slice(half)];
-  };
-
-  /**
    * Generate and show the stat block modal with current settings
    */
   const showStatBlockModal = () => {
@@ -147,6 +133,20 @@ const StatBlockImageExporter = ({ monster }) => {
     const distributeFeaturesByLength = (features, monster) => {
       if (!features || features.length === 0) return [[], []];
       if (features.length === 1) return [features, []];
+      
+      // For exactly 2 features, always put one in each column
+      if (features.length === 2) {
+        const multiattack = features.find(f => f.isMultiattack === true);
+        const other = features.find(f => f.isMultiattack !== true);
+        
+        if (multiattack) {
+          // Multiattack goes left, other goes right
+          return [[multiattack], [other]];
+        } else {
+          // No multiattack, just split them
+          return [[features[0]], [features[1]]];
+        }
+      }
 
       // Calculate text length for each feature
       const featuresWithLength = features.map(feature => {
@@ -249,7 +249,7 @@ const StatBlockImageExporter = ({ monster }) => {
           isRightMuchHeavier: rightLength > leftLength * 1.5
         });
         
-        if (newImbalance < currentImbalance || (rightLength > leftLength * 1.5)) { // Also move if right is much heavier
+        if (newImbalance < currentImbalance) { // Only move if it actually improves balance
           console.log(`Moving ${feature.name} from right to left`);
           
           // Remove from right, add to left (but after Multiattack if it exists)
