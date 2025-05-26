@@ -143,12 +143,149 @@ const StatBlockImageExporter = ({ monster }) => {
         
     const bonusActions = monster.features ? monster.features.filter(f => f.category === 'Bonus Actions') : [];
     const reactions = monster.features ? monster.features.filter(f => f.category === 'Reactions') : [];
+
+    const distributeFeaturesByLength = (features, monster) => {
+      if (!features || features.length === 0) return [[], []];
+      if (features.length === 1) return [features, []];
+
+      // Calculate text length for each feature
+      const featuresWithLength = features.map(feature => {
+        const name = feature.imageDisplayName || feature.name || '';
+        const description = getActionString(feature, monster) || '';
+        const totalLength = name.length + description.length;
+        
+        return {
+          ...feature,
+          textLength: totalLength
+        };
+      });
+
+      console.log('Features with lengths:', featuresWithLength.map(f => ({
+        name: f.name, 
+        textLength: f.textLength
+      })));
+
+      // Separate Multiattack from other features
+      const multiattack = featuresWithLength.find(f => f.isMultiattack === true);
+      const otherFeatures = featuresWithLength.filter(f => f.isMultiattack !== true);
+
+      // Start with even distribution of non-Multiattack features
+      const half = Math.ceil(otherFeatures.length / 2);
+      let leftColumn = otherFeatures.slice(0, half);
+      let rightColumn = otherFeatures.slice(half);
+
+      // Always put Multiattack at the top of left column if it exists
+      if (multiattack) {
+        leftColumn.unshift(multiattack);
+      }
+
+      // Calculate initial weights
+      let leftLength = leftColumn.reduce((sum, f) => sum + f.textLength, 0);
+      let rightLength = rightColumn.reduce((sum, f) => sum + f.textLength, 0);
+
+      console.log('Initial distribution:', {
+        left: leftColumn.map(f => ({name: f.name, length: f.textLength})),
+        right: rightColumn.map(f => ({name: f.name, length: f.textLength})),
+        leftTotal: leftLength,
+        rightTotal: rightLength
+      });
+
+      // If right column is significantly heavier, try to balance by moving short items from right to left
+      const movableFromRight = rightColumn.filter(f => f.isMultiattack !== true);
+      const movableFromLeft = leftColumn.filter(f => f.isMultiattack !== true);
+
+      // Sort potential moves by length (shortest first for better optimization)
+      movableFromRight.sort((a, b) => a.textLength - b.textLength);
+      movableFromLeft.sort((a, b) => b.textLength - a.textLength); // longest first when moving from left
+
+      console.log('Movable features:', {
+        fromRight: movableFromRight.map(f => ({name: f.name, length: f.textLength})),
+        fromLeft: movableFromLeft.map(f => ({name: f.name, length: f.textLength}))
+      });
+
+      // Determine which direction to balance first
+      const isLeftMuchHeavier = leftLength > rightLength * 1.5;
+      const isRightMuchHeavier = rightLength > leftLength * 1.5;
+
+      // If left is much heavier, move long items from left to right first
+      if (isLeftMuchHeavier) {
+        for (let feature of movableFromLeft.slice()) {
+          const newLeftLength = leftLength - feature.textLength;
+          const newRightLength = rightLength + feature.textLength;
+          
+          const currentImbalance = Math.abs(leftLength - rightLength);
+          const newImbalance = Math.abs(newLeftLength - newRightLength);
+          
+          console.log(`Considering moving ${feature.name} from left to right:`, {
+            currentImbalance,
+            newImbalance,
+            wouldImprove: newImbalance < currentImbalance,
+            isLeftMuchHeavier: leftLength > rightLength * 1.5
+          });
+          
+          if (newImbalance < currentImbalance) {
+            console.log(`Moving ${feature.name} from left to right`);
+            leftColumn = leftColumn.filter(f => f !== feature);
+            rightColumn.push(feature);
+            leftLength = newLeftLength;
+            rightLength = newRightLength;
+          }
+        }
+      }
+      
+      // Try moving short items from right to left to balance
+      for (let feature of movableFromRight.slice()) { // Use slice() to avoid modifying array while iterating
+        const newLeftLength = leftLength + feature.textLength;
+        const newRightLength = rightLength - feature.textLength;
+        
+        // If this move improves balance, do it
+        const currentImbalance = Math.abs(leftLength - rightLength);
+        const newImbalance = Math.abs(newLeftLength - newRightLength);
+        
+        console.log(`Considering moving ${feature.name} from right to left:`, {
+          currentImbalance,
+          newImbalance,
+          wouldImprove: newImbalance < currentImbalance,
+          isRightMuchHeavier: rightLength > leftLength * 1.5
+        });
+        
+        if (newImbalance < currentImbalance || (rightLength > leftLength * 1.5)) { // Also move if right is much heavier
+          console.log(`Moving ${feature.name} from right to left`);
+          
+          // Remove from right, add to left (but after Multiattack if it exists)
+          rightColumn = rightColumn.filter(f => f !== feature);
+          if (multiattack) {
+            leftColumn.splice(1, 0, feature); // Insert after Multiattack
+          } else {
+            leftColumn.unshift(feature); // Insert at beginning
+          }
+          leftLength = newLeftLength;
+          rightLength = newRightLength;
+        }
+      }
+
+      console.log('Final distribution:', {
+        leftCount: leftColumn.length,
+        rightCount: rightColumn.length,
+        leftLength: leftLength,
+        rightLength: rightLength,
+        left: leftColumn.map(f => ({name: f.name})),
+        right: rightColumn.map(f => ({name: f.name}))
+      });
+
+      return [leftColumn, rightColumn];
+    };
+
+    // Replace your existing distributeFeatures function with this:
+    const distributeFeatures = (features, monster) => {
+      return distributeFeaturesByLength(features, monster);
+    };
     
     // Split features for two-column layout
-    let [leftAbilities, rightAbilities] = useTwoColumns ? distributeFeatures(abilities) : [abilities, []];
-    let [leftActions, rightActions] = useTwoColumns ? distributeFeatures(actions) : [actions, []];
-    let [leftBonusActions, rightBonusActions] = useTwoColumns ? distributeFeatures(bonusActions) : [bonusActions, []];
-    let [leftReactions, rightReactions] = useTwoColumns ? distributeFeatures(reactions) : [reactions, []];
+    let [leftAbilities, rightAbilities] = useTwoColumns ? distributeFeatures(abilities, monster) : [abilities, []];
+    let [leftActions, rightActions] = useTwoColumns ? distributeFeatures(actions, monster) : [actions, []];
+    let [leftBonusActions, rightBonusActions] = useTwoColumns ? distributeFeatures(bonusActions, monster) : [bonusActions, []];
+    let [leftReactions, rightReactions] = useTwoColumns ? distributeFeatures(reactions, monster) : [reactions, []];
     
     // Generate feature HTML for a single category
     const generateFeatureHtml = (features, category, showHeader = true) => {
