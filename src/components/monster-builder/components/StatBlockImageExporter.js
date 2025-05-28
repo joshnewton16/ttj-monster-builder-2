@@ -343,7 +343,84 @@ const StatBlockImageExporter = ({ monster }) => {
       leftColumnHtml += generateFeatureHtml(bonusActions, 'Bonus Actions');
       leftColumnHtml += generateFeatureHtml(reactions, 'Reactions');
     }
-    
+
+    const checkAndShowSizeWarning = async (useTwoColumns) => {
+    try {
+      console.log('Beginning Size Check');
+      const elementToCapture = document.getElementById('stat-block-to-capture');
+      if (!elementToCapture) return; // Element not ready yet
+      
+      const dpi = 300;
+      const widthInches = useTwoColumns ? 6.5 : 3.25;
+      const maxHeightInches = 9.75;
+      const widthPixels = widthInches * dpi;
+      
+      // Capture at low scale just to measure
+      const testCanvas = await html2canvas(elementToCapture, {
+        backgroundColor: null,
+        scale: 0.5, // Low scale for speed
+        useCORS: true
+      });
+      
+      // Calculate projected height
+      const currentWidth = testCanvas.width;
+      const currentHeight = testCanvas.height;
+      const scaleFactor = widthPixels / currentWidth;
+      const projectedHeightPixels = currentHeight * scaleFactor;
+      const projectedHeightInches = projectedHeightPixels / dpi;
+
+      console.log('projectedHeightInches', projectedHeightInches)
+      
+      // Show/hide warning
+      let warningElement = document.getElementById('size-warning');
+      if (projectedHeightInches > maxHeightInches) {
+        console.log('Image is larger than max')
+        if (!warningElement) {
+          console.log('warningElement is false')
+          warningElement = document.createElement('div');
+          warningElement.id = 'size-warning';
+          warningElement.style.cssText = `
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 14px;
+          `;
+          // Try multiple ways to find the buttons container
+          let buttonsContainer = document.getElementById('layout-toggle-button')?.parentNode;
+          if (!buttonsContainer) {
+            buttonsContainer = document.getElementById('download-button')?.parentNode;
+          }
+          if (!buttonsContainer) {
+            // Fallback: find any div with text-align center
+            buttonsContainer = Array.from(document.querySelectorAll('#monster-stat-block-modal div')).find(div => 
+              div.style.textAlign === 'center'
+            );
+          }
+          if (buttonsContainer) {
+            buttonsContainer.insertBefore(warningElement, buttonsContainer.firstChild);
+          } else {
+            console.log('Could not find buttons container for warning');
+          }
+        }
+        warningElement.innerHTML = `
+          ⚠️ <strong>Warning:</strong> Image will be ${projectedHeightInches.toFixed(2)}" tall, exceeding the ${maxHeightInches}" limit.<br>
+          Consider shortening descriptions or switching to ${useTwoColumns ? 'single' : 'two'} column layout.
+        `;
+      } else {
+        // Remove warning if it exists and height is okay
+        if (warningElement) {
+          warningElement.remove();
+        }
+      }
+    } catch (error) {
+      console.log('Size check failed:', error); // Fail silently
+    }
+  };
+
   // Create stat block HTML
   const statBlockHtml = `
     <div id="stat-block-to-capture" style="
@@ -739,6 +816,8 @@ const StatBlockImageExporter = ({ monster }) => {
         }
       </div>
     `;
+
+
     
     // Set the HTML content of the stat block container
     statBlockContainer.innerHTML = statBlockHtml;
@@ -780,9 +859,14 @@ const StatBlockImageExporter = ({ monster }) => {
     statBlockContainer.appendChild(closeButton);
     modal.appendChild(statBlockContainer);
     document.body.appendChild(modal);
-    
+
+    // Check size after modal is rendered
+    setTimeout(() => {
+      checkAndShowSizeWarning(useTwoColumns);
+    }, 100);
+        
     // Add click event to layout toggle button
-    document.getElementById('layout-toggle-button').addEventListener('click', () => {
+    document.getElementById('layout-toggle-button').addEventListener('click', async () => {
       // Toggle the layout preference
       twoColumnsRef.current = !twoColumnsRef.current;
       
@@ -797,26 +881,61 @@ const StatBlockImageExporter = ({ monster }) => {
     document.getElementById('download-button').addEventListener('click', async () => {
       try {
         const elementToCapture = document.getElementById('stat-block-to-capture');
-        const canvas = await html2canvas(elementToCapture, {
+        
+        // Define dimensions based on column layout
+        const dpi = 300;
+        const widthInches = useTwoColumns ? 6.5 : 3.25;
+        const maxHeightInches = 9.75;
+        
+        const widthPixels = widthInches * dpi;
+        const maxHeightPixels = maxHeightInches * dpi;
+        
+        // First, capture at current scale to measure height
+        const testCanvas = await html2canvas(elementToCapture, {
           backgroundColor: null,
-          scale: 2, // Higher scale for better quality
+          scale: 1,
           useCORS: true
         });
         
-        // Convert canvas to blob
-        canvas.toBlob((blob) => {
-          // Create download link
+        // Calculate what the height would be at our target width
+        const currentWidth = testCanvas.width;
+        const currentHeight = testCanvas.height;
+        const scaleFactor = widthPixels / currentWidth;
+        const projectedHeightPixels = currentHeight * scaleFactor;
+        const projectedHeightInches = projectedHeightPixels / dpi;
+        
+        // Create the final canvas with exact dimensions
+        const finalCanvas = document.createElement('canvas');
+        finalCanvas.width = widthPixels;
+        finalCanvas.height = projectedHeightPixels;
+        
+        // Capture at high quality and scale to fit
+        const highQualityCanvas = await html2canvas(elementToCapture, {
+          backgroundColor: null,
+          scale: 2, // High quality capture
+          useCORS: true
+        });
+        
+        // Draw scaled image to final canvas
+        const ctx = finalCanvas.getContext('2d');
+        ctx.fillStyle = '#fdf1dc'; // Match your background color
+        ctx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
+        ctx.drawImage(highQualityCanvas, 0, 0, finalCanvas.width, finalCanvas.height);
+        
+        // Convert canvas to blob and download
+        finalCanvas.toBlob((blob) => {
           const url = URL.createObjectURL(blob);
           const a = document.createElement('a');
           a.href = url;
-          a.download = `${monster.name ? monster.name.toLowerCase().replace(/\s+/g, '-') : 'monster'}-stat-block.png`;
+          const layoutType = useTwoColumns ? 'two-column' : 'single-column';
+          a.download = `${monster.name ? monster.name.toLowerCase().replace(/\s+/g, '-') : 'monster'}-stat-block-${layoutType}.png`;
           document.body.appendChild(a);
           a.click();
           document.body.removeChild(a);
           URL.revokeObjectURL(url);
           
           // Show success message
-          alert('Image downloaded successfully!');
+          alert(`Image downloaded successfully!\nSize: ${widthInches}" × ${projectedHeightInches.toFixed(2)}" at ${dpi} DPI`);
         }, 'image/png');
       } catch (error) {
         console.error('Error generating image:', error);
