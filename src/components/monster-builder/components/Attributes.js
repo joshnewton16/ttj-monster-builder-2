@@ -16,7 +16,7 @@ export function Attributes({ monster, setMonster }) {
   // Calculate spent points (how many points above base value 8 have been spent)
   const calculateSpentPoints = () => {
     return Object.values(monster.attributes).reduce((total, value) => {
-      return total + (value - 8); // 8 is the base attribute value
+      return total + (value - 10); // 8 is the base attribute value
     }, 0);
   };
 
