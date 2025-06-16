@@ -33,8 +33,11 @@ export const getActionString = (feature, monster) => {
       // Battleaxe. Melee: 1d8 slashing (versatile: 1d10)
       if (feature.type === 'Custom') {
         attackType = " " + feature.description;
-      } else {
-        attackType = " " + feature.type + " Attack: +" + (mod + monster.proficiencyBonus) + " to hit, reach 5 ft., one target. Hit" ;
+      }
+        else if (feature.type === 'Melee') {
+          attackType = " " + feature.type + " Attack: +" + (mod + monster.proficiencyBonus) + " to hit, reach 5 ft., one target. Hit" ;
+      } else if (feature.type === 'Ranged') {
+          attackType = " " + feature.type + " Attack: +" + (mod + monster.proficiencyBonus) + " to hit, range 20/60 ft., one target. Hit" ;
       }
 
       //console.log(feature.type, attackType);
