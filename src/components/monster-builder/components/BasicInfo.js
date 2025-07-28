@@ -128,29 +128,6 @@ export function BasicInfo({ monster, setMonster, onCRChange }) {
       onCRChange(newCR);
     }
   }, [monster.ac, monster.hp, monster.cr, onCRChange]);
-
-  // Function to adjust AC based on CR (only used during manual CR adjustment)
-  function adjustACForCR(newCR) {
-    const crEntry = CR_TABLE.find(entry => entry.cr === newCR);
-    if (!crEntry) return monster.ac;
-    
-    // If AC is below minimum for this CR, increase to minimum
-    if (monster.ac < crEntry.minAC) {
-      return crEntry.minAC;
-    }
-    
-    // If AC is above minimum for next CR level, cap it at previous level
-    const nextCRIndex = CR_TABLE.findIndex(entry => entry.cr === newCR) + 1;
-    if (nextCRIndex < CR_TABLE.length) {
-      const nextCREntry = CR_TABLE[nextCRIndex];
-      if (monster.ac >= nextCREntry.minAC) {
-        return nextCREntry.minAC - 1;
-      }
-    }
-    
-    // Otherwise, AC is already appropriate for this CR
-    return monster.ac;
-  }
   
   // Function to handle manual CR adjustment
   function handleCRAdjustment(increment) {
@@ -172,7 +149,7 @@ export function BasicInfo({ monster, setMonster, onCRChange }) {
     }
     
     // Calculate appropriate AC for the new CR
-    const adjustedAC = adjustACForCR(newCR);
+    const adjustedAC = monster.ac
     
     // Update monster state
     setMonster(prev => ({

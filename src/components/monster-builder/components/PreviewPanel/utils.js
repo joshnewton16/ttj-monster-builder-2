@@ -41,11 +41,13 @@ export const getActionString = (feature, monster) => {
       }
 
       //console.log(feature.type, attackType);
-      if (feature.doubleDamage) {
+      if (feature.type === 'Custom') {
+        description = `${attackType}`;
+      } else if (feature.doubleDamage) {
         const [count, die] = dice.split('d').map(Number);
         const doubledCount = count * 2;
         const doubledMod = mod * 2;
-        const doubledModString = doubledMod >= 0 ? `+${doubledMod}` : doubledMod;
+        const doubledModString = doubledMod === 0 ? '' : (doubledMod > 0 ? `+${doubledMod}` : `${doubledMod}`);
         
         description = `${attackType}: ${doubledCount}d${die}${doubledModString} ${damageType.join(' ')}`;
       } else {

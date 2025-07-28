@@ -12,7 +12,7 @@ import { generateStatBlockHtml } from './StatBlockHTMLGenerator';
  * Supports toggling between one and two-column layouts with manual column control
  */
 const StatBlockImageExporter = ({ monster }) => {
-  
+  console.log(monster);
   const statBlockRef = useRef(null);
   const twoColumnsRef = useRef(false);
   const manualColumnAssignmentsRef = useRef({
@@ -220,9 +220,49 @@ const StatBlockImageExporter = ({ monster }) => {
     closeButton.onclick = () => document.body.removeChild(modal);
 
     // Filter and sort features
-    const abilities = monster.features ? 
-      monster.features.filter(f => f.category === 'Abilities' && f.isHidden !== true) : [];
-    
+const abilities = monster.features ? 
+  monster.features
+    .filter(f => f.category === 'Abilities' && f.isHidden !== true)
+    .map(feature => {
+      // Check if this is a Spellcasting ability that needs fixing
+      if (feature.name === 'Spellcasting' && 
+          feature.description && 
+          !feature.description.includes('spell attack bonus')) {
+        
+        // Create a copy of the feature to avoid mutating the original
+        const updatedFeature = { ...feature };
+
+        const abilityMap = {
+          'Intelligence': 'int',
+          'Wisdom': 'wis',
+          'Charisma': 'cha'
+        };
+
+        // Varibles
+        const abilityScore = monster.attributes[abilityMap[feature.spellcasting.ability]];
+        const abilityMod = Math.floor((abilityScore - 10) / 2);
+        const spellAttackBonus = abilityMod + monster.proficiencyBonus;
+        const spellSaveDC = 8 + spellAttackBonus;
+        
+        // Find and replace the spellcasting ability sentence
+        const spellcastingAbilityRegex = /Its spellcasting ability is (\w+)\./;
+        const match = updatedFeature.description.match(spellcastingAbilityRegex);
+        
+        if (match) {
+          const spellcastingAbility = match[1];
+          const oldSentence = match[0];
+          const newSentence = `Its spellcasting ability is ${spellcastingAbility} (spell attack bonus: +${spellAttackBonus}, spell save DC: ${spellSaveDC}).`;
+          
+          updatedFeature.description = updatedFeature.description.replace(oldSentence, newSentence);
+        }
+        
+        return updatedFeature;
+      }
+      
+      // Return the feature unchanged if it doesn't need fixing
+      return feature;
+    }) : [];
+
     const actions = monster.features ? 
       monster.features
         .filter(f => f.category === 'Actions')
