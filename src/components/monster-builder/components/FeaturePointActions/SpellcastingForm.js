@@ -191,15 +191,6 @@ export function SpellcastingForm({ onSubmit, availablePoints, monster, currentMa
           : `${spellcastingStats.spellSlots[parseInt(level)-1] || 0}/day each`
       };
     });
-    const abilityMap = {
-      'Intelligence': 'int',
-      'Wisdom': 'wis',
-      'Charisma': 'cha'
-    };
-    const abilityScore = monster.attributes[abilityMap[spellcastingAbility]];
-    const abilityMod = Math.floor((abilityScore - 10) / 2);
-    const spellAttackBonus = abilityMod + monster.proficiencyBonus;
-    const spellSaveDC = 8 + spellAttackBonus;
     
     // Create the main spellcasting feature
     const mainFeature = {
@@ -207,7 +198,7 @@ export function SpellcastingForm({ onSubmit, availablePoints, monster, currentMa
       type: 'spellcasting', // Add a unique type to identify this feature
       id: 'spellcasting-feature', // Add a unique ID for this feature
       category: 'Abilities',
-      description: `The creature is a ${spellcastingStats.casterLevel}th-level spellcaster. Its spellcasting ability is ${spellcastingAbility} (spell attack bonus: +${spellAttackBonus}, spell save DC: ${spellSaveDC}). ${spellDescription}`,
+      description: `The creature is a ${spellcastingStats.casterLevel}th-level spellcaster. Its spellcasting ability is ${spellcastingAbility}. ${spellDescription}`,
       costFeaturePoint: true,
       featurePointCost: 2,
       magicPointsTotal: spellcastingStats.magicPoints,
@@ -218,9 +209,7 @@ export function SpellcastingForm({ onSubmit, availablePoints, monster, currentMa
         spellsByLevel: detailedSpellInfo, // Include the detailed spell info
         spellSlots: spellcastingStats.spellSlots, // Include the spell slots array
         totalSpells: selectedBasicSpells.length, // Total number of spells selected
-        spellCountByLevel: spellCountByLevel, // Count of spells per level
-        spellAttackBonus: spellAttackBonus,
-        spellSaveDC: spellSaveDC 
+        spellCountByLevel: spellCountByLevel // Count of spells per level
       }
     };
     
