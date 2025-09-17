@@ -9,12 +9,12 @@ import { generateStatBlockHtml } from './StatBlockHTMLGenerator';
 
 /**
  * Component for generating and exporting D&D monster stat blocks as images
- * Supports toggling between one and two-column layouts with manual column control
+ * Supports one-column, two-column, and compact card layouts with manual column control
  */
 const StatBlockImageExporter = ({ monster }) => {
-  console.log(monster);
+  
   const statBlockRef = useRef(null);
-  const twoColumnsRef = useRef(false);
+  const layoutModeRef = useRef('single'); // 'single', 'two-column', 'compact'
   const manualColumnAssignmentsRef = useRef({
     actions: { left: [], right: [] },
     bonusActions: { left: [], right: [] },
@@ -109,16 +109,32 @@ const StatBlockImageExporter = ({ monster }) => {
   };
 
   /**
+   * Get layout dimensions based on current layout mode
+   */
+  const getLayoutDimensions = () => {
+    const mode = layoutModeRef.current;
+    switch (mode) {
+      case 'single':
+        return { widthInches: 3.25, maxHeightInches: 9.75 };
+      case 'two-column':
+        return { widthInches: 6.5, maxHeightInches: 9.75 };
+      case 'compact':
+        return { widthInches: 3.0, maxHeightInches: 5.0 }; // 3x5 card
+      default:
+        return { widthInches: 3.25, maxHeightInches: 9.75 };
+    }
+  };
+
+  /**
    * Size warning check
    */
-  const checkAndShowSizeWarning = async (useTwoColumns) => {
+  const checkAndShowSizeWarning = async () => {
     try {
       const elementToCapture = document.getElementById('stat-block-to-capture');
       if (!elementToCapture) return;
       
       const dpi = 300;
-      const widthInches = useTwoColumns ? 6.5 : 3.25;
-      const maxHeightInches = 9.75;
+      const { widthInches, maxHeightInches } = getLayoutDimensions();
       const widthPixels = widthInches * dpi;
       
       const testCanvas = await html2canvas(elementToCapture, {
@@ -149,7 +165,7 @@ const StatBlockImageExporter = ({ monster }) => {
             font-size: 14px;
           `;
           
-          let buttonsContainer = document.getElementById('layout-toggle-button')?.parentNode;
+          let buttonsContainer = document.getElementById('layout-buttons')?.parentNode;
           if (!buttonsContainer) {
             buttonsContainer = document.getElementById('download-button')?.parentNode;
           }
@@ -157,9 +173,15 @@ const StatBlockImageExporter = ({ monster }) => {
             buttonsContainer.insertBefore(warningElement, buttonsContainer.firstChild);
           }
         }
+        const currentMode = layoutModeRef.current;
+        const suggestions = {
+          'single': 'two-column or compact',
+          'two-column': 'single or compact',
+          'compact': 'single or two-column'
+        };
         warningElement.innerHTML = `
-          ⚠️ <strong>Warning:</strong> Image will be ${projectedHeightInches.toFixed(2)}" tall, exceeding the ${maxHeightInches}" limit.<br>
-          Consider shortening descriptions or switching to ${useTwoColumns ? 'single' : 'two'} column layout.
+          ⚠️ <strong>Warning:</strong> Image will be ${projectedHeightInches.toFixed(2)}" tall, exceeding the ${maxHeightInches}" limit for ${currentMode} layout.<br>
+          Consider shortening descriptions or switching to ${suggestions[currentMode]} layout.
         `;
       } else {
         if (warningElement) {
@@ -172,97 +194,54 @@ const StatBlockImageExporter = ({ monster }) => {
   };
 
   /**
-   * Generate and show the stat block modal
+   * Generate and show the stat block modal with current settings
    */
   const showStatBlockModal = () => {
-    const useTwoColumns = twoColumnsRef.current;
-    
-    // Create modal
+    const layoutMode = layoutModeRef.current;
+    const useTwoColumns = layoutMode === 'two-column';
+    const useCompactLayout = layoutMode === 'compact';
+
+    // Create stat block modal
     const modal = document.createElement('div');
     modal.id = 'monster-stat-block-modal';
-    modal.style.cssText = `
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.7);
-      z-index: 1000;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    `;
+    modal.style.position = 'fixed';
+    modal.style.top = '0';
+    modal.style.left = '0';
+    modal.style.width = '100%';
+    modal.style.height = '100%';
+    modal.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+    modal.style.zIndex = '1000';
+    modal.style.display = 'flex';
+    modal.style.justifyContent = 'center';
+    modal.style.alignItems = 'center';
     
-    // Create container
+    // Create stat block container
     const statBlockContainer = document.createElement('div');
-    statBlockContainer.style.cssText = `
-      padding: 20px;
-      background-color: white;
-      border-radius: 5px;
-      max-width: 90%;
-      max-height: 90%;
-      overflow: auto;
-      position: relative;
-    `;
+    statBlockContainer.style.padding = '20px';
+    statBlockContainer.style.backgroundColor = 'white';
+    statBlockContainer.style.borderRadius = '5px';
+    statBlockContainer.style.maxWidth = '90%';
+    statBlockContainer.style.maxHeight = '90%';
+    statBlockContainer.style.overflow = 'auto';
+    statBlockContainer.style.position = 'relative';
     
     // Add close button
     const closeButton = document.createElement('button');
     closeButton.textContent = '×';
-    closeButton.style.cssText = `
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      border: none;
-      background: none;
-      font-size: 20px;
-      cursor: pointer;
-    `;
-    closeButton.onclick = () => document.body.removeChild(modal);
+    closeButton.style.position = 'absolute';
+    closeButton.style.top = '10px';
+    closeButton.style.right = '10px';
+    closeButton.style.border = 'none';
+    closeButton.style.background = 'none';
+    closeButton.style.fontSize = '20px';
+    closeButton.style.cursor = 'pointer';
+    closeButton.onclick = () => {
+      document.body.removeChild(modal);
+    };
 
-    // Filter and sort features
-const abilities = monster.features ? 
-  monster.features
-    .filter(f => f.category === 'Abilities' && f.isHidden !== true)
-    .map(feature => {
-      // Check if this is a Spellcasting ability that needs fixing
-      if (feature.name === 'Spellcasting' && 
-          feature.description && 
-          !feature.description.includes('spell attack bonus')) {
-        
-        // Create a copy of the feature to avoid mutating the original
-        const updatedFeature = { ...feature };
-
-        const abilityMap = {
-          'Intelligence': 'int',
-          'Wisdom': 'wis',
-          'Charisma': 'cha'
-        };
-
-        // Varibles
-        const abilityScore = monster.attributes[abilityMap[feature.spellcasting.ability]];
-        const abilityMod = Math.floor((abilityScore - 10) / 2);
-        const spellAttackBonus = abilityMod + monster.proficiencyBonus;
-        const spellSaveDC = 8 + spellAttackBonus;
-        
-        // Find and replace the spellcasting ability sentence
-        const spellcastingAbilityRegex = /Its spellcasting ability is (\w+)\./;
-        const match = updatedFeature.description.match(spellcastingAbilityRegex);
-        
-        if (match) {
-          const spellcastingAbility = match[1];
-          const oldSentence = match[0];
-          const newSentence = `Its spellcasting ability is ${spellcastingAbility} (spell attack bonus: +${spellAttackBonus}, spell save DC: ${spellSaveDC}).`;
-          
-          updatedFeature.description = updatedFeature.description.replace(oldSentence, newSentence);
-        }
-        
-        return updatedFeature;
-      }
-      
-      // Return the feature unchanged if it doesn't need fixing
-      return feature;
-    }) : [];
-
+    // Filter monster features by category
+    const abilities = monster.features ? monster.features.filter(f => f.category === 'Abilities' && f.isHidden !== true) : [];
+    
     const actions = monster.features ? 
       monster.features
         .filter(f => f.category === 'Actions')
@@ -272,29 +251,48 @@ const abilities = monster.features ?
           return 0;
         }) : [];
         
-    const bonusActions = monster.features ? 
-      monster.features.filter(f => f.category === 'Bonus Actions') : [];
-    const reactions = monster.features ? 
-      monster.features.filter(f => f.category === 'Reactions') : [];
+    const bonusActions = monster.features ? monster.features.filter(f => f.category === 'Bonus Actions') : [];
+    const reactions = monster.features ? monster.features.filter(f => f.category === 'Reactions') : [];
     
-    // Distribute features
-    let [leftAbilities, rightAbilities] = useTwoColumns ? 
-      distributeFeaturesByLength(abilities, monster) : [abilities, []];
-    let [leftActions, rightActions] = useTwoColumns ? 
-      distributeFeatures(actions, 'actions', monster, manualColumnAssignmentsRef.current) : [actions, []];
-    let [leftBonusActions, rightBonusActions] = useTwoColumns ? 
-      distributeFeatures(bonusActions, 'bonusActions', monster, manualColumnAssignmentsRef.current) : [bonusActions, []];
-    let [leftReactions, rightReactions] = useTwoColumns ? 
-      distributeFeatures(reactions, 'reactions', monster, manualColumnAssignmentsRef.current) : [reactions, []];
+    // Split features based on layout mode
+    let leftAbilities, rightAbilities, leftActions, rightActions, leftBonusActions, rightBonusActions, leftReactions, rightReactions;
+    
+    if (useCompactLayout) {
+      // Compact layout: all abilities in left, all actions/bonus/reactions in right
+      leftAbilities = abilities;
+      rightAbilities = [];
+      leftActions = [];
+      rightActions = actions;
+      leftBonusActions = [];
+      rightBonusActions = bonusActions;
+      leftReactions = [];
+      rightReactions = reactions;
+    } else if (useTwoColumns) {
+      // Two-column layout: distribute normally
+      [leftAbilities, rightAbilities] = distributeFeaturesByLength(abilities, monster);
+      [leftActions, rightActions] = distributeFeatures(actions, 'actions', monster, manualColumnAssignmentsRef.current);
+      [leftBonusActions, rightBonusActions] = distributeFeatures(bonusActions, 'bonusActions', monster, manualColumnAssignmentsRef.current);
+      [leftReactions, rightReactions] = distributeFeatures(reactions, 'reactions', monster, manualColumnAssignmentsRef.current);
+    } else {
+      // Single column: everything in left column
+      leftAbilities = abilities;
+      rightAbilities = [];
+      leftActions = actions;
+      rightActions = [];
+      leftBonusActions = bonusActions;
+      rightBonusActions = [];
+      leftReactions = reactions;
+      rightReactions = [];
+    }
     
     // Setup global functions
     setupGlobalFunctions(actions, bonusActions, reactions);
 
-    // Generate HTML
+    // Generate stat block HTML - we'll need to modify generateStatBlockHtml to support compact layout
     const statBlockHtml = generateStatBlockHtml(
       monster, 
-      useTwoColumns, 
-      previewModeRef.current,
+      useTwoColumns || useCompactLayout, // Pass true for any multi-column layout
+      previewModeRef.current, 
       leftAbilities, 
       rightAbilities, 
       leftActions, 
@@ -302,110 +300,170 @@ const abilities = monster.features ?
       leftBonusActions, 
       rightBonusActions, 
       leftReactions, 
-      rightReactions
+      rightReactions,
+      useCompactLayout // Add this parameter to indicate compact mode
     );
     
+    // Set the HTML content of the stat block container
     statBlockContainer.innerHTML = statBlockHtml;
     
-    // Add control buttons
+    // Add buttons for export and layout toggle
     const buttonsContainer = document.createElement('div');
-    buttonsContainer.style.cssText = `
-      margin-top: 20px;
-      text-align: center;
-      margin-bottom: 15px;
-    `;
+    buttonsContainer.style.marginTop = '20px';
+    buttonsContainer.style.textAlign = 'center';
+    buttonsContainer.style.marginBottom = '15px';
     
-    const layoutToggleButton = document.createElement('button');
-    layoutToggleButton.id = 'layout-toggle-button';
-    layoutToggleButton.textContent = useTwoColumns ? 'Switch to One Column' : 'Switch to Two Columns';
-    layoutToggleButton.style.cssText = `
-      background-color: #4a76a8;
-      color: white;
-      border: none;
-      padding: 8px 16px;
-      margin-right: 10px;
-      border-radius: 4px;
-      cursor: pointer;
-    `;
+    // Layout mode buttons
+    const layoutButtonsContainer = document.createElement('div');
+    layoutButtonsContainer.id = 'layout-buttons';
+    layoutButtonsContainer.style.marginBottom = '10px';
+    
+    const singleColumnButton = document.createElement('button');
+    singleColumnButton.textContent = 'Single Column';
+    singleColumnButton.style.backgroundColor = layoutMode === 'single' ? '#2d5a87' : '#4a76a8';
+    singleColumnButton.style.color = 'white';
+    singleColumnButton.style.border = 'none';
+    singleColumnButton.style.padding = '8px 16px';
+    singleColumnButton.style.margin = '0 5px';
+    singleColumnButton.style.borderRadius = '4px';
+    singleColumnButton.style.cursor = 'pointer';
+    
+    const twoColumnButton = document.createElement('button');
+    twoColumnButton.textContent = 'Two Column';
+    twoColumnButton.style.backgroundColor = layoutMode === 'two-column' ? '#2d5a87' : '#4a76a8';
+    twoColumnButton.style.color = 'white';
+    twoColumnButton.style.border = 'none';
+    twoColumnButton.style.padding = '8px 16px';
+    twoColumnButton.style.margin = '0 5px';
+    twoColumnButton.style.borderRadius = '4px';
+    twoColumnButton.style.cursor = 'pointer';
+    
+    const compactButton = document.createElement('button');
+    compactButton.textContent = 'Compact Card';
+    compactButton.style.backgroundColor = layoutMode === 'compact' ? '#2d5a87' : '#4a76a8';
+    compactButton.style.color = 'white';
+    compactButton.style.border = 'none';
+    compactButton.style.padding = '8px 16px';
+    compactButton.style.margin = '0 5px';
+    compactButton.style.borderRadius = '4px';
+    compactButton.style.cursor = 'pointer';
     
     const downloadButton = document.createElement('button');
     downloadButton.id = 'download-button';
     downloadButton.textContent = 'Download Image';
-    downloadButton.style.cssText = `
-      background-color: #7a200d;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      font-size: 16px;
-      border-radius: 4px;
-      cursor: pointer;
-    `;
+    downloadButton.style.backgroundColor = '#7a200d';
+    downloadButton.style.color = 'white';
+    downloadButton.style.border = 'none';
+    downloadButton.style.padding = '10px 20px';
+    downloadButton.style.fontSize = '16px';
+    downloadButton.style.borderRadius = '4px';
+    downloadButton.style.cursor = 'pointer';
     
-    buttonsContainer.appendChild(layoutToggleButton);
+    layoutButtonsContainer.appendChild(singleColumnButton);
+    layoutButtonsContainer.appendChild(twoColumnButton);
+    layoutButtonsContainer.appendChild(compactButton);
+    
+    buttonsContainer.appendChild(layoutButtonsContainer);
     buttonsContainer.appendChild(downloadButton);
+    
     statBlockContainer.appendChild(buttonsContainer);
+    
+    // Add elements to DOM
     statBlockContainer.appendChild(closeButton);
     modal.appendChild(statBlockContainer);
     document.body.appendChild(modal);
 
-    // Check size warning
-    setTimeout(() => checkAndShowSizeWarning(useTwoColumns), 100);
-        
-    // Layout toggle event
-    layoutToggleButton.addEventListener('click', () => {
-      twoColumnsRef.current = !twoColumnsRef.current;
-      document.body.removeChild(modal);
-      showStatBlockModal();
+    // Check size after modal is rendered
+    setTimeout(() => {
+      checkAndShowSizeWarning();
+    }, 100);
+    
+    // Add click events for layout buttons
+    singleColumnButton.addEventListener('click', () => {
+      if (layoutModeRef.current !== 'single') {
+        layoutModeRef.current = 'single';
+        document.body.removeChild(document.getElementById('monster-stat-block-modal'));
+        showStatBlockModal();
+      }
     });
     
-    // Download event
-    downloadButton.addEventListener('click', async () => {
-      try {
-        // Switch to export mode
-        previewModeRef.current = false;
-        document.body.removeChild(modal);
+    twoColumnButton.addEventListener('click', () => {
+      if (layoutModeRef.current !== 'two-column') {
+        layoutModeRef.current = 'two-column';
+        document.body.removeChild(document.getElementById('monster-stat-block-modal'));
         showStatBlockModal();
+      }
+    });
+    
+    compactButton.addEventListener('click', () => {
+      if (layoutModeRef.current !== 'compact') {
+        layoutModeRef.current = 'compact';
+        document.body.removeChild(document.getElementById('monster-stat-block-modal'));
+        showStatBlockModal();
+      }
+    });
+    
+    // Add click event to download button
+    document.getElementById('download-button').addEventListener('click', async () => {
+      try {
+        // Switch to export mode (hide buttons)
+        previewModeRef.current = false;
         
+        // Regenerate the modal without buttons
+        const currentModal = document.getElementById('monster-stat-block-modal');
+        if (currentModal) {
+          document.body.removeChild(currentModal);
+          showStatBlockModal();
+        }
+        
+        // Wait a moment for the modal to render
         await new Promise(resolve => setTimeout(resolve, 100));
         
         const elementToCapture = document.getElementById('stat-block-to-capture');
+        
+        // Define dimensions based on layout mode
         const dpi = 300;
-        const widthInches = useTwoColumns ? 6.5 : 3.25;
+        const { widthInches } = getLayoutDimensions();
         const widthPixels = widthInches * dpi;
         
-        // Capture and process
+        // First, capture at current scale to measure height
         const testCanvas = await html2canvas(elementToCapture, {
           backgroundColor: null,
           scale: 1,
           useCORS: true
         });
         
+        // Calculate what the height would be at our target width
         const currentWidth = testCanvas.width;
         const currentHeight = testCanvas.height;
         const scaleFactor = widthPixels / currentWidth;
         const projectedHeightPixels = currentHeight * scaleFactor;
         const projectedHeightInches = projectedHeightPixels / dpi;
         
+        // Create the final canvas with exact dimensions
         const finalCanvas = document.createElement('canvas');
         finalCanvas.width = widthPixels;
         finalCanvas.height = projectedHeightPixels;
         
+        // Capture at high quality and scale to fit
         const highQualityCanvas = await html2canvas(elementToCapture, {
           backgroundColor: null,
           scale: 2,
           useCORS: true
         });
         
+        // Draw scaled image to final canvas
         const ctx = finalCanvas.getContext('2d');
         ctx.fillStyle = '#fdf1dc';
         ctx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
         ctx.drawImage(highQualityCanvas, 0, 0, finalCanvas.width, finalCanvas.height);
         
+        // Convert canvas to blob and download
         finalCanvas.toBlob((blob) => {
           const url = URL.createObjectURL(blob);
           const a = document.createElement('a');
           a.href = url;
-          const layoutType = useTwoColumns ? 'two-column' : 'single-column';
+          const layoutType = layoutModeRef.current;
           a.download = `${monster.name ? monster.name.toLowerCase().replace(/\s+/g, '-') : 'monster'}-stat-block-${layoutType}.png`;
           document.body.appendChild(a);
           a.click();
@@ -414,8 +472,10 @@ const abilities = monster.features ?
           
           alert(`Image downloaded successfully!\nSize: ${widthInches}" × ${projectedHeightInches.toFixed(2)}" at ${dpi} DPI`);
           
-          // Switch back to preview mode
+          // Switch back to preview mode (show buttons)
           previewModeRef.current = true;
+          
+          // Regenerate the modal with buttons
           const currentModal = document.getElementById('monster-stat-block-modal');
           if (currentModal) {
             document.body.removeChild(currentModal);
@@ -426,6 +486,7 @@ const abilities = monster.features ?
         console.error('Error generating image:', error);
         alert('Failed to generate image. See console for details.');
         
+        // Switch back to preview mode on error
         previewModeRef.current = true;
         const currentModal = document.getElementById('monster-stat-block-modal');
         if (currentModal) {
