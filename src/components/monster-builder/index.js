@@ -9,9 +9,11 @@ import StateExport from './components/StateExport';
 import StateImport from './components/StateImport';
 import StatBlockImageExporter from './components/StatBlockImageExporter'; // Import image exporter
 
+
 const initialMonsterState = {
   name: '',
   cr: 0,
+  isManualCR: false, // Add this line
   creaturetype: '',
   baseArmorType: 'Natural Armor',
   customAC: 0,

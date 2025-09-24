@@ -5,32 +5,17 @@ import { calculateAverageHP, calculateCR } from '../functions/globalFunctions';
 const SPEED_TYPES = ['Walk', 'Fly', 'Swim', 'Climb', 'Burrow'];
 
 export function BasicInfo({ monster, setMonster, onCRChange }) {
-  // Ref to track if we're manually adjusting CR
-  const isManuallyAdjustingCR = useRef(false);
   // Ref to track previous size for movement speed updates
   const previousSize = useRef(monster.size);
   // Ref to track if component has mounted (for initial calculations)
   const hasInitialized = useRef(false);
 
-  // Debug logging to track state changes
-  /*useEffect(() => {
-    console.log("Monster state updated:", {
-      ac: monster.ac,
-      hp: monster.hp, 
-      cr: monster.cr,
-      size: monster.size,
-      speed: monster.speed
-    });
-  }, [monster.ac, monster.hp, monster.cr, monster.size, monster.speed]);
-  */
   // Initialize component on first render
   useEffect(() => {
     if (!hasInitialized.current) {
-      //console.log("Initializing BasicInfo component");
       
       // Initialize speeds if not already set
       if (!monster.speed || !Array.isArray(monster.speed)) {
-        //console.log("Initializing movement speeds");
         setMonster(prev => ({
           ...prev,
           speed: SPEED_TYPES.map(type => ({ 
@@ -42,25 +27,14 @@ export function BasicInfo({ monster, setMonster, onCRChange }) {
       
       // Set initial CR if HP and AC exist but CR doesn't
       if (monster.hp && monster.ac && (!monster.cr || monster.cr === 0)) {
-        //console.log("Performing initial CR calculation with AC:", monster.ac, "HP:", monster.hp);
-        
         const acValue = parseInt(monster.ac);
         const hpValue = parseInt(monster.hp);
         
         if (!isNaN(acValue) && !isNaN(hpValue)) {
           const initialCR = calculateCR(acValue, hpValue);
-          //console.log("Initial CR calculation result:", initialCR);
           onCRChange(initialCR);
-        } else {
-          console.error("Invalid AC or HP values for initial CR calculation");
         }
-      } /*else {
-        console.log("Skipping initial CR calculation:", {
-          hp: monster.hp,
-          ac: monster.ac,
-          cr: monster.cr
-        });
-      }*/
+      }
       
       hasInitialized.current = true;
     }
@@ -71,16 +45,12 @@ export function BasicInfo({ monster, setMonster, onCRChange }) {
     if (previousSize.current !== monster.size && Array.isArray(monster.speed)) {
       const sizeSpeed = SIZE_MOVEMENT[monster.size] || 30;
       
-      // Update speeds that were previously set
       setMonster(prev => ({
         ...prev,
-        speed: prev.speed.map(s => {
-          // Only update speeds that were active (non-zero)
-          return {
-            ...s,
-            value: s.value > 0 ? sizeSpeed : s.value
-          };
-        })
+        speed: prev.speed.map(s => ({
+          ...s,
+          value: s.value > 0 ? sizeSpeed : s.value
+        }))
       }));
       
       previousSize.current = monster.size;
@@ -105,71 +75,73 @@ export function BasicInfo({ monster, setMonster, onCRChange }) {
     }
   }, [monster.armorClass, monster.armorDescription, setMonster]);
 
-  // Calculate CR when AC or HP changes (but not during manual adjustment)
+  // Calculate CR when AC or HP changes (but only if CR is not manually set)
   useEffect(() => {
-    // Skip if we're manually adjusting CR
-    if (isManuallyAdjustingCR.current) {
-      //console.log("Skipping automatic CR calculation during manual adjustment");
+    // Skip if CR was manually adjusted
+    if (monster.isManualCR) {
       return;
     }
     
     // Skip if hp or ac are missing
     if (!monster.hp || !monster.ac) {
-      //console.log("Skipping CR calculation - missing HP or AC");
       return;
     }
 
     const newCR = calculateCR(monster.ac, monster.hp);
-    //console.log("Calculated CR:", newCR, "from AC:", monster.ac, "HP:", monster.hp);
     
     // Only update if CR actually changed and isn't undefined
     if (newCR !== undefined && newCR !== monster.cr) {  
-      //console.log("Updating CR from", monster.cr, "to", newCR);
       onCRChange(newCR);
     }
-  }, [monster.ac, monster.hp, monster.cr, onCRChange]);
+  }, [monster.ac, monster.hp, monster.isManualCR, monster.cr, onCRChange]);
   
   // Function to handle manual CR adjustment
   function handleCRAdjustment(increment) {
-    // Set the flag to indicate we're manually adjusting
-    isManuallyAdjustingCR.current = true;
-    
-    // Get the current CR - make sure it's a number
     const currentCR = parseInt(monster.cr) || 0;
-    //console.log("Current CR before adjustment:", currentCR);
-    
-    // Increment or decrement by 1, with a minimum of 0
     const newCR = Math.max(0, currentCR + increment);
-    //console.log("New CR after adjustment:", newCR);
     
     // If CR didn't change, do nothing
     if (newCR === currentCR) {
-      isManuallyAdjustingCR.current = false;
       return;
     }
     
-    // Calculate appropriate AC for the new CR
-    const adjustedAC = monster.ac
-    
-    // Update monster state
+    // Mark CR as manually adjusted in monster state
     setMonster(prev => ({
       ...prev,
-      cr: newCR,
-      ac: adjustedAC,
-      armorClass: adjustedAC.toString(),
-      acText: prev.armorDescription ? 
-        `${adjustedAC} (${prev.armorDescription})` : 
-        `${adjustedAC}`
+      isManualCR: true
     }));
     
-    // Notify parent component of CR change
+    // Call onCRChange to update CR
     onCRChange(newCR);
-    
-    // Reset the flag after a short delay
-    setTimeout(() => {
-      isManuallyAdjustingCR.current = false;
-    }, 100);
   }
+
+  // Function to reset to automatic CR calculation
+  function resetToAutomaticCR() {
+    // Reset manual CR flag
+    setMonster(prev => ({
+      ...prev,
+      isManualCR: false
+    }));
+    
+    // Recalculate CR based on current AC and HP
+    if (monster.hp && monster.ac) {
+      const automaticCR = calculateCR(monster.ac, monster.hp);
+      if (automaticCR !== undefined) {
+        onCRChange(automaticCR);
+      }
+    }
+  }
+
+  // Reset manual CR flag when AC or HP changes significantly
+  useEffect(() => {
+    if (monster.isManualCR && monster.hp && monster.ac) {
+      const automaticCR = calculateCR(monster.ac, monster.hp);
+      // If the automatic CR would be very different, suggest resetting
+      if (Math.abs(automaticCR - monster.cr) > 2) {
+        // Could add a notification here, or auto-reset
+      }
+    }
+  }, [monster.ac, monster.hp, monster.cr, monster.isManualCR]);
 
   return (
     <div className="space-y-4">
@@ -273,11 +245,8 @@ export function BasicInfo({ monster, setMonster, onCRChange }) {
                       newHP = calculateAverageHP(newNotation);
                     }
 
-                    //console.log("Setting new HP:", newHP, "from notation:", newNotation);
-
                     // Skip update if HP calculation failed
                     if (isNaN(newHP)) {
-                      console.error("Failed to calculate HP from notation:", newNotation);
                       return;
                     }
 
@@ -291,10 +260,13 @@ export function BasicInfo({ monster, setMonster, onCRChange }) {
                   }}
                 />
               </label>
-              <div className="text-sm mt-1 flex items-center">
+              <div className="text-sm mt-1 flex items-center flex-wrap">
                 <span>Average HP: {monster.hp || 0}</span>
                 <span className="mx-2">|</span>
-                <span>CR: {monster.cr || 0}</span>
+                <span className={monster.isManualCR ? 'text-blue-600 font-semibold' : ''}>
+                  CR: {monster.cr || 0}
+                  {monster.isManualCR && ' (Manual)'}
+                </span>
                 <div className="ml-2 flex">
                   <button
                     type="button"
@@ -313,6 +285,16 @@ export function BasicInfo({ monster, setMonster, onCRChange }) {
                     +
                   </button>
                 </div>
+                {monster.isManualCR && (
+                  <button
+                    type="button"
+                    className="ml-2 px-2 py-0.5 bg-yellow-200 hover:bg-yellow-300 rounded text-xs"
+                    onClick={resetToAutomaticCR}
+                    title="Reset to automatic CR calculation"
+                  >
+                    Auto
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -323,7 +305,7 @@ export function BasicInfo({ monster, setMonster, onCRChange }) {
             <div className="grid grid-cols-2 gap-2">
               {Array.isArray(monster.speed) && SPEED_TYPES.map(speedType => {
                     const currentValue = monster.speed?.find(s => s.type === speedType)?.value || 0;
-                    const sizeSpeed = SIZE_MOVEMENT[monster.size] || 30; // default to 30 if size not found
+                    const sizeSpeed = SIZE_MOVEMENT[monster.size] || 30;
                     
                     return (
                       <div key={speedType} className="flex items-center gap-2">
@@ -338,13 +320,11 @@ export function BasicInfo({ monster, setMonster, onCRChange }) {
                           }`}
                           onClick={() => {
                             setMonster(prev => {
-                              // Create a new speed array with all values set to 0
                               const newSpeed = prev.speed.map(s => ({
                                 ...s,
                                 value: 0
                               }));
                               
-                              // If current button isn't already active, set just this one to sizeSpeed
                               if (currentValue !== sizeSpeed) {
                                 const targetIndex = newSpeed.findIndex(s => s.type === speedType);
                                 if (targetIndex >= 0) {
